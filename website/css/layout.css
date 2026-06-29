@@ -1,0 +1,74 @@
+/**
+ * ============================================================================
+ * Global Layout Grid
+ * ============================================================================
+ */
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- Sidebar --- */
+aside.sidebar-left {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-speed);
+}
+
+/* --- Main Content Wrapper --- */
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-left: var(--sidebar-width);
+}
+
+/* --- Fixed Header --- */
+header.app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--sidebar-width);
+  height: var(--header-height);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  transition: left var(--transition-speed);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* --- Main Viewport --- */
+main.main-viewport {
+  margin-top: var(--header-height);
+  flex-grow: 1;
+  padding: 40px;
+  max-width: 1600px;
+  width: 100%;
+}

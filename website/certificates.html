@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificates | MathLab AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar-left" id="sidebarLeft">
+        <div class="logo-section">
+          <svg
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 3h18v18H3z"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M9 9l6 6M15 9l-6 6"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+          <span>MathLab AI</span>
+        </div>
+        <nav>
+          <ul class="nav-links">
+            <li class="nav-item"><a href="./index.html">Dashboard</a></li>
+            <li class="nav-item">
+              <a href="./calculus.html">Calculus Path</a>
+            </li>
+            <li class="nav-item">
+              <a href="./linear-algebra.html">Linear Algebra</a>
+            </li>
+            <li class="nav-item">
+              <a href="./premium.html">Premium Lessons</a>
+            </li>
+            <li class="nav-item active">
+              <a href="./certificates.html">Certificates</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-progress">
+          <div class="progress-label">
+            <span>Platform Progress</span>
+            <span class="progress-pct">42%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div
+              class="progress-bar-fill"
+              id="sidebarProgressBar"
+              style="width: 42%"
+            ></div>
+          </div>
+          <div class="cert-unlock">
+            <span>2 paths active</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-wrapper">
+        <header class="app-header">
+          <div class="header-left">
+            <button class="mobile-nav-toggle" id="mobileNavBtn">☰</button>
+          </div>
+          <div class="header-actions">
+            <button class="theme-btn" id="themeSwitcher">
+              <span id="themeIcon">☀️</span>
+            </button>
+          </div>
+        </header>
+
+        <main class="main-viewport">
+          <h2>Your Achievements</h2>
+          <div class="paths-grid mt-4">
+            <div class="cert-card locked">
+              <div class="lock-icon">🔒</div>
+              <h3>Calculus Master</h3>
+              <p class="path-desc">
+                Complete all 8 Calculus & Analysis modules to unlock this
+                official certificate.
+              </p>
+              <div class="progress-bar-container mt-4">
+                <div class="progress-bar-fill" style="width: 25%"></div>
+              </div>
+            </div>
+
+            <div class="cert-card locked">
+              <div class="lock-icon">🔒</div>
+              <h3>Linear Algebra Pro</h3>
+              <p class="path-desc">
+                Complete all Linear Algebra modules and pass the final exam.
+              </p>
+              <div class="progress-bar-container mt-4">
+                <div class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script src="./js/theme.js"></script>
+    <script src="./js/navigation.js"></script>
+  </body>
+</html>

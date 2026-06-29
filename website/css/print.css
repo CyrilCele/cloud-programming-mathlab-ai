@@ -1,0 +1,55 @@
+/**
+ * ============================================================================
+ * Print Stylesheet
+ * ----------------------------------------------------------------------------
+ * Optimized for physical printing of lessons and tutorials.
+ * ============================================================================
+ */
+
+@media print {
+  /* Hide UI Elements */
+  aside.sidebar-left,
+  header.app-header,
+  .sandbox-drawer,
+  .fab-container,
+  .btn-primary,
+  .btn-secondary,
+  .btn-premium {
+    display: none !important;
+  }
+
+  /* Reset Layout */
+  .app-container,
+  .main-wrapper {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  main.main-viewport {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  /* Typography Adjustments */
+  body {
+    background-color: #fff;
+    color: #000;
+    font-size: 12pt;
+  }
+
+  /* Avoid page breaks inside important blocks */
+  pre,
+  blockquote,
+  .math-formula-box {
+    page-break-inside: avoid;
+    border: 1px solid #ccc;
+  }
+
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}

@@ -1,0 +1,15 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log

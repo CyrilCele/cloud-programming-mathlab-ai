@@ -1,0 +1,60 @@
+/**
+ * ============================================================================
+ * CSS Variables (Design Tokens)
+ * ----------------------------------------------------------------------------
+ * Handles global colors, typography, and spacing for Dark/Light modes.
+ * ============================================================================
+ */
+
+:root {
+  /* Dark Mode (Default) */
+  --bg-primary: #080c14;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --accent-primary: #3b82f6;
+  --accent-secondary: #8b5cf6;
+  --accent-cyan: #06b6d4;
+
+  --border-color: #1e293b;
+  --border-hover: #334155;
+
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(15, 23, 42, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Layout Variables */
+  --sidebar-width: 260px;
+  --header-height: 70px;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Animation */
+  --transition-speed: 0.3s;
+}
+
+html.light {
+  /* Light Mode Overrides */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+
+  --accent-primary: #2563eb;
+  --accent-secondary: #7c3aed;
+  --accent-cyan: #0891b2;
+
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+
+  --shadow-color: rgba(15, 23, 42, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(15, 23, 42, 0.08);
+}

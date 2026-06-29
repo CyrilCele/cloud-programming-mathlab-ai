@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linear Algebra | MathLab AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar-left" id="sidebarLeft">
+        <div class="logo-section">
+          <svg
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 3h18v18H3z"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M9 9l6 6M15 9l-6 6"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+          <span>MathLab AI</span>
+        </div>
+
+        <nav>
+          <ul class="nav-links">
+            <li class="nav-item"><a href="./index.html">Dashboard</a></li>
+            <li class="nav-item">
+              <a href="./calculus.html">Calculus Path</a>
+            </li>
+            <li class="nav-item active">
+              <a href="./linear-algebra.html">Linear Algebra</a>
+            </li>
+            <li class="nav-item">
+              <a href="./premium.html">Premium Lessons</a>
+            </li>
+            <li class="nav-item">
+              <a href="./certificates.html">Certificates</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-progress">
+          <div class="progress-label">
+            <span>Platform Progress</span>
+            <span class="progress-pct">42%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div
+              class="progress-bar-fill"
+              id="sidebarProgressBar"
+              style="width: 42%"
+            ></div>
+          </div>
+          <div class="cert-unlock">
+            <span>2 paths active</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-wrapper">
+        <header class="app-header">
+          <div class="header-left">
+            <button class="mobile-nav-toggle" id="mobileNavBtn">☰</button>
+          </div>
+          <div class="header-actions">
+            <button class="theme-btn" id="themeSwitcher">
+              <span id="themeIcon">☀️</span>
+            </button>
+            <a class="btn-premium" href="./premium.html">Subscribe Pro</a>
+          </div>
+        </header>
+
+        <main class="main-viewport">
+          <section
+            class="hero-banner"
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(245, 158, 11, 0.1),
+                rgba(239, 68, 68, 0.1)
+              );
+            "
+          >
+            <div class="hero-content">
+              <div
+                class="hero-badge"
+                style="
+                  color: #f59e0b;
+                  border-color: rgba(245, 158, 11, 0.3);
+                  background: rgba(245, 158, 11, 0.1);
+                "
+              >
+                Intermediate Track
+              </div>
+              <h1 class="hero-title">Linear Algebra</h1>
+              <p class="hero-desc">
+                Understand vector spaces, matrices, linear transformations,
+                eigenvalues, and eigenvectors with interactive visualizations.
+              </p>
+            </div>
+          </section>
+
+          <section class="paths-section">
+            <h2>Course Modules</h2>
+            <div class="paths-grid">
+              <article class="path-card">
+                <span class="path-difficulty diff-intermediate">Module 1</span>
+                <div class="path-meta">
+                  <h3 class="path-title">Vectors & Spaces</h3>
+                  <p class="path-desc">
+                    Dot products, cross products, linear independence, and
+                    spans.
+                  </p>
+                </div>
+                <div class="path-footer">
+                  <span class="path-stat">3 Lessons</span
+                  ><button class="path-btn">→</button>
+                </div>
+              </article>
+              <article class="path-card">
+                <span class="path-difficulty diff-intermediate">Module 2</span>
+                <div class="path-meta">
+                  <h3 class="path-title">Matrix Transformations</h3>
+                  <p class="path-desc">
+                    Determinants, inverse matrices, and mapping coordinate
+                    systems.
+                  </p>
+                </div>
+                <div class="path-footer">
+                  <span class="path-stat">5 Lessons</span
+                  ><button class="path-btn">→</button>
+                </div>
+              </article>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <script src="./js/theme.js"></script>
+    <script src="./js/navigation.js"></script>
+  </body>
+</html>
