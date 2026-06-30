@@ -1,15 +1,28 @@
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-terraform.tfvars
-
-# VS Code
+# Local Development Servers and Editors
+fiveserver.config.js
 .vscode/
+.cache/
+.history/
 
-# Windows
+# System Junk Files
 Thumbs.db
+Desktop.ini
+.DS_Store
 
-# Logs
-*.log
+# Terraform Working Directories
+terraform/.terraform/
+
+# Terraform State Files
+terraform/*.tfstate
+terraform/*.tfstate.*
+
+# Terraform Variable & Secret Files
+terraform/terraform.tfvars
+terraform/*.tfvars.json
+website/js/config.js
+
+# Terraform Logs and Overrides
+terraform/crash.log
+terraform/override.tf
+terraform/override.tf.json
+terraform/*._ovveride.tf

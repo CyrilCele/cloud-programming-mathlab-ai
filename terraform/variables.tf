@@ -39,3 +39,14 @@ variable "private_subnet_2" {
   description = "Private subnet 2 CIDR block"
   default     = "10.0.12.0/24"
 }
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_pair_name" {
+  description = "Existing AWS EC2 Key Pair."
+  type        = string
+}
