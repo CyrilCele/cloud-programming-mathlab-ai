@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = aws_region
+  default     = "us-east-1"
 }
 
 variable "project_name" {
@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 variable "public_subnet_1" {
   type        = string
   description = "Public subnet 1 CIDR block"
-  default     = public_subnet_1
+  default     = "10.0.1.0/24"
 }
 
 variable "public_subnet_2" {
@@ -43,7 +43,7 @@ variable "private_subnet_2" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = instance_type
+  default     = "t2.micro"
 }
 
 variable "key_pair_name" {

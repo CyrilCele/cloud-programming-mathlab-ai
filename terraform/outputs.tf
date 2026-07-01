@@ -41,3 +41,13 @@ output "low_cpu_alarm" {
   description = "Low CPU Alarm ARN."
   value       = aws_cloudwatch_metric_alarm.low_cpu.alarm_name
 }
+
+output "s3_bucket_name" {
+  description = "Amazon S3 bucket"
+  value       = aws_s3_bucket.website.bucket
+}
+
+output "s3_bucket_arn" {
+  description = "Amazon S3 bucket ARN"
+  value       = aws_s3_bucket.website.arn
+}
