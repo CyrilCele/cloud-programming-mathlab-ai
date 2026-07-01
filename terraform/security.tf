@@ -30,6 +30,13 @@ resource "aws_security_group" "web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  /**
+ * Temporary SSH access for development.
+ *
+ * Recommendation:
+ * Replace with AWS Systems Manager Session Manager
+ * before production deployment.
+ */
   ingress {
     description = "SSH"
     from_port   = 22
