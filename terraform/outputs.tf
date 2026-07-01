@@ -21,3 +21,23 @@ output "auto_scaling_group_name" {
   description = "Auto Scaling Group Name"
   value       = aws_autoscaling_group.web.name
 }
+
+output "scale_out_policy" {
+  description = "Scale-out policy ARN."
+  value       = aws_autoscaling_policy.scale_out.arn
+}
+
+output "scale_in_policy" {
+  description = "Scale-in policy ARN."
+  value       = aws_autoscaling_policy.scale_in.arn
+}
+
+output "high_cpu_alarm" {
+  description = "High CPU Alarm ARN."
+  value       = aws_cloudwatch_metric_alarm.high_cpu.alarm_name
+}
+
+output "low_cpu_alarm" {
+  description = "Low CPU Alarm ARN."
+  value       = aws_cloudwatch_metric_alarm.low_cpu.alarm_name
+}
