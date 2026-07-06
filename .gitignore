@@ -1,28 +1,60 @@
-# Local Development Servers and Editors
-fiveserver.config.js
-.vscode/
-.cache/
-.history/
+# ===========================
+# Terraform
+# ===========================
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
 
-# System Junk Files
-Thumbs.db
-Desktop.ini
+# ===========================
+# Terraform Variables
+# ===========================
+*.auto.tfvars
+terraform.tfvars
+
+# ===========================
+# Sensitive Files
+# ===========================
+*.pem
+*.key
+*.p12
+*.crt
+
+# ===========================
+# IDE
+# ===========================
+.vscode/
+.idea/
+
+# ===========================
+# macOS
+# ===========================
 .DS_Store
 
-# Terraform Working Directories
-terraform/.terraform/
+# ===========================
+# Windows
+# ===========================
+Thumbs.db
 
-# Terraform State Files
-terraform/*.tfstate
-terraform/*.tfstate.*
+# ===========================
+# Logs
+# ===========================
+*.log
 
-# Terraform Variable & Secret Files
-terraform/terraform.tfvars
-terraform/*.tfvars.json
-website/js/config.js
+# ===========================
+# Temporary Files
+# ===========================
+tmp/
+temp/
 
-# Terraform Logs and Overrides
-terraform/crash.log
-terraform/override.tf
-terraform/override.tf.json
-terraform/*._ovveride.tf
+# ===========================
+# Environment Variables
+# ===========================
+.env
+.env.*
