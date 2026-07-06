@@ -1,0 +1,31 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Secret Scan
+        run: |
+          if grep -R \
+              --exclude-dir=.git \
+              --exclude="*.md" \
+              -E "(AKIA|ASIA|aws_secret_access_key|BEGIN RSA PRIVATE KEY|BEGIN OPENSSH PRIVATE KEY)" .; then
+              echo "Potential secret detected."
+              exit 1
+          fi
+
+          echo "No obvious secrets detected."
