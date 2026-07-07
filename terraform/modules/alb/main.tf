@@ -3,21 +3,25 @@
 #########################################
 
 resource "aws_lb_target_group" "this" {
-  name        = "${var.project_name}-tg"
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "instance"
+  name                 = "${var.project_name}-tg"
+  port                 = 80
+  protocol             = "HTTP"
+  target_type          = "instance"
+  deregistration_delay = 30
+  protocol_version     = "HTTP1"
+  vpc_id               = var.vpc_id
 
-  vpc_id = var.vpc_id
+  stickiness {
+    enabled = false
+    type    = "lb_cookie"
+  }
 
   health_check {
-    enabled = true
-
+    enabled  = true
     protocol = "HTTP"
-
-    path = "/"
-
-    matcher = "200"
+    path     = "/"
+    port     = "traffic-port"
+    matcher  = "200"
 
     interval            = 30
     timeout             = 5
@@ -38,8 +42,7 @@ resource "aws_lb_target_group" "this" {
 #########################################
 
 resource "aws_lb" "this" {
-  name = "${var.project_name}-alb"
-
+  name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
 
@@ -47,9 +50,9 @@ resource "aws_lb" "this" {
     var.security_group_id
   ]
 
-  subnets = var.public_subnet_ids
-
-  enable_deletion_protection = false
+  subnets                    = var.public_subnet_ids
+  idle_timeout               = 60
+  enable_deletion_protection = var.enable_deletion_protection
 
   tags = merge(
     var.tags,

@@ -7,3 +7,8 @@ variable "tags" {
   description = "Common resource tags."
   type        = map(string)
 }
+
+variable "assets_bucket_arn" {
+  description = "ARN of the S3 assest bucket."
+  type        = string
+}

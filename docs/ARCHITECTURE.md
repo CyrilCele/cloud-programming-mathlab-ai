@@ -27,6 +27,8 @@ The architecture follows the AWS Well-Architected Framework and Infrastructure a
                              ▼
                   Auto Scaling Group (ASG)
                              │
+                             ▼
+                  CloudWatch Monitoring
             ┌────────────────┴────────────────┐
             │                                 │
             ▼                                 ▼
@@ -92,6 +94,22 @@ This provides:
 - Resilience against Availability Zone failures
 
 The Availability Zones are selected dynamically by Terraform to improve portability between AWS accounts and regions.
+
+---
+
+# Monitoring Architecture
+
+Amazon CloudWatch provides centralized monitoring and logging for the infrastructure.
+
+Current monitoring includes:
+
+- CloudWatch Log Group
+- EC2 CPU Utilization alarms
+- EC2 Status Check alarms
+- Application Load Balancer 5XX alarms
+- Unhealthy Target alarms
+
+CloudWatch enables proactive monitoring and forms the foundation for future alerting and operational dashboards.
 
 ---
 
@@ -304,7 +322,7 @@ Each module is designed to be:
 | Launch Template           | Complete             |
 | Application Load Balancer | Complete             |
 | Auto Scaling              | Complete             |
-| CloudWatch                | Pending              |
+| CloudWatch                | Complete             |
 | Route 53                  | Pending              |
 | GitHub Actions            | Pending              |
 | Production Hardening      | Pending              |

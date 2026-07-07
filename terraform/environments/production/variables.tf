@@ -48,3 +48,19 @@ variable "assets_bucket_name" {
   description = "Globally unique S3 bucket name."
   type        = string
 }
+
+variable "ami_id" {
+  description = "Ubuntu Server AMI ID."
+  type        = string
+}
+
+variable "instance_type" {
+  description = "EC2 instance type."
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "alert_email" {
+  description = "Email address for CloudWatch alarm notifications."
+  type        = string
+}

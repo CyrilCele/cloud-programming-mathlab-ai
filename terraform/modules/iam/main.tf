@@ -33,31 +33,34 @@ resource "aws_iam_role" "ec2" {
 # IAM Policy
 #########################################
 
-resource "aws_iam_policy" "ec2" {
-  name        = "${var.project_name}-ec2-policy"
-  description = "Least privilege policy for EC2 instances."
+resource "aws_iam_role_policy" "cloudwatch" {
+  name = "${var.project_name}-cloudwatch"
+
+  role = aws_iam_role.ec2.id
 
   policy = jsonencode({
     Version = "2012-10-17"
 
-    Statement = []
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ]
+
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["cloudwatch:PutMetricData"]
+        Resource = "*"
+      }
+    ]
   })
-
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.project_name}-ec2-policy"
-    }
-  )
-}
-
-#########################################
-# Policy Attachment
-#########################################
-
-resource "aws_iam_role_policy_attachment" "ec2" {
-  role       = aws_iam_role.ec2.name
-  policy_arn = aws_iam_policy.ec2.arn
 }
 
 #########################################

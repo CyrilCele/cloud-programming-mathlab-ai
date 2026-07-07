@@ -247,6 +247,22 @@ The infrastructure currently provisions:
 - HTTP Listener
 - Amazon CloudFront
 - Auto Scaling Group
+- CloudWatch Log Group
+- CloudWatch Alarms
+
+---
+
+# Monitoring
+
+The deployment provisions Amazon CloudWatch monitoring resources, including:
+
+- CloudWatch Log Group
+- CPU Utilization Alarm
+- EC2 Status Check Alarm
+- Application Load Balancer 5XX Alarm
+- Unhealthy Target Alarm
+
+If Amazon SNS notifications are configured, confirm the email subscription after deployment to receive alarm notifications.
 
 ---
 
@@ -335,11 +351,11 @@ Verify AWS Resources
 | Networking                | Complete |
 | IAM                       | Complete |
 | Amazon S3                 | Complete |
-| CloudFront                | Pending  |
-| Launch Template           | Pending  |
-| Application Load Balancer | Pending  |
-| Auto Scaling              | Pending  |
-| CloudWatch                | Pending  |
+| CloudFront                | Complete |
+| Launch Template           | Complete |
+| Application Load Balancer | Complete |
+| Auto Scaling              | Complete |
+| CloudWatch                | Complete |
 | Route 53                  | Pending  |
 | GitHub Actions            | Pending  |
 | Production Hardening      | Pending  |

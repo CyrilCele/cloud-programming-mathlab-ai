@@ -18,7 +18,7 @@ resource "aws_security_group" "alb" {
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   security_group_id = aws_security_group.alb.id
 
-  description = "Allow HTTP from the Internet"
+  description = "Allow HTTP from the internet."
 
   ip_protocol = "tcp"
 
@@ -31,7 +31,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb_http" {
 resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   security_group_id = aws_security_group.alb.id
 
-  description = "Allow HTTPS from the Internet"
+  description = "Allow HTTPS from the internet."
 
   ip_protocol = "tcp"
 
@@ -71,7 +71,7 @@ resource "aws_security_group" "ec2" {
 resource "aws_vpc_security_group_ingress_rule" "ec2_http" {
   security_group_id = aws_security_group.ec2.id
 
-  description = "Allow HTTP from the ALB"
+  description = "Allow HTTP from the Application Load Balancer."
 
   ip_protocol = "tcp"
 
@@ -82,9 +82,9 @@ resource "aws_vpc_security_group_ingress_rule" "ec2_http" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "ec2_outbound" {
-  security_group_id = aws_security_group.alb.ec2.id
+  security_group_id = aws_security_group.ec2.id
 
-  description = "Allow outbound traffic"
+  description = "Allow all outbound traffic."
 
   ip_protocol = "-1"
 

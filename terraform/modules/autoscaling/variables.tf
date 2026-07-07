@@ -3,11 +3,6 @@ variable "project_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "Deployment environment."
-  type        = string
-}
-
 variable "launch_template_id" {
   description = "Launch Template ID."
   type        = string

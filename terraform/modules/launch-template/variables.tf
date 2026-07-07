@@ -3,11 +3,6 @@ variable "project_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "Deployment environment."
-  type        = string
-}
-
 variable "ami_id" {
   description = "Ubuntu Server AMI ID."
   type        = string
@@ -34,7 +29,7 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "user_data" {
-  description = "Base64-encoded EC2 user data."
+variable "assets_bucket_name" {
+  description = "S3 bucket containing deployment artifacts."
   type        = string
 }

@@ -27,3 +27,9 @@ variable "tags" {
   description = "Common resource tags."
   type        = map(string)
 }
+
+variable "enable_deletion_protection" {
+  description = "Enable deletion protection on the ALB."
+  type        = bool
+  default     = false
+}

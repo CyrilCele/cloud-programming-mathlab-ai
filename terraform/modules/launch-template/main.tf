@@ -3,9 +3,17 @@ resource "aws_launch_template" "this" {
 
   image_id      = var.ami_id
   instance_type = var.instance_type
-  user_data     = var.user_data
+  user_data = base64encode(
+    templatefile(
+      "${path.module}/../../../templates/bootstrap.sh.tftpl",
+      {
+        assets_bucket_name = var.assets_bucket_name
+      }
+    )
+  )
 
-  update_default_version = true
+  update_default_version               = true
+  instance_initiated_shutdown_behavior = "terminate"
 
   iam_instance_profile {
     name = var.instance_profile_name
@@ -51,4 +59,22 @@ resource "aws_launch_template" "this" {
       }
     )
   }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      var.tags,
+      {
+        Name = "${var.project_name}-ebs"
+      }
+    )
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.project_name}-launch-template"
+    }
+  )
 }

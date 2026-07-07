@@ -169,6 +169,21 @@ Terraform follows these security practices:
 
 ---
 
+## Monitoring and Detection
+
+Amazon CloudWatch provides operational monitoring for infrastructure health.
+
+Current monitoring includes:
+
+- EC2 CPU utilization
+- EC2 status checks
+- Application Load Balancer HTTP 5XX errors
+- Unhealthy target detection
+
+These controls improve operational visibility and support early detection of infrastructure issues.
+
+---
+
 # Amazon S3 Security
 
 The Amazon S3 bucket is secured using AWS security best practices.
@@ -214,4 +229,4 @@ Future milestones will introduce:
 | Amazon S3 Versioning           | ✅      |
 | Amazon S3 Block Public Access  | ✅      |
 | HTTPS                          | Pending |
-| CloudWatch Monitoring          | Pending |
+| CloudWatch Monitoring          | ✅      |

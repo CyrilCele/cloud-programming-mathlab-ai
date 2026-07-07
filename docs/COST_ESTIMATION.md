@@ -32,16 +32,10 @@ Actual costs depend on:
 
 # Planned Infrastructure
 
-| Service                   |
-| ------------------------- |
-| EC2                       |
-| Launch Template           |
-| Auto Scaling Group        |
-| Application Load Balancer |
-| Amazon CloudFront         |
-| Amazon Route 53           |
-| Amazon CloudWatch         |
-| AWS Certificate Manager   |
+| Service                 |
+| ----------------------- |
+| Amazon Route 53         |
+| AWS Certificate Manager |
 
 ---
 
@@ -85,6 +79,17 @@ Costs depend on:
 
 - Running hours
 - Load Balancer Capacity Units (LCUs)
+
+---
+
+## Amazon CloudWatch
+
+CloudWatch costs depend on:
+
+- Number of alarms
+- Log ingestion
+- Log storage
+- Metric collection
 
 ---
 

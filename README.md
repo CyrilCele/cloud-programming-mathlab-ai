@@ -62,7 +62,7 @@ The infrastructure follows AWS Well-Architected Framework principles and Infrast
 
 - Amazon Route 53
 
-### Monitoring (Upcoming)
+### Monitoring
 
 - Amazon CloudWatch
 
@@ -134,6 +134,9 @@ The following components have been implemented:
 - HTTP Listener
 - Amazon CloudFront
 - Auto Scaling Group
+- CloudWatch Log Group
+- CloudWatch Monitoring
+- CloudWatch Alarms
 
 ---
 
@@ -187,7 +190,7 @@ Current security controls include:
 | Launch Template | Complete             |
 | ALB             | Complete             |
 | Auto Scaling    | Complete             |
-| CloudWatch      | Pending              |
+| CloudWatch      | Complete             |
 | Route 53        | Pending              |
 | ACM             | Pending              |
 
@@ -236,7 +239,7 @@ terraform apply
 | Launch Template           | Complete             |
 | Application Load Balancer | Complete             |
 | Auto Scaling              | Complete             |
-| CloudWatch                | Pending              |
+| CloudWatch                | Complete             |
 | Route 53                  | Pending              |
 | GitHub Actions            | Pending              |
 | Production Hardening      | Pending              |

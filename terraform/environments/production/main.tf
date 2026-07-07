@@ -29,7 +29,27 @@ module "iam" {
   source = "../../modules/iam"
 
   project_name = var.project_name
-  tags         = local.common_tags
+
+  assets_bucket_arn = module.s3.bucket_arn
+
+  tags = local.common_tags
+}
+
+module "launch_template" {
+  source = "../../modules/launch-template"
+
+  project_name = var.project_name
+
+  ami_id = var.ami_id
+
+  instance_type         = var.instance_type
+  instance_profile_name = module.iam.instance_profile_name
+
+  security_group_id = module.security_groups.ec2_security_group_id
+
+  assets_bucket_name = module.s3.bucket_name
+
+  tags = local.common_tags
 }
 
 module "s3" {
@@ -57,7 +77,6 @@ module "autoscaling" {
   source = "../../modules/autoscaling"
 
   project_name = var.project_name
-  environment  = var.environment
 
   launch_template_id             = module.launch_template.launch_template_id
   launch_template_latest_version = module.launch_template.launch_template_latest_version
@@ -65,6 +84,21 @@ module "autoscaling" {
   private_subnet_ids = module.networking.private_subnet_ids
 
   target_group_arn = module.alb.target_group_arn
+
+  tags = local.common_tags
+}
+
+module "cloudwatch" {
+  source = "../../modules/cloudwatch"
+
+  project_name = var.project_name
+
+  autoscaling_group_name = module.autoscaling.autoscaling_group_name
+
+  load_balancer_arn_suffix = module.alb.alb_arn_suffix
+  target_group_arn_suffix  = module.alb.target_group_arn_suffix
+
+  alert_email = var.alert_email
 
   tags = local.common_tags
 }

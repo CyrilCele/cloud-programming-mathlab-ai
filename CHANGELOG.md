@@ -10,18 +10,34 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ### Planned
 
-- IAM Roles and Policies
-- EC2 Instance Profile
 - Amazon S3
-- CloudFront Distribution
-- Launch Template
-- EC2 Auto Scaling Group
-- Application Load Balancer
-- CloudWatch Monitoring
 - Route 53
 - GitHub Actions CI/CD
 - Production Hardening
 - Final Infrastructure Validation
+
+---
+
+## [0.9.0] - Milestone 9
+
+### Added
+
+#### Monitoring
+
+- CloudWatch Log Group
+- CloudWatch Alarms
+- CPU Utilization monitoring
+- EC2 Status Check monitoring
+- Application Load Balancer 5XX monitoring
+- Unhealthy Target monitoring
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+- Updated SECURITY.md
+- Updated COST_ESTIMATION.md
 
 ---
 

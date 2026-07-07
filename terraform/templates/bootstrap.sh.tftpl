@@ -1,24 +1,38 @@
 #!/bin/bash
 
+exec > >(tee /var/log/bootstrap.log)
+exec 2>&1
+
 set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update -y
-apt-get upgrade -y
+apt-get update
 
 apt-get install -y \
     nginx \
-    unzip
+    unzip \
+    awscli
 
 systemctl enable nginx
 systemctl start nginx
 
-rm -rf /var/www/html/*
+mkdir -p /tmp/website
 
+aws s3 cp \
+    s3://${assets_bucket_name}/website.zip \
+    /tmp/website/website.zip
+
+test -f /tmp/website/website.zip    
+
+unzip -o \
+    /tmp/website/website.zip \
+    -d /var/www/html
 
 chown -R www-data:www-data /var/www/html
+
 find /var/www/html -type d -exec chmod 755 {} \;
+
 find /var/www/html -type f -exec chmod 644 {} \;
 
 systemctl restart nginx
