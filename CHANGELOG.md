@@ -25,6 +25,35 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.4.0] - Milestone 4
+
+### Added
+
+#### Amazon S3
+
+- Reusable S3 Terraform module
+- Private S3 bucket
+- Bucket versioning
+- Server-side encryption (AES-256)
+- Block Public Access
+- Lifecycle configuration
+
+#### Terraform
+
+- Production environment integration
+- S3 outputs
+- Configurable globally unique bucket name
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+- Updated SECURITY.md
+- Updated COST_ESTIMATION.md
+
+---
+
 ## [0.3.0] - Milestone 3
 
 ### Added

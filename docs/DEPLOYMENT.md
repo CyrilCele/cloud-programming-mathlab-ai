@@ -124,6 +124,8 @@ environment = "production"
 
 project_name = "aws-static-website"
 
+assets_bucket_name = "my-company-static-assets"
+
 vpc_cidr = "10.0.0.0/16"
 
 public_subnet_cidr_a = "10.0.1.0/24"
@@ -239,6 +241,7 @@ The infrastructure currently provisions:
 - EC2 Security Group
 - IAM Role
 - EC2 Instance Profile
+- Amazon S3
 
 ---
 
@@ -319,8 +322,8 @@ Verify AWS Resources
 | ------------------------- | -------- |
 | Repository Initialization | Complete |
 | Networking                | Complete |
-| IAM                       | Pending  |
-| Amazon S3                 | Pending  |
+| IAM                       | Complete |
+| Amazon S3                 | Complete |
 | CloudFront                | Pending  |
 | Launch Template           | Pending  |
 | Application Load Balancer | Pending  |

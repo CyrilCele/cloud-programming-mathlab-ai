@@ -17,15 +17,16 @@ Actual costs depend on:
 # Current Infrastructure
 
 | Service          | Quantity |
-| ---------------- | -------- |
-| Amazon VPC       | 1        |
-| Internet Gateway | 1        |
-| NAT Gateway      | 1        |
-| Elastic IP       | 1        |
-| Public Subnets   | 2        |
-| Private Subnets  | 2        |
-| Route Tables     | 2        |
-| Security Groups  | 2        |
+| ---------------- | -------: |
+| Amazon VPC       |        1 |
+| Internet Gateway |        1 |
+| NAT Gateway      |        1 |
+| Elastic IP       |        1 |
+| Public Subnets   |        2 |
+| Private Subnets  |        2 |
+| Route Tables     |        2 |
+| Security Groups  |        2 |
+| Amazon S3 Bucket |        1 |
 
 ---
 
@@ -37,7 +38,6 @@ Actual costs depend on:
 | Launch Template           |
 | Auto Scaling Group        |
 | Application Load Balancer |
-| Amazon S3                 |
 | Amazon CloudFront         |
 | Amazon Route 53           |
 | Amazon CloudWatch         |

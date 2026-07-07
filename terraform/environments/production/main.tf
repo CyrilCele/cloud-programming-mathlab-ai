@@ -31,3 +31,10 @@ module "iam" {
   project_name = var.project_name
   tags         = local.common_tags
 }
+
+module "s3" {
+  source = "../../modules/s3"
+
+  bucket_name = var.assets_bucket_name
+  tags        = local.common_tags
+}

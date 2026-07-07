@@ -157,6 +157,21 @@ Inbound internet connections to the private subnets are not permitted.
 
 ---
 
+## AMazon S3
+
+Amazon S3 is provisioned as a private bucket for storing website assets and future deployment artifacts.
+
+The bucket includes:
+
+- Versioning enabled
+- Server-side encryption (AES-256)
+- Block Public Access enabled
+- Lifecycle configuration to clean up incomplete multipart uploads
+
+The bucket is intentionally provate and is designed for future integration with Amazon CloudFront using Origin Access Control (OAC).
+
+---
+
 # Security Architecture
 
 ## Application Load Balancer Security Group
@@ -258,6 +273,7 @@ Each module is designed to be:
 
 ## Performance Efficiency
 
+- Amazon S3 for highly durable static asset storage
 - CloudFront (planned)
 - Auto Scaling (planned)
 - Application Load Balancer (planned)
@@ -282,7 +298,7 @@ Each module is designed to be:
 | Networking                | Complete |
 | Security Groups           | Complete |
 | IAM                       | Complete |
-| Amazon S3                 | Pending  |
+| Amazon S3                 | Complete |
 | CloudFront                | Pending  |
 | Launch Template           | Pending  |
 | Application Load Balancer | Pending  |
@@ -299,11 +315,12 @@ Each module is designed to be:
 
 # Next Milestone
 
-The next milestone provisions Amazon S3, including:
+The next milestone provisions Amazon CloudFront, including:
 
-- Website assests bucket
-- Versioning
-- Server-side encryption
-- Lifecycle configuration
-- Bucket policies
-- Public access configuration
+- CloudFront Distribution
+- Origin Access Control (OAC)
+- Multiple Origins
+- Cache Behaviors
+- HTTPS Viewer Policy
+- Compression
+- Optimised Caching

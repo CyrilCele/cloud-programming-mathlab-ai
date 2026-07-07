@@ -46,7 +46,7 @@ The infrastructure follows AWS Well-Architected Framework principles and Infrast
 - Private Subnets
 - Security Groups
 
-### Compute (Upcoming)
+### Compute
 
 - Amazon EC2
 - Auto Scaling Group
@@ -55,8 +55,8 @@ The infrastructure follows AWS Well-Architected Framework principles and Infrast
 
 ### Content Delivery (Upcoming)
 
-- Amazon CloudFront
 - Amazon S3
+- Amazon CloudFront (Upcoming)
 
 ### DNS (Upcoming)
 
@@ -105,7 +105,7 @@ mathlab-ai/
 
 ## Current Architecture
 
-[AWS-Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+![AWS Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
 
 ### Current Implementation
 
@@ -123,6 +123,12 @@ The following components have been implemented:
 - EC2 Security Group
 - IAM Role
 - EC2 Instance Profile
+- Amazon S3
+  - Private bucket
+  - Server-side encryption (AES-256)
+  - Versioning enabled
+  - Block Public Access enabled
+  - Lifecycle configuration
 
 ---
 
@@ -171,7 +177,7 @@ Current security controls include:
 | Networking      | Complete |
 | Security Groups | Complete |
 | IAM             | Complete |
-| S3              | Pending  |
+| S3              | Complete |
 | CloudFront      | Pending  |
 | Launch Template | Pending  |
 | ALB             | Pending  |
@@ -220,7 +226,7 @@ terraform apply
 | Repository Initialization | Complete |
 | Networking                | Complete |
 | IAM                       | Complete |
-| Amazon S3                 | Pending  |
+| Amazon S3                 | Complete |
 | CloudFront                | Pending  |
 | Launch Template           | Pending  |
 | Application Load Balancer | Pending  |

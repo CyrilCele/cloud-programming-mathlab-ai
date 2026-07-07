@@ -151,6 +151,20 @@ Terraform follows these security practices:
 
 ---
 
+# Amazon S3 Security
+
+The Amazon S3 bucket is secured using AWS security best practices.
+
+Implemented controls include:
+
+- Block Public Access enabled
+- Server-side encryption (AES-256)
+- Bucket versioning enabled
+- Private bucket by default
+- Lifecycle configuration for incomplete multipart uploads
+
+---
+
 # Planned Security Enhancements
 
 Future milestones will introduce:
@@ -177,7 +191,9 @@ Future milestones will introduce:
 | No Public SSH                  | ✅      |
 | No Hardcoded Credentials       | ✅      |
 | Modular Terraform              | ✅      |
-| IAM Least Privilege            | Pending |
+| IAM Least Privilege            | ✅      |
+| Amazon S3 Encryption           | ✅      |
+| Amazon S3 Versioning           | ✅      |
+| Amazon S3 Block Public Access  | ✅      |
 | HTTPS                          | Pending |
-| Encryption at Rest             | Pending |
 | CloudWatch Monitoring          | Pending |

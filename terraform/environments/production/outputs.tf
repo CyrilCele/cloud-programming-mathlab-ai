@@ -61,3 +61,19 @@ output "instance_profile_arn" {
 
   value = module.iam.instance_profile_arn
 }
+
+#########################################
+# S3
+#########################################
+
+output "assets_bucket_name" {
+  description = "Assets bucket name."
+
+  value = module.s3.bucket_name
+}
+
+output "assets_bucket_arn" {
+  description = "Assets bucket ARN."
+
+  value = module.s3.bucket_arn
+}
