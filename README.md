@@ -178,7 +178,7 @@ Current security controls include:
 | Security Groups | Complete |
 | IAM             | Complete |
 | S3              | Complete |
-| CloudFront      | Pending  |
+| CloudFront      | Complete |
 | Launch Template | Pending  |
 | ALB             | Pending  |
 | Auto Scaling    | Pending  |
@@ -221,23 +221,23 @@ terraform apply
 
 ## Project Status
 
-| Milestone                 | Status   |
-| ------------------------- | -------- |
-| Repository Initialization | Complete |
-| Networking                | Complete |
-| IAM                       | Complete |
-| Amazon S3                 | Complete |
-| CloudFront                | Pending  |
-| Launch Template           | Pending  |
-| Application Load Balancer | Pending  |
-| Auto Scaling              | Pending  |
-| CloudWatch                | Pending  |
-| Route 53                  | Pending  |
-| GitHub Actions            | Pending  |
-| Production Hardening      | Pending  |
-| Deployment                | Pending  |
-| Validation                | Pending  |
-| Final Submission          | Pending  |
+| Milestone                 | Status           |
+| ------------------------- | ---------------- |
+| Repository Initialization | Complete         |
+| Networking                | Complete         |
+| IAM                       | Complete         |
+| Amazon S3                 | Complete         |
+| CloudFront                | Phase A Complete |
+| Launch Template           | Pending          |
+| Application Load Balancer | Pending          |
+| Auto Scaling              | Pending          |
+| CloudWatch                | Pending          |
+| Route 53                  | Pending          |
+| GitHub Actions            | Pending          |
+| Production Hardening      | Pending          |
+| Deployment                | Pending          |
+| Validation                | Pending          |
+| Final Submission          | Pending          |
 
 ---
 

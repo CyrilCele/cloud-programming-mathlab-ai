@@ -25,6 +25,28 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.5.0] - Milestone 5 (Phase A)
+
+### Added
+
+#### CloudFront
+
+- Reusable CloudFront Terraform module
+- Origin Access Control (OAC)
+- Configurable price class
+- Multi-origin support
+- HTTPS viewer redirection
+- Response compression
+- CloudFront module outputs
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+
+---
+
 ## [0.4.0] - Milestone 4
 
 ### Added

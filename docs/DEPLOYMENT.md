@@ -245,17 +245,23 @@ The infrastructure currently provisions:
 
 ---
 
+## CloudFront Module
+
+A reusable CloudFront module has been implemented.
+
+Production integration will occur after the Application Load Balancer has been provisioned, ensuring the CloudFront distribution has a valid production origin.
+
+---
+
 # Planned Infrastructure
 
 Future milestones will provision:
 
-- IAM
-- Amazon S3
-- CloudFront
 - Launch Template
 - EC2
 - Auto Scaling Group
 - Application Load Balancer
+- CloudFront integration
 - CloudWatch
 - Route 53
 - ACM

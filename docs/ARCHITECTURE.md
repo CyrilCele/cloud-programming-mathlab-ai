@@ -273,8 +273,9 @@ Each module is designed to be:
 
 ## Performance Efficiency
 
-- Amazon S3 for highly durable static asset storage
-- CloudFront (planned)
+- Amazon S3 for durable static asset storage
+- CloudFront module implemented
+- CloudFront integration pending Application Load Balancer deployment
 - Auto Scaling (planned)
 - Application Load Balancer (planned)
 
@@ -299,7 +300,8 @@ Each module is designed to be:
 | Security Groups           | Complete |
 | IAM                       | Complete |
 | Amazon S3                 | Complete |
-| CloudFront                | Pending  |
+| CloudFront Module         | Complete |
+| CloudFront Integration    | Pending  |
 | Launch Template           | Pending  |
 | Application Load Balancer | Pending  |
 | Auto Scaling              | Pending  |
@@ -315,12 +317,11 @@ Each module is designed to be:
 
 # Next Milestone
 
-The next milestone provisions Amazon CloudFront, including:
+The next milestone provisions the EC2 Launch Template, including:
 
-- CloudFront Distribution
-- Origin Access Control (OAC)
-- Multiple Origins
-- Cache Behaviors
-- HTTPS Viewer Policy
-- Compression
-- Optimised Caching
+- Ubuntu Server
+- User Data
+- Automatic Nginx installation
+- Website deployment
+- Automatic service startup
+- Reboot persistence
