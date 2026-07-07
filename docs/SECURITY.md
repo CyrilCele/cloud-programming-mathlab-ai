@@ -1,221 +1,184 @@
 # Security Guide
 
-This document describes the security architecture, controls, and best practices implemented throughout the AWS Static Website Infrastructure project.
+## Overview
 
-Security is incorporated into every layer of the infrastructure and follows the AWS Well-Architected Framework Security Pillar.
+This document describes the security controls implemented throughout the AWS Infrastructure project.
 
----
-
-# Security Objectives
-
-The infrastructure is designed to achieve the following security objectives:
-
-- Protect infrastructure resources.
-- Protect application availability.
-- Protect data at rest and in transit.
-- Minimize the attack surface.
-- Follow the Principle of Least Privilege.
-- Ensure repeatable and auditable deployments.
-- Prevent exposure of sensitive information.
+The infrastructure follows AWS security best practices and the Security pillar of the AWS Well-Architected Framework.
 
 ---
 
 # Security Principles
 
-The project follows these core security principles:
+The infrastructure is designed according to the following principles:
 
-- Least Privilege
+- Principle of Least Privilege
 - Defense in Depth
 - Secure by Default
 - Infrastructure as Code
-- Encryption by Default
-- Identity-Based Access Control
-- Continuous Monitoring
+- No Hardcoded Secrets
+- Network Isolation
 
 ---
 
-# Identity and Access Management (IAM)
+# Identity and Access Management
 
-AWS Identity and Access Management (IAM) is used to control access to AWS resources.
+IAM resources will be implemented in Milestone 3.
 
-The project implements:
+The design goals are:
 
-- IAM Roles
-- IAM Policies
+- Least Privilege permissions
+- No AdministratorAccess policies
+- Dedicated IAM Roles
 - EC2 Instance Profiles
-
-No AWS credentials are stored on EC2 instances.
-
-Long-term access keys are avoided wherever possible.
+- Temporary credentials
 
 ---
 
 # Network Security
 
-The networking layer is designed to reduce unnecessary exposure.
+## Virtual Private Cloud
 
-Security measures include:
+The infrastructure is deployed inside a dedicated Amazon VPC.
 
-- Virtual Private Cloud (VPC)
-- Public and private network segmentation (where applicable)
-- Security Groups
-- Restrictive ingress and egress rules
-- Internet Gateway
-- Route Tables
+CIDR Block:
 
-Only required network ports are opened.
+```text
+10.0.0.0/16
+```
+
+---
+
+## Public Subnets
+
+Public subnets host:
+
+- Application Load Balancer
+- NAT Gateway
+
+No application workloads are deployed in public subnets.
+
+---
+
+## Private Subnets
+
+Private subnets host:
+
+- EC2 Instances
+- Auto Scaling Group
+
+Private subnets are not directly reachable from the internet.
+
+---
+
+## Internet Gateway
+
+Provides internet connectivity for resources deployed in public subnets.
+
+---
+
+## NAT Gateway
+
+Provides outbound internet access for resources deployed in private subnets.
+
+Inbound internet connections are not permitted.
 
 ---
 
 # Security Groups
 
-Security Groups provide stateful firewall protection.
+## Application Load Balancer
 
-The project follows these principles:
+### Inbound
 
-- Deny unnecessary traffic.
-- Allow only required inbound traffic.
-- Restrict outbound traffic where practical.
-- Separate Security Groups by resource responsibility.
+| Protocol | Port | Source    |
+| -------- | ---- | --------- |
+| TCP      | 80   | 0.0.0.0/0 |
+| TCP      | 443  | 0.0.0.0/0 |
 
----
+### Outbound
 
-# Data Protection
-
-Sensitive information must never be committed to version control.
-
-Protected files include:
-
-- terraform.tfvars
-- Terraform state files
-- Private keys
-- Certificates
-- AWS credentials
-
-The project's `.gitignore` prevents accidental commits of these files.
+All traffic.
 
 ---
 
-# Encryption
+## EC2 Instances
 
-Encryption is enabled wherever supported by AWS services.
+### Inbound
 
-Examples include:
+| Protocol | Port | Source                                   |
+| -------- | ---- | ---------------------------------------- |
+| TCP      | 80   | Application Load Balancer Security Group |
 
-- Amazon S3
-- CloudFront HTTPS
-- AWS-managed encryption services
+### Outbound
 
-Additional encryption configurations will be documented as infrastructure components are implemented.
-
----
-
-# Infrastructure as Code Security
-
-Terraform provides a repeatable and auditable deployment process.
-
-Security benefits include:
-
-- Version-controlled infrastructure
-- Peer-review capability
-- Reduced configuration drift
-- Consistent deployments
-- Repeatable provisioning
+All traffic.
 
 ---
 
-# Website Security
+# SSH Access
 
-The existing website remains unchanged.
+Direct SSH access is disabled.
 
-Infrastructure security is implemented independently of the website source code.
+No inbound TCP port 22 is exposed.
 
-Nginx is configured to securely serve the static website after EC2 provisioning.
-
----
-
-# Logging and Monitoring
-
-Monitoring is implemented using Amazon CloudWatch.
-
-Monitoring includes:
-
-- Infrastructure metrics
-- System health
-- Performance monitoring
-- Alarm generation
-
-Additional monitoring configurations will be added during the CloudWatch milestone.
+Future administrative access can be implemented using AWS Systems Manager Session Manager.
 
 ---
 
-# Security Best Practices
+# Secrets Management
 
-The project follows AWS best practices by:
+The repository does not store:
 
-- Using IAM Roles instead of access keys.
-- Applying the Principle of Least Privilege.
-- Restricting network access.
-- Avoiding hardcoded credentials.
-- Encrypting supported resources.
-- Using Infrastructure as Code.
-- Maintaining version control.
-- Performing infrastructure validation before deployment.
+- AWS Access Keys
+- Secret Access Keys
+- Passwords
+- Tokens
+- Private Keys
 
----
-
-# Security Responsibilities
-
-| Component       | Responsibility                 |
-| --------------- | ------------------------------ |
-| IAM             | Identity and access management |
-| Security Groups | Network traffic filtering      |
-| VPC             | Network isolation              |
-| CloudFront      | Secure content delivery        |
-| S3              | Secure object storage          |
-| CloudWatch      | Monitoring and alerting        |
-| Terraform       | Infrastructure provisioning    |
+Sensitive configuration must never be committed to Git.
 
 ---
 
-# Security Compliance
+# Terraform Security
 
-The infrastructure is designed to align with the AWS Well-Architected Framework Security Pillar by implementing:
+Terraform follows these security practices:
 
-- Identity management
-- Network protection
-- Secure infrastructure provisioning
-- Encryption
-- Monitoring
-- Least privilege access
+- No hardcoded credentials
+- Variables used for configurable values
+- Modular design
+- Least privilege resource access
+- Environment-specific configuration
 
 ---
 
-# Future Updates
+# Planned Security Enhancements
 
-This document will be expanded as additional infrastructure components are implemented.
+Future milestones will introduce:
 
-Future milestones will document:
-
-- IAM policies
-- Security Group rules
-- S3 bucket policies
+- IAM Roles
+- IAM Policies
+- EC2 Instance Profiles
+- ACM TLS Certificates
+- HTTPS-only access
 - CloudFront Origin Access Control (OAC)
-- HTTPS configuration
-- Encryption settings
-- Monitoring and alarms
-- Production hardening
+- CloudWatch monitoring and alarms
+- GitHub Actions security scanning
 
 ---
 
-# Current Status
+# Security Checklist
 
-| Security Component    | Status     |
-| --------------------- | ---------- |
-| Security Principles   | ✅ Defined |
-| IAM                   | ⏳ Pending |
-| Security Groups       | ⏳ Pending |
-| Encryption            | ⏳ Pending |
-| CloudWatch Monitoring | ⏳ Pending |
-| CloudFront Security   | ⏳ Pending |
-| Production Hardening  | ⏳ Pending |
+| Control                        | Status  |
+| ------------------------------ | ------- |
+| Private EC2 Instances          | ✅      |
+| Public ALB Only                | ✅      |
+| Least Privilege Network Access | ✅      |
+| Dedicated Security Groups      | ✅      |
+| No Public SSH                  | ✅      |
+| No Hardcoded Credentials       | ✅      |
+| Modular Terraform              | ✅      |
+| IAM Least Privilege            | Pending |
+| HTTPS                          | Pending |
+| Encryption at Rest             | Pending |
+| CloudWatch Monitoring          | Pending |

@@ -4,138 +4,96 @@
 
 ---
 
-# Project Overview
+## Overview
 
-This project provisions a product-ready AWS infrastructure capable of hosting an static (HTML, CSS< and JavaScript>) website. The infrastructure is designed using AWS best practices and follows the AWS Well-Architected Framework to provide high availability, security, scalability, reliability, maintainability, and low-latency content delivery.
+This project provisions a production-ready AWS infrastructure for hosting a static website built with HTML, CSS and JavaScript.
 
-The website itself is **not** the focus of this project. It represents the workload that will be deployed to the AWS infrastructure. All infrastructure resources are provisioned and managed using Terraform to ensure repeatability, consistency, and ease of deployment across AWS accounts.
+The website itself is **not** modified. The focus of this project is designing, provisioning and managing a secure, scalable and highly available AWS infrastructure using Terraform.
 
----
-
-# Project Objectives
-
-The primary objectives of this project are to:
-
-- Provision all AWS resources using Terraform.
-- Deploy a static website without modifying its source code.
-- Build a highly available and fault-tolerant architecture.
-- Implement secure networking and identity management.
-- Automate infrastructure deployment.
-- Follow AWS and HashiCorp best practices.
-- Produce professional documentation suitable for engineering handover and academic assessment.
+The infrastructure follows AWS Well-Architected Framework principles and Infrastructure as Code (IaC) best practices.
 
 ---
 
-# Target Architecture
+## Objectives
 
-This infrastructure implements the following architecture:
-
-```text
-Internet Users
-        │
-        ▼
-Amazon Route 53
-        │
-        ▼
-Amazon CloudFront
-        │
-        ▼
-Application Load Balancer
-        │
-        ▼
-Auto Scaling Group
-        │
-        ▼
-Amazon EC2 Instances
-        │
-        ▼
-Nginx
-        │
-        ▼
-Static HTML/CSS/JavaScript Website
-```
-
-Additional AWS services provide networking, storage, monitoring, identity management, and security.
-
-A detailed architecture diagram is included in `/assets` and described in `docs/ARCHITECTURE.md`.
+- Provision infrastructure using Terraform
+- Deploy a static website
+- Achieve High Availability across multiple Availability Zones
+- Follow AWS security best practices
+- Use reusable Terraform modules
+- Maintain production-ready documentation
+- Enable deployment in another AWS account with minimal configuration
 
 ---
 
-# Technology Stack
+## Technology Stack
 
-## Cloud Platform
+### Cloud
 
-- Amazon Web Services (AWS)
+- AWS
 
-## Infrastructure as Code
+### Infrastructure as Code
 
 - Terraform
 
-## Web Server
+### Networking
 
-- Nginx
+- Amazon VPC
+- Internet Gateway
+- NAT Gateway
+- Route Tables
+- Public Subnets
+- Private Subnets
+- Security Groups
+
+### Compute (Upcoming)
+
+- Amazon EC2
+- Auto Scaling Group
+- Launch Template
+- Application Load Balancer
+
+### Content Delivery (Upcoming)
+
+- Amazon CloudFront
+- Amazon S3
+
+### DNS (Upcoming)
+
+- Amazon Route 53
+
+### Monitoring (Upcoming)
+
+- Amazon CloudWatch
+
+### Web Server
+
 - Ubuntu Server
+- Nginx
 
-## Application
+### Website
 
 - HTML5
 - CSS3
 - JavaScript
 
-## Networking
-
-- Amazon VPC
-- Internet Gateway
-- Route Tables
-- Security Groups
-
-## Compute
-
-- Amazon EC2
-- Auto-Scaling Group
-- Launch Template
-- Application Load Balancer
-
-## Storage
-
-- Amazon S3
-
-## Content Delivery
-
-- Amazon CloudFront
-
-## DNS
-
-- Amazon Route 53
-
-## Monitoring
-
-- Amazon CloudWatch
-
-## Identity and Access Management
-
-- AWS IAM
-
-## Version Control
-
-- Git
-- GitHub
-
 ---
 
-# Repository Structure
+## Repository Structure
 
 ```text
 mathlab-ai/
-
+│
 ├── .github/
 ├── assets/
 ├── docs/
 ├── scripts/
 ├── tests/
-├── terraform/
 ├── website/
-
+├── terraform/
+│   ├── environments/
+│   └── modules/
+│
 ├── .gitignore
 ├── CHANGELOG.md
 ├── LICENSE
@@ -143,90 +101,156 @@ mathlab-ai/
 └── README.md
 ```
 
-Each directory has a dedicated responsibility and is documented throughout this project.
+---
+
+## Current Architecture
+
+[AWS Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+
+### Current Implementation
+
+The following components have been implemented:
+
+- VPC
+- Internet Gateway
+- NAT Gateway
+- Public Subnets
+- Private Subnets
+- Public Route Table
+- Private Route Table
+- Route Table Associations
+- Application Load Balancer Security Group
+- EC2 Security Group
 
 ---
 
-# AWS Well-Architected Framework
+## Networking Design
 
-The infrastructure is designed to align with all six pillars of the AWS Well-Architected Framework.
+### Public Subnets
 
-- Operational Excellence
-- Security
-- Reliability
-- Performance Efficiency
-- Cost Optimization
-- Sustainability
+Used for:
 
-Architectural decisions mad throughout the project identify which pillar(s) they support.
+- Internet Gateway
+- NAT Gateway
+- Application Load Balancer
 
----
+### Private Subnets
 
-# Infrastructure as Code
+Used for:
 
-All AWS resources are provisioned using Terraform.
+- EC2 Instances
+- Auto Scaling Group
 
-The project emphasizes:
+Private instances are not directly accessible from the Internet.
 
-- Reusable modules
-- Parameterized configuration
-- Environment-specific deployment
-- Secure handling of sensitive variables
-- Consistent and repeatable infrastructure provisioning
-
-Manual configuration is avoided unless explicitly required by AWS.
+Outbound connectivity is provided through the NAT Gateway.
 
 ---
 
-# Website Deployment
+## Security
 
-The website is stored in the `website/` directory. The website source code is **not modified** during this project. Instead, Terraform provisions the required infrastructure while EC2 User Data automatically:
+Current security controls include:
 
-- installs Nginx,
-- deploys the website,
-- configures the web server, and
-- starts required services.
-
-This approach separates infrastructure from application code and simplifies website updates.
+- Principle of Least Privilege
+- Private EC2 architecture
+- Dedicated security groups
+- No inbound SSH access
+- Internet traffic terminates at the Application Load Balancer
+- Common resource tagging
+- No hardcoded credentials
+- No hardcoded AWS account IDs
 
 ---
 
-# Documentation
+## Terraform Modules
 
-Project documentation is maintained throughout development.
+| Module          | Status   |
+| --------------- | -------- |
+| Networking      | Complete |
+| Security Groups | Complete |
+| IAM             | Pending  |
+| S3              | Pending  |
+| CloudFront      | Pending  |
+| Launch Template | Pending  |
+| ALB             | Pending  |
+| Auto Scaling    | Pending  |
+| CloudWatch      | Pending  |
+| Route 53        | Pending  |
+| ACM             | Pending  |
 
-| Document             | Purpose                                    |
-| -------------------- | ------------------------------------------ |
-| `ARCHITECTURE.md`    | Infrastructure design and AWS architecture |
-| `DEPLOYMENT.md`      | Deployment guide                           |
-| `SECURITY.md`        | Security controls and best practices       |
-| `TESTING.md`         | Infrastructure validation procedures       |
-| `TROUBLESHOOTING.md` | Common issues and resolutions              |
-| `DECISIONS.md`       | Architecture Decision Records (ADRs)       |
-| `COST_ESTIMATION.md` | Estimated AWS infrastructure costs         |
-| `OPERATIONS.md`      | Operational procedures and maintenance     |
+---
 
-Each document is updated as new milestones are completed.
+## Deployment Prerequisites
 
-# Project Status
+- AWS Account
+- AWS CLI
+- Terraform 1.13+
+- Git
 
-Current Progress
+---
 
-- Repository initialization in progress.
-- Documentation established.
-- Terraform bootstrap pending.
-- Newtworking pending.
-- Compute infrastructure pending.
-- Monitoring pending.
-- DNS pending.
+## Initial Deployment
 
-Progress will be updated after every milestone.
+```bash
+git clone <repository>
 
-# License
+cd mathlab-ai
 
-This project is licensed under MIT License.
+cp terraform/environments/production/terraform.tfvars
 
-See the `LICENSE` file for details.
+cd terraform/environments/production
+
+terraform init
+
+terraform validate
+
+terraform plan
+
+terraform apply
+```
+
+---
+
+## Project Status
+
+| Milestone                 | Status   |
+| ------------------------- | -------- |
+| Repository Initialization | Complete |
+| Networking                | Complete |
+| IAM                       | Pending  |
+| Amazon S3                 | Pending  |
+| CloudFront                | Pending  |
+| Launch Template           | Pending  |
+| Application Load Balancer | Pending  |
+| Auto Scaling              | Pending  |
+| CloudWatch                | Pending  |
+| Route 53                  | Pending  |
+| GitHub Actions            | Pending  |
+| Production Hardening      | Pending  |
+| Deployment                | Pending  |
+| Validation                | Pending  |
+| Final Submission          | Pending  |
+
+---
+
+## Documentation
+
+Project documentation is available in the `docs/` directory.
+
+- ARCHITECTURE.md
+- DEPLOYMENT.md
+- SECURITY.md
+- TESTING.md
+- TROUBLESHOOTING.md
+- DECISIONS.md
+- COST_ESTIMATION.md
+- OPERATIONS.md
+
+---
+
+## License
+
+This project is licensed under the MIT [License](./LICENSE).
 
 # Author
 

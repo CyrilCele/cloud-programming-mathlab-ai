@@ -1,201 +1,117 @@
 # Cost Estimation
 
-This document provides an estimated monthly cost for the AWS infrastructure used in this project.
+## Overview
 
-The estimates are intended for planning purposes only. Actual costs depend on AWS Region, service usage, traffic volume, storage consumption, scaling activity, and AWS pricing at the time of deployment.
+This document provides an estimated monthly cost for the AWS infrastructure.
 
-AWS pricing changes periodically. Always verify current pricing using the AWS Pricing Calculator before deploying to production.
+Actual costs depend on:
 
----
-
-# Cost Estimation Objectives
-
-This document aims to:
-
-- Estimate the monthly infrastructure cost.
-- Identify the major cost contributors.
-- Promote cost-aware architectural decisions.
-- Support the AWS Well-Architected Cost Optimization Pillar.
-
----
-
-# Assumptions
-
-The following assumptions are used for this estimate.
-
-- One production environment.
-- Moderate website traffic.
-- Static HTML, CSS, and JavaScript website.
-- Auto Scaling enabled.
-- Multiple Availability Zones.
-- Infrastructure deployed continuously for one month.
-
-Actual usage may increase or decrease the total monthly cost.
-
----
-
-# Estimated AWS Services
-
-The project uses the following AWS services.
-
-| AWS Service               | Purpose                                 |
-| ------------------------- | --------------------------------------- |
-| Amazon VPC                | Network isolation                       |
-| Internet Gateway          | Internet connectivity                   |
-| Security Groups           | Network security                        |
-| IAM                       | Identity and access management          |
-| Amazon EC2                | Website hosting                         |
-| Auto Scaling              | Automatic scaling                       |
-| Application Load Balancer | Traffic distribution                    |
-| Amazon S3                 | Static asset storage (where applicable) |
-| Amazon CloudFront         | Global content delivery                 |
-| Amazon Route 53           | DNS management                          |
-| Amazon CloudWatch         | Monitoring and logging                  |
-
----
-
-# Estimated Monthly Costs
-
-| Service                   | Estimated Monthly Cost                          |
-| ------------------------- | ----------------------------------------------- |
-| Amazon EC2                | Varies by instance type and usage               |
-| Application Load Balancer | Varies by traffic volume                        |
-| Amazon CloudFront         | Varies by requests and data transfer            |
-| Amazon S3                 | Varies by storage and requests                  |
-| Amazon Route 53           | Varies by hosted zones and DNS queries          |
-| Amazon CloudWatch         | Varies by metrics, dashboards, alarms, and logs |
-| Data Transfer             | Varies by outbound traffic                      |
-
-The final cost depends on the workload and AWS pricing at the time of deployment.
-
----
-
-# Primary Cost Drivers
-
-The largest contributors to infrastructure cost are expected to be:
-
-- Amazon EC2
-- Application Load Balancer
-- Amazon CloudFront
+- AWS Region
+- Traffic volume
 - Data transfer
-- CloudWatch logging
-
-These services should be monitored regularly to avoid unexpected costs.
-
----
-
-# Cost Optimization Strategy
-
-The infrastructure follows AWS Cost Optimization best practices.
-
-## Infrastructure as Code
-
-Terraform enables:
-
-- Consistent deployments.
-- Resource tracking.
-- Easier cleanup.
-- Reduced orphaned resources.
+- Compute usage
+- Storage consumption
 
 ---
 
-## Auto Scaling
+# Current Infrastructure
 
-Auto Scaling helps reduce unnecessary costs by:
+| Service          | Quantity |
+| ---------------- | -------- |
+| Amazon VPC       | 1        |
+| Internet Gateway | 1        |
+| NAT Gateway      | 1        |
+| Elastic IP       | 1        |
+| Public Subnets   | 2        |
+| Private Subnets  | 2        |
+| Route Tables     | 2        |
+| Security Groups  | 2        |
 
-- Launching instances only when required.
-- Terminating excess capacity automatically.
-- Matching infrastructure capacity to demand.
+---
+
+# Planned Infrastructure
+
+| Service                   |
+| ------------------------- |
+| EC2                       |
+| Launch Template           |
+| Auto Scaling Group        |
+| Application Load Balancer |
+| Amazon S3                 |
+| Amazon CloudFront         |
+| Amazon Route 53           |
+| Amazon CloudWatch         |
+| AWS Certificate Manager   |
+
+---
+
+# Major Cost Drivers
+
+## NAT Gateway
+
+The NAT Gateway is expected to be one of the largest recurring networking costs.
+
+A single NAT Gateway has been selected to balance:
+
+- Production readiness
+- Cost optimization
+- Simplicity
+
+---
+
+## EC2 Instances
+
+Compute costs depend on:
+
+- Instance type
+- Number of running instances
+- Auto Scaling configuration
 
 ---
 
 ## CloudFront
 
-CloudFront reduces origin load by:
+CloudFront costs depend on:
 
-- Caching static content.
-- Serving requests from edge locations.
-- Reducing requests to EC2 instances.
-
----
-
-## Amazon S3
-
-Where appropriate, S3 provides cost-effective storage for static assets and other supporting resources.
-
-Lifecycle management may be implemented if it provides measurable operational or financial benefit.
+- Requests
+- Data transfer
+- Cache hit ratio
 
 ---
 
-## Monitoring
+## Application Load Balancer
 
-CloudWatch provides visibility into resource utilization.
+Costs depend on:
 
-Monitoring helps identify:
-
-- Underutilized resources.
-- Unnecessary infrastructure.
-- Scaling opportunities.
-- Operational inefficiencies.
+- Running hours
+- Load Balancer Capacity Units (LCUs)
 
 ---
 
-# Cost Monitoring
+# Cost Optimization Decisions
 
-Infrastructure costs should be reviewed regularly using AWS billing and monitoring services.
+The project incorporates the following cost optimization strategies:
 
-Recommended practices include:
-
-- Review monthly AWS costs.
-- Monitor resource utilization.
-- Remove unused resources.
-- Destroy non-production infrastructure when no longer required.
-- Review CloudWatch metrics before increasing capacity.
-
----
-
-# Future Cost Updates
-
-As additional AWS resources are implemented, this document will be updated to include:
-
-- Networking considerations.
-- EC2 instance selection rationale.
-- Auto Scaling impact.
-- CloudFront usage patterns.
-- Monitoring costs.
-- DNS costs.
-- Production deployment estimates.
+- Single NAT Gateway
+- Auto Scaling (planned)
+- CloudFront caching (planned)
+- Infrastructure as Code
+- Modular Terraform
+- Resource tagging
 
 ---
 
-# Cost Optimization Checklist
+# AWS Well-Architected Cost Optimization
 
-Before production deployment, verify:
+The infrastructure is designed to:
 
-- Infrastructure uses only required AWS resources.
-- Auto Scaling is configured appropriately.
-- CloudFront caching is optimized.
-- Unused resources have been removed.
-- Monitoring is appropriately configured.
-- Infrastructure follows AWS Cost Optimization best practices.
+- Avoid unnecessary resources
+- Scale automatically
+- Minimize operational overhead
+- Support efficient resource utilization
 
 ---
 
-# AWS Well-Architected Alignment
+# Estimated Monthly Cost
 
-This project supports the Cost Optimization pillar through:
-
-- Infrastructure as Code.
-- Automated scaling.
-- Managed AWS services.
-- Infrastructure lifecycle management.
-- Continuous monitoring.
-- Resource optimization.
-
----
-
-# Revision History
-
-| Version | Description                               |
-| ------- | ----------------------------------------- |
-| 0.1.0   | Initial cost estimation document created. |
+A detailed cost estimate will be completed after all infrastructure components have been implemented in later milestones using the AWS Pricing Calculator.

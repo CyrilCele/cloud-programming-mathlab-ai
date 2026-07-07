@@ -1,278 +1,308 @@
-# AWS Infrastructure Architecture
+# Architecture
 
-This document describes the architecture, design decisions, and infrastructure components used to host the static website on Amazon Web Services (AWS).
+## Overview
 
-The architecture is designed according to AWS Well-Architected Framework principles and follows Infrastructure as Code (IaC) practices using Terraform.
+This document describes the architecture of the AWS Infrastructure project.
 
----
+The objective is to deploy a static website using a secure, highly available, fault-tolerant, and production-ready AWS infrastructure provisioned entirely with Terraform.
 
-# Architecture Goals
-
-The infrastructure is designed to achieve the following goals:
-
-- High Availability
-- Fault Tolerance
-- Scalability
-- Security
-- Low Latency
-- Infrastructure as Code
-- Production Readiness
-- Maintainability
-- Reproducibility
+The architecture follows the AWS Well-Architected Framework and Infrastructure as Code (IaC) best practices.
 
 ---
 
 # High-Level Architecture
 
-![AWS-Architecture](../Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+```text
+                         Internet
+                             │
+                             ▼
+                       Amazon Route 53
+                             │
+                             ▼
+                    Amazon CloudFront
+                             │
+                             ▼
+                Application Load Balancer
+                             │
+                             ▼
+                  Auto Scaling Group (ASG)
+                             │
+            ┌────────────────┴────────────────┐
+            │                                 │
+            ▼                                 ▼
+      EC2 Instance (AZ-A)               EC2 Instance (AZ-B)
+            │                                 │
+            └────────────────┬────────────────┘
+                             │
+                       Static Website
+                             │
+                  HTML • CSS • JavaScript
+```
 
 ---
 
-# Infrastructure Components
+# Network Architecture
 
-## Amazon Route 53
-
-Route 53 provides DNS services for the application.
-
-Responsibilities include:
-
-- Domain resolution
-- Alias records
-- Routing traffic to CloudFront
-- Highly available DNS
-
----
-
-## Amazon CloudFront
-
-CloudFront acts as the global Content Delivery Network (CDN).
-
-Responsibilities include:
-
-- Global edge caching
-- HTTPS termination
-- Reduced latency
-- Static content acceleration
-- Improved website performance
-
----
-
-## Application Load Balancer
-
-The Application Load Balancer distributes incoming traffic across multiple EC2 instances.
-
-Responsibilities include:
-
-- Layer 7 load balancing
-- Health checks
-- Traffic distribution
-- High availability
+```text
+                         AWS Region
+┌────────────────────────────────────────────────────────────┐
+│                                                            │
+│                       Amazon VPC                           │
+│                     10.0.0.0/16                            │
+│                                                            │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                  Internet Gateway                    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                           │                                │
+│                           ▼                                │
+│          ┌──────────────────────────────────┐              │
+│          │         Public Route Table       │              │
+│          └──────────────────────────────────┘              │
+│                   │                       │                │
+│                   ▼                       ▼                │
+│         Public Subnet A          Public Subnet B          │
+│          10.0.1.0/24             10.0.2.0/24              │
+│                   │                                       │
+│                   ▼                                       │
+│              NAT Gateway                                 │
+│                   │                                       │
+│                   ▼                                       │
+│          ┌──────────────────────────────────┐             │
+│          │        Private Route Table       │             │
+│          └──────────────────────────────────┘             │
+│                   │                       │               │
+│                   ▼                       ▼               │
+│        Private Subnet A          Private Subnet B         │
+│         10.0.11.0/24             10.0.12.0/24             │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Auto Scaling Group
+# Availability Zone Strategy
 
-The Auto Scaling Group ensures application availability.
+The infrastructure is distributed across two Availability Zones within a single AWS Region.
 
-Responsibilities include:
+This provides:
 
-- Automatic instance replacement
-- Horizontal scaling
-- Multi-AZ deployment
-- Desired capacity management
+- High Availability
+- Fault Tolerance
+- Load Distribution
+- Resilience against Availability Zone failures
 
----
-
-## Amazon EC2
-
-Amazon EC2 hosts the website.
-
-Each instance automatically:
-
-- Launches Ubuntu Server
-- Installs Nginx
-- Deploys the website
-- Starts required services
-
-No manual configuration is required after provisioning.
+The Availability Zones are selected dynamically by Terraform to improve portability between AWS accounts and regions.
 
 ---
 
-## Amazon S3
+# Network Components
 
-Amazon S3 is used for supporting infrastructure where appropriate.
+## VPC
 
-Potential responsibilities include:
+The Virtual Private Cloud provides an isolated network environment for all AWS resources.
 
-- Static assets
-- CloudFront origin
-- Terraform backend (future enhancement)
-- Log storage
+CIDR Block:
 
----
-
-## Amazon CloudWatch
-
-CloudWatch provides monitoring and observability.
-
-Responsibilities include:
-
-- Metrics
-- Alarms
-- Dashboards
-- Log collection
-- Infrastructure monitoring
+```text
+10.0.0.0/16
+```
 
 ---
 
-## AWS IAM
+## Public Subnets
 
-AWS Identity and Access Management secures access to AWS resources.
+Public subnets contain resources that require direct internet connectivity.
 
-Responsibilities include:
+Resources deployed here include:
 
-- Least privilege access
-- IAM roles
-- IAM policies
-- EC2 instance profiles
-
----
-
-## Amazon VPC
-
-The Virtual Private Cloud provides network isolation.
-
-Responsibilities include:
-
-- Secure networking
-- Subnet segmentation
-- Internet connectivity
-- Routing
-- Security boundaries
-
----
-
-# Request Flow
-
-A typical user request follows the sequence below:
-
-1. A user enters the website URL.
-2. Route 53 resolves the domain.
-3. CloudFront receives the request.
-4. CloudFront serves cached content when available.
-5. If content is not cached, CloudFront forwards the request to the Application Load Balancer.
-6. The Application Load Balancer forwards the request to a healthy EC2 instance.
-7. Nginx serves the website content.
-8. The response is returned through CloudFront to the user.
-
----
-
-# Availability Strategy
-
-High availability is achieved through:
-
-- Multiple Availability Zones
-- Auto Scaling Group
 - Application Load Balancer
-- CloudFront global edge network
-- Health checks
-- Automatic instance replacement
+- NAT Gateway
 
 ---
 
-# Scalability Strategy
+## Private Subnets
 
-The infrastructure supports horizontal scaling.
+Private subnets contain application compute resources.
 
-When demand increases:
+Resources deployed here include:
 
-- CloudWatch detects increased resource utilization.
-- Auto Scaling launches additional EC2 instances.
-- The Application Load Balancer automatically distributes traffic.
+- EC2 Instances
+- Auto Scaling Group
 
-When demand decreases:
+The private subnets do not have direct internet access.
 
-- Auto Scaling safely terminates excess instances.
-
----
-
-# Security Strategy
-
-Security principles include:
-
-- Principle of Least Privilege
-- Restricted Security Groups
-- IAM Roles instead of long-lived credentials
-- Encryption where supported
-- HTTPS
-- Controlled public exposure
-- Infrastructure as Code
-
-Detailed security controls are documented in `SECURITY.md`.
+Outbound internet connectivity is provided through the NAT Gateway.
 
 ---
 
-# Infrastructure as Code
+## Internet Gateway
 
-All infrastructure resources are provisioned using Terraform.
+The Internet Gateway enables communication between the VPC and the public internet.
 
-Terraform provides:
-
-- Repeatable deployments
-- Version control
-- Modular design
-- Reusable infrastructure
-- Reduced configuration drift
-
-No manual infrastructure provisioning is required unless explicitly required by AWS.
+It is attached directly to the VPC.
 
 ---
 
-# AWS Well-Architected Framework Alignment
+## NAT Gateway
 
-| Pillar                 | Implementation                                         |
-| ---------------------- | ------------------------------------------------------ |
-| Operational Excellence | Infrastructure as Code, documentation, version control |
-| Security               | IAM, Security Groups, least privilege, encryption      |
-| Reliability            | Multi-AZ deployment, Auto Scaling, health checks       |
-| Performance Efficiency | CloudFront, Load Balancer, Auto Scaling                |
-| Cost Optimization      | Elastic scaling, managed AWS services                  |
-| Sustainability         | Automatic scaling to reduce unnecessary resource usage |
+The NAT Gateway enables outbound internet access for resources located in the private subnets.
 
----
+Typical use cases include:
 
-# Architecture Evolution
+- Ubuntu package installation
+- Operating system updates
+- Downloading deployment artifacts
 
-This document will be expanded as the project progresses.
-
-Future milestones will add:
-
-- Detailed VPC topology
-- Network diagrams
-- Security architecture
-- Auto Scaling diagrams
-- CloudFront configuration
-- IAM architecture
-- Monitoring architecture
-- Route 53 configuration
-- Deployment workflow
-- Disaster recovery considerations
+Inbound internet connections to the private subnets are not permitted.
 
 ---
 
-# Current Status
+# Security Architecture
 
-| Component            | Status         |
-| -------------------- | -------------- |
-| Repository           | ✅ Complete    |
-| Documentation        | 🟡 In Progress |
-| Terraform Bootstrap  | ⏳ Pending     |
-| Networking           | ⏳ Pending     |
-| IAM                  | ⏳ Pending     |
-| S3                   | ⏳ Pending     |
-| CloudFront           | ⏳ Pending     |
-| EC2                  | ⏳ Pending     |
-| Auto Scaling         | ⏳ Pending     |
-| CloudWatch           | ⏳ Pending     |
-| Route 53             | ⏳ Pending     |
-| Production Hardening | ⏳ Pending     |
+## Application Load Balancer Security Group
+
+### Inbound
+
+| Protocol | Port | Source    |
+| -------- | ---- | --------- |
+| TCP      | 80   | 0.0.0.0/0 |
+| TCP      | 443  | 0.0.0.0/0 |
+
+### Outbound
+
+All traffic.
+
+---
+
+## EC2 Security Group
+
+### Inbound
+
+| Protocol | Port | Source             |
+| -------- | ---- | ------------------ |
+| TCP      | 80   | ALB Security Group |
+
+### Outbound
+
+All traffic.
+
+---
+
+## Security Principles
+
+The infrastructure follows the Principle of Least Privilege.
+
+Key characteristics include:
+
+- No public EC2 instances
+- No inbound SSH access
+- Private compute layer
+- Public traffic terminates at the Application Load Balancer
+- Dedicated security groups
+- Network segmentation using public and private subnets
+
+---
+
+# Terraform Architecture
+
+```text
+terraform/
+│
+├── environments/
+│   └── production/
+│
+└── modules/
+    ├── networking/
+    ├── iam/
+    ├── security-groups/
+    ├── s3/
+    ├── cloudfront/
+    ├── launch-template/
+    ├── alb/
+    ├── autoscaling/
+    ├── cloudwatch/
+    ├── route53/
+    └── acm/
+```
+
+Each module is designed to be:
+
+- Reusable
+- Modular
+- Environment independent
+- Production ready
+
+---
+
+# AWS Well-Architected Framework
+
+## Operational Excellence
+
+- Infrastructure as Code using Terraform
+- Modular repository structure
+- Version-controlled infrastructure
+
+## Security
+
+- Least Privilege
+- Private EC2 instances
+- Dedicated Security Groups
+- No hardcoded credentials
+
+## Reliability
+
+- Multi-AZ deployment
+- NAT Gateway
+- Route Tables
+- Reusable Terraform modules
+
+## Performance Efficiency
+
+- CloudFront (planned)
+- Auto Scaling (planned)
+- Application Load Balancer (planned)
+
+## Cost Optimization
+
+- Single NAT Gateway selected to reduce operational costs while maintaining production-grade architecture suitable for this workload.
+
+## Sustainability
+
+- Infrastructure automation
+- Elastic scaling (planned)
+- Efficient resource provisioning
+
+---
+
+# Current Implementation Status
+
+| Component                 | Status   |
+| ------------------------- | -------- |
+| Repository Structure      | Complete |
+| Networking                | Complete |
+| Security Groups           | Complete |
+| IAM                       | Pending  |
+| Amazon S3                 | Pending  |
+| CloudFront                | Pending  |
+| Launch Template           | Pending  |
+| Application Load Balancer | Pending  |
+| Auto Scaling              | Pending  |
+| CloudWatch                | Pending  |
+| Route 53                  | Pending  |
+| GitHub Actions            | Pending  |
+| Production Hardening      | Pending  |
+| Deployment                | Pending  |
+| Validation                | Pending  |
+| Final Submission          | Pending  |
+
+---
+
+# Next Milestone
+
+The next milestone implements Identity and Access Management (IAM), including:
+
+- IAM Roles
+- IAM Policies
+- EC2 Instance Profile
+- Least Privilege permissions
+- IAM module integration

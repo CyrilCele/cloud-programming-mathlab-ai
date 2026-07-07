@@ -1,64 +1,48 @@
 # Deployment Guide
 
-This document explains how to deploy the AWS Static Website Infrastructure using Terraform.
+## Overview
 
-The project is designed so that another engineer can deploy the infrastructure using their own AWS account with minimal configuration.
+This document describes how to deploy the Static Website on AWS Infrastructure using Terraform.
 
----
-
-# Deployment Overview
-
-Infrastructure provisioning is performed entirely using Terraform.
-
-The deployment process consists of the following stages:
-
-1. Clone the repository.
-2. Configure AWS credentials.
-3. Configure Terraform variables.
-4. Initialize Terraform.
-5. Validate the configuration.
-6. Review the execution plan.
-7. Apply the infrastructure.
-8. Verify the deployment.
+The infrastructure is designed to be fully reproducible and deployable in any AWS account with minimal configuration.
 
 ---
 
 # Prerequisites
 
-Before deployment, ensure the following software is installed.
+Before deploying the infrastructure, ensure the following software is installed.
 
 ## Required Software
 
 - Git
-- Terraform
-- AWS CLI
-- Make (optional but recommended)
+- AWS CLI v2
+- Terraform 1.13 or later
 
----
-
-## AWS Account
-
-You will need:
-
-- An active AWS account.
-- Permission to provision AWS resources.
-- AWS CLI configured with valid credentials.
-
----
-
-# Clone the Repository
+Verify the installations.
 
 ```bash
-git clone <repository-url>
+git --version
 
-cd mathlab-ai
+aws --version
+
+terraform version
 ```
 
 ---
 
-# Configure AWS Credentials
+# AWS Account Requirements
 
-Configure the AWS CLI using:
+You must have:
+
+- An active AWS account
+- Permissions to provision AWS resources
+- AWS CLI configured with valid credentials
+
+---
+
+# Configure AWS CLI
+
+Configure your AWS credentials.
 
 ```bash
 aws configure
@@ -68,13 +52,49 @@ Provide:
 
 - AWS Access Key ID
 - AWS Secret Access Key
-- Default Region
-- Default Output Format
+- Default AWS Region
+- Output format
 
-Verify the configuration.
+Verify authentication.
 
 ```bash
 aws sts get-caller-identity
+```
+
+---
+
+# Clone the Repository
+
+Clone the repository.
+
+```bash
+git clone <repository-url>
+
+cd mathlab-ai
+```
+
+---
+
+# Repository Structure
+
+```text
+mathlab-ai/
+│
+├── .github/
+├── assets/
+├── docs/
+├── scripts/
+├── tests/
+├── website/
+├── terraform/
+│   ├── environments/
+│   └── modules/
+│
+├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
+├── Makefile
+└── README.md
 ```
 
 ---
@@ -83,29 +103,35 @@ aws sts get-caller-identity
 
 Navigate to the production environment.
 
-```text
-terraform/
-└── environments/
-    └── production/
+```bash
+cd terraform/environments/production
 ```
 
 Copy the example variables file.
 
 ```bash
-cp terraform.tfvars.example terraform.tfvars
+cp terraform.tfvars
 ```
 
-Update the values according to your AWS environment.
+Update the values inside `terraform.tfvars`.
 
-Typical variables include:
+Example:
 
-- AWS Region
-- Project Name
-- Environment Name
-- Domain Name (if applicable)
-- Availability Zones
+```hcl
+aws_region = "af-south-1"
 
-Additional variables will be introduced as infrastructure components are implemented.
+environment = "production"
+
+project_name = "aws-static-website"
+
+vpc_cidr = "10.0.0.0/16"
+
+public_subnet_cidr_a = "10.0.1.0/24"
+public_subnet_cidr_b = "10.0.2.0/24"
+
+private_subnet_cidr_a = "10.0.11.0/24"
+private_subnet_cidr_b = "10.0.12.0/24"
+```
 
 ---
 
@@ -117,11 +143,15 @@ Initialize the working directory.
 terraform init
 ```
 
-Terraform downloads the required providers and prepares the working directory.
+Terraform downloads:
+
+- AWS Provider
+- Required modules
+- Backend configuration
 
 ---
 
-# Validate the Configuration
+# Validate Configuration
 
 Validate the Terraform configuration.
 
@@ -129,7 +159,7 @@ Validate the Terraform configuration.
 terraform validate
 ```
 
-Expected outcome:
+Expected result:
 
 ```text
 Success! The configuration is valid.
@@ -137,9 +167,9 @@ Success! The configuration is valid.
 
 ---
 
-# Format Terraform Files
+# Format Configuration
 
-Ensure Terraform files are correctly formatted.
+Ensure all Terraform files follow the official formatting standard.
 
 ```bash
 terraform fmt -recursive
@@ -155,21 +185,27 @@ Generate an execution plan.
 terraform plan
 ```
 
-Review the planned infrastructure carefully before deployment.
+Review all planned changes before applying them.
 
 ---
 
 # Deploy the Infrastructure
 
-Provision the infrastructure.
+Deploy the infrastructure.
 
 ```bash
 terraform apply
 ```
 
-Confirm the deployment when prompted.
+Terraform will prompt for confirmation.
 
-Terraform provisions all configured AWS resources.
+Type:
+
+```text
+yes
+```
+
+Terraform will provision all configured AWS resources.
 
 ---
 
@@ -177,142 +213,120 @@ Terraform provisions all configured AWS resources.
 
 After deployment, verify:
 
-- Terraform completed successfully.
-- AWS resources were created.
-- EC2 instances are running.
-- Auto Scaling Group is healthy.
-- Load Balancer is operational.
-- CloudFront distribution is deployed.
-- Website is accessible.
-
-Additional verification steps will be documented as each milestone is completed.
+- VPC created
+- Public Subnets created
+- Private Subnets created
+- Internet Gateway attached
+- NAT Gateway created
+- Route Tables created
+- Security Groups created
 
 ---
 
-# Destroy the Infrastructure
+# Current Infrastructure
 
-To remove all deployed resources:
+The infrastructure currently provisions:
+
+- Amazon VPC
+- Internet Gateway
+- NAT Gateway
+- Public Route Table
+- Private Route Table
+- Public Subnets
+- Private Subnets
+- Route Table Associations
+- Application Load Balancer Security Group
+- EC2 Security Group
+
+---
+
+# Planned Infrastructure
+
+Future milestones will provision:
+
+- IAM
+- Amazon S3
+- CloudFront
+- Launch Template
+- EC2
+- Auto Scaling Group
+- Application Load Balancer
+- CloudWatch
+- Route 53
+- ACM
+
+---
+
+# Destroy Infrastructure
+
+To remove all infrastructure:
 
 ```bash
 terraform destroy
 ```
 
-Confirm the operation when prompted.
+Confirm by typing:
 
----
-
-# Deployment Order
-
-The infrastructure is deployed in the following logical order.
-
-1. Networking
-2. IAM
-3. Security Groups
-4. S3
-5. CloudFront
-6. Launch Template
-7. Application Load Balancer
-8. Auto Scaling Group
-9. CloudWatch
-10. Route 53
-
-Terraform automatically determines resource dependencies.
-
----
-
-# Deployment Verification Checklist
-
-After deployment, verify:
-
-- VPC created.
-- Public subnets available.
-- Security Groups configured.
-- IAM roles attached.
-- EC2 instances healthy.
-- Nginx installed.
-- Website deployed.
-- Application Load Balancer healthy.
-- Auto Scaling operational.
-- CloudWatch monitoring active.
-- Route 53 records resolving.
-- CloudFront serving content.
-
----
-
-# Updating the Website
-
-The infrastructure is designed so that the website can be updated independently.
-
-Typical workflow:
-
-1. Replace the files inside the `website/` directory.
-2. Commit the changes.
-3. Redeploy the application (if required).
-
-Infrastructure changes are not required unless the hosting architecture changes.
+```text
+yes
+```
 
 ---
 
 # Troubleshooting
 
-If deployment fails:
-
-1. Review the Terraform error message.
-2. Validate the configuration.
-3. Verify AWS credentials.
-4. Confirm required AWS permissions.
-5. Check AWS service quotas.
-6. Review CloudWatch logs (where applicable).
-
-Additional troubleshooting guidance is provided in `TROUBLESHOOTING.md`.
+Refer to the [TROUBLESHOOTING](./TROUBLESHOOTING.md) file.
 
 ---
 
-# Security Considerations
+# Deployment Workflow
 
-Never commit:
-
-- `terraform.tfvars`
-- AWS credentials
-- Private keys
-- Terraform state files
-
-Always follow the Principle of Least Privilege when configuring AWS credentials.
+```text
+Clone Repository
+        │
+        ▼
+Configure AWS CLI
+        │
+        ▼
+Configure terraform.tfvars
+        │
+        ▼
+terraform init
+        │
+        ▼
+terraform fmt
+        │
+        ▼
+terraform validate
+        │
+        ▼
+terraform plan
+        │
+        ▼
+terraform apply
+        │
+        ▼
+Verify AWS Resources
+```
 
 ---
 
-# Future Enhancements
+# Milestone Status
 
-This document will be updated as the project progresses.
-
-Future milestones will include:
-
-- Backend state configuration
-- Multi-AZ deployment details
-- CloudFront deployment notes
-- Auto Scaling verification
-- Monitoring verification
-- DNS configuration
-- HTTPS configuration
-- Production validation procedures
-
----
-
-# Deployment Status
-
-| Component                 | Status         |
-| ------------------------- | -------------- |
-| Repository                | ✅ Complete    |
-| Documentation             | 🟡 In Progress |
-| Terraform Bootstrap       | ⏳ Pending     |
-| Networking                | ⏳ Pending     |
-| IAM                       | ⏳ Pending     |
-| S3                        | ⏳ Pending     |
-| CloudFront                | ⏳ Pending     |
-| Launch Template           | ⏳ Pending     |
-| Application Load Balancer | ⏳ Pending     |
-| Auto Scaling              | ⏳ Pending     |
-| CloudWatch                | ⏳ Pending     |
-| Route 53                  | ⏳ Pending     |
-| Production Hardening      | ⏳ Pending     |
-| Final Validation          | ⏳ Pending     |
+| Milestone                 | Status   |
+| ------------------------- | -------- |
+| Repository Initialization | Complete |
+| Networking                | Complete |
+| IAM                       | Pending  |
+| Amazon S3                 | Pending  |
+| CloudFront                | Pending  |
+| Launch Template           | Pending  |
+| Application Load Balancer | Pending  |
+| Auto Scaling              | Pending  |
+| CloudWatch                | Pending  |
+| Route 53                  | Pending  |
+| GitHub Actions            | Pending  |
+| Production Hardening      | Pending  |
+| Deployment                | Pending  |
+| Validation                | Pending  |
+| Final Submission          | Pending  |

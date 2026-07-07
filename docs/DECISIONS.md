@@ -1,280 +1,136 @@
-# Architecture Decision Records (ADRs)
+# Architecture Decisions
 
-This document records the significant architectural decisions made throughout the project.
-
-Each decision includes the context, the decision itself, and the rationale behind it. Recording these decisions ensures that future engineers understand why specific technologies and architectural patterns were selected.
-
-Additional Architecture Decision Records (ADRs) will be added as the project progresses.
+This document records important architectural decisions made during the project.
 
 ---
 
-# ADR-001: Infrastructure as Code
+# ADR-001
 
-## Status
+## Title
+
+Use a Modular Terraform Architecture
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-The project requires a repeatable, maintainable, and version-controlled method of provisioning AWS infrastructure.
+Terraform will be organised into reusable modules.
 
-Manual provisioning is error-prone, difficult to reproduce, and unsuitable for production environments.
+### Rationale
 
-## Decision
-
-Use Terraform as the Infrastructure as Code (IaC) tool for provisioning all supported AWS resources.
-
-## Rationale
-
-Terraform provides:
-
-- Declarative infrastructure definitions.
-- Modular architecture.
-- Version control integration.
-- Repeatable deployments.
-- Multi-cloud support.
-- Large community support.
-- Mature AWS provider.
-
-## Consequences
-
-### Positive
-
-- Infrastructure is reproducible.
-- Reduced configuration drift.
-- Easier collaboration.
-- Version-controlled infrastructure.
-- Easier disaster recovery.
-
-### Negative
-
-- Requires Terraform knowledge.
-- Requires state management.
+- Reusability
+- Maintainability
+- Easier testing
+- Better separation of concerns
 
 ---
 
-# ADR-002: Static Website Architecture
+# ADR-002
 
-## Status
+## Title
+
+Deploy Across Two Availability Zones
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-The workload consists of HTML, CSS, and JavaScript website.
+Deploy all highly available resources across two Availability Zones.
 
-The assessment focuses on cloud infrastructure rather than web application development.
+### Rationale
 
-## Decision
-
-Deploy the website without modifying its source code.
-
-The website will be served by Nginx running on Amazon EC2 instances.
-
-## Rationale
-
-This approach:
-
-- Meets project requirements.
-- Separates infrastructure from application code.
-- Simplifies maintenance.
-- Supports future website updates.
-
-## Consequences
-
-### Positive
-
-- Minimal application changes.
-- Straightforward deployment.
-- Production-ready hosting.
-
-### Negative
-
-- Dynamic server-side functionality is outside the project scope.
+- High Availability
+- Fault Tolerance
+- AWS Best Practices
 
 ---
 
-# ADR-003: High Availability
+# ADR-003
 
-## Status
+## Title
+
+Use Public and Private Subnets
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-Production workloads should remain available during infrastructure failures.
+Deploy the Application Load Balancer in public subnets and EC2 instances in private subnets.
 
-## Decision
+### Rationale
 
-Deploy EC2 instances across multiple Availability Zones using an Auto Scaling Group behind an Application Load Balancer.
-
-## Rationale
-
-This architecture improves:
-
-- Availability.
-- Fault tolerance.
-- Scalability.
-- Reliability.
-
-## Consequences
-
-### Positive
-
-- Automatic recovery.
-- Traffic distribution.
-- Improved resilience.
-
-### Negative
-
-- Increased infrastructure complexity.
-- Additional AWS costs.
+- Improved security
+- Reduced attack surface
+- AWS recommended architecture
 
 ---
 
-# ADR-004: Content Delivery Network
+# ADR-004
 
-## Status
+## Title
+
+Use a Single NAT Gateway
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-Users may access the website from different geographic locations.
+Deploy one NAT Gateway.
 
-## Decision
+### Rationale
 
-Use Amazon CloudFront as the Content Delivery Network (CDN).
+For this workload, a single NAT Gateway provides outbound internet connectivity for private EC2 instances while significantly reducing monthly cost compared to deploying one NAT Gateway per Availability Zone.
 
-## Rationale
-
-CloudFront provides:
-
-- Lower latency.
-- Edge caching.
-- Improved performance.
-- HTTPS support.
-- Global distribution.
-
-## Consequences
-
-### Positive
-
-- Faster website delivery.
-- Reduced origin load.
-- Improved user experience.
-
-### Negative
-
-- Additional service configuration.
-- Cache management considerations.
+This is an intentional balance between Cost Optimization and Reliability within the AWS Well-Architected Framework.
 
 ---
 
-# ADR-005: Infrastructure Security
+# ADR-005
 
-## Status
+## Title
+
+No Public SSH Access
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-Infrastructure must follow AWS security best practices.
+Do not expose TCP port 22 to the internet.
 
-## Decision
+### Rationale
 
-Apply the Principle of Least Privilege and secure-by-default configurations throughout the infrastructure.
+- Principle of Least Privilege
+- Reduced attack surface
+- Production security best practice
 
-## Rationale
-
-Security controls reduce the attack surface and protect AWS resources.
-
-## Consequences
-
-### Positive
-
-- Reduced security risk.
-- Improved compliance.
-- Better operational security.
-
-### Negative
-
-- Additional configuration effort.
+Future administrative access can be implemented using AWS Systems Manager Session Manager if required.
 
 ---
 
-# ADR-006: Infrastructure Documentation
+# ADR-006
 
-## Status
+## Title
+
+Use Dedicated Security Groups
+
+### Status
 
 Accepted
 
-## Context
+### Decision
 
-The repository should be understandable by another engineer without requiring additional explanation.
+Use separate security groups for the Application Load Balancer and EC2 instances.
 
-## Decision
+### Rationale
 
-Maintain documentation throughout the project rather than documenting only after implementation.
-
-## Rationale
-
-Incremental documentation:
-
-- Improves maintainability.
-- Supports knowledge transfer.
-- Simplifies future updates.
-- Provides an accurate representation of the infrastructure.
-
-## Consequences
-
-### Positive
-
-- Documentation remains synchronized with implementation.
-- Easier project handover.
-- Better maintainability.
-
-### Negative
-
-- Requires documentation updates after every milestone.
-
----
-
-# Future Architecture Decisions
-
-Additional ADRs will be added as the project progresses.
-
-Planned topics include:
-
-- VPC design.
-- CIDR allocation strategy.
-- Security Group architecture.
-- IAM design.
-- S3 configuration.
-- CloudFront configuration.
-- Launch Template design.
-- Auto Scaling policies.
-- CloudWatch monitoring.
-- Route 53 DNS configuration.
-- Production hardening decisions.
-
----
-
-# Decision Summary
-
-| ADR     | Decision                             | Status   |
-| ------- | ------------------------------------ | -------- |
-| ADR-001 | Terraform for Infrastructure as Code | Accepted |
-| ADR-002 | Deploy existing static website       | Accepted |
-| ADR-003 | High Availability architecture       | Accepted |
-| ADR-004 | Amazon CloudFront CDN                | Accepted |
-| ADR-005 | Secure-by-default infrastructure     | Accepted |
-| ADR-006 | Incremental project documentation    | Accepted |
-
----
-
-# Revision History
-
-| Version | Description                                    |
-| ------- | ---------------------------------------------- |
-| 0.1.0   | Initial Architecture Decision Records created. |
+This allows traffic to flow only from the ALB to the EC2 instances and prevents direct public access to the application servers.

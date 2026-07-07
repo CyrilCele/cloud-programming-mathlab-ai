@@ -18,3 +18,28 @@ variable "aws_profile" {
   type        = string
   default     = "default"
 }
+
+variable "vpc_cidr" {
+  description = "CIDR block assigned to the VPC."
+  type        = string
+}
+
+variable "public_subnet_cidr_a" {
+  description = "CIDR block for Public Subnet A."
+  type        = string
+}
+
+variable "public_subnet_cidr_b" {
+  description = "CIDR block for Public Subnet B."
+  type        = string
+}
+
+variable "private_subnet_cidr_a" {
+  description = "CIDR block for Private Subnet A."
+  type        = string
+}
+
+variable "private_subnet_cidr_b" {
+  description = "CIDR block for Private Subnet B."
+  type        = string
+}
