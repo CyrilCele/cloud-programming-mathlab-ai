@@ -84,6 +84,24 @@ Inbound internet connections are not permitted.
 
 ---
 
+## Application Load Balancer
+
+The Application Load Balancer is the only public entry point to the application.
+
+It accepts inbound HTTP traffic and forwards requests only to registered EC2 instances within the private subnets.
+
+Direct access to EC2 instances from the internet is not permitted.
+
+---
+
+## Amazon CloudFront
+
+Amazon CloudFront is deployed in front of the Application Load Balancer to improve performance and provide an additional security layer.
+
+The S3 bucket remains private and access is restricted through an AWS-managed service principal using a bucket policy.
+
+---
+
 # Security Groups
 
 ## Application Load Balancer

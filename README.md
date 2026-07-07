@@ -129,6 +129,10 @@ The following components have been implemented:
   - Versioning enabled
   - Block Public Access enabled
   - Lifecycle configuration
+- Application Load Balancer
+- Target Group
+- HTTP Listener
+- Amazon CloudFront
 
 ---
 
@@ -172,19 +176,19 @@ Current security controls include:
 
 ## Terraform Modules
 
-| Module          | Status          |
-| --------------- | --------------- |
-| Networking      | Complete        |
-| Security Groups | Complete        |
-| IAM             | Complete        |
-| S3              | Complete        |
-| CloudFront      | Module Complete |
-| Launch Template | Complete        |
-| ALB             | Pending         |
-| Auto Scaling    | Pending         |
-| CloudWatch      | Pending         |
-| Route 53        | Pending         |
-| ACM             | Pending         |
+| Module          | Status   |
+| --------------- | -------- |
+| Networking      | Complete |
+| Security Groups | Complete |
+| IAM             | Complete |
+| S3              | Complete |
+| CloudFront      | Complete |
+| Launch Template | Complete |
+| ALB             | Complete |
+| Auto Scaling    | Pending  |
+| CloudWatch      | Pending  |
+| Route 53        | Pending  |
+| ACM             | Pending  |
 
 ---
 
@@ -221,23 +225,23 @@ terraform apply
 
 ## Project Status
 
-| Milestone                 | Status           |
-| ------------------------- | ---------------- |
-| Repository Initialization | Complete         |
-| Networking                | Complete         |
-| IAM                       | Complete         |
-| Amazon S3                 | Complete         |
-| CloudFront                | Phase A Complete |
-| Launch Template           | Complete         |
-| Application Load Balancer | Pending          |
-| Auto Scaling              | Pending          |
-| CloudWatch                | Pending          |
-| Route 53                  | Pending          |
-| GitHub Actions            | Pending          |
-| Production Hardening      | Pending          |
-| Deployment                | Pending          |
-| Validation                | Pending          |
-| Final Submission          | Pending          |
+| Milestone                 | Status   |
+| ------------------------- | -------- |
+| Repository Initialization | Complete |
+| Networking                | Complete |
+| IAM                       | Complete |
+| Amazon S3                 | Complete |
+| CloudFront                | Complete |
+| Launch Template           | Complete |
+| Application Load Balancer | Complete |
+| Auto Scaling              | Pending  |
+| CloudWatch                | Pending  |
+| Route 53                  | Pending  |
+| GitHub Actions            | Pending  |
+| Production Hardening      | Pending  |
+| Deployment                | Pending  |
+| Validation                | Pending  |
+| Final Submission          | Pending  |
 
 ---
 

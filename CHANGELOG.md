@@ -25,6 +25,32 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.7.0] - Milestone 7
+
+### Added
+
+#### Application Load Balancer
+
+- Reusable ALB Terraform module
+- Target Group
+- HTTP Listener
+- Production environment integration
+
+#### Amazon CloudFront
+
+- CloudFront module integration
+- ALB origin configuration
+- Private S3 bucket access policy
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+- Updated SECURITY.md
+
+---
+
 ## [0.6.0] - Milestone 6
 
 ### Added

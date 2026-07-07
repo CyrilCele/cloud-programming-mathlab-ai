@@ -300,10 +300,9 @@ Each module is designed to be:
 | Security Groups           | Complete |
 | IAM                       | Complete |
 | Amazon S3                 | Complete |
-| CloudFront Module         | Complete |
-| CloudFront Integration    | Pending  |
-| Launch Template           | Pending  |
-| Application Load Balancer | Pending  |
+| CloudFront                | Complete |
+| Launch Template           | Complete |
+| Application Load Balancer | Complete |
 | Auto Scaling              | Pending  |
 | CloudWatch                | Pending  |
 | Route 53                  | Pending  |

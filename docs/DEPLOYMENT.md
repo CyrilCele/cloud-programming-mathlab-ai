@@ -242,6 +242,10 @@ The infrastructure currently provisions:
 - IAM Role
 - EC2 Instance Profile
 - Amazon S3
+- Application Load Balancer
+- Target Group
+- HTTP Listener
+- Amazon CloudFront
 
 ---
 
