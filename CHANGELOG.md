@@ -25,6 +25,26 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.3.0] - Milestone 3
+
+### Added
+
+#### Identity and Access Management
+
+- EC2 IAM Role
+- EC2 Instance Profile
+- Reusable IAM Terraform module
+- Production environment integration
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+- Updated SECURITY.md
+
+---
+
 ## [0.2.0] - Milestone 2
 
 ### Added

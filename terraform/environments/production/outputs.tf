@@ -33,3 +33,31 @@ output "ec2_security_group_id" {
 
   value = module.security_groups.ec2_security_group_id
 }
+
+#########################################
+# IAM
+#########################################
+
+output "ec2_role_name" {
+  description = "EC2 IAM Role name."
+
+  value = module.iam.ec2_role_name
+}
+
+output "ec2_role_arn" {
+  description = "EC2 IAM Role ARN."
+
+  value = module.iam.ec2_role_arn
+}
+
+output "instance_profile_name" {
+  description = "EC2 Instance Profile name."
+
+  value = module.iam.instance_profile_name
+}
+
+output "instance_profile_arn" {
+  description = "EC2 Instance Profile ARN."
+
+  value = module.iam.instance_profile_arn
+}

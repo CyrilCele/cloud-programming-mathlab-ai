@@ -237,6 +237,8 @@ The infrastructure currently provisions:
 - Route Table Associations
 - Application Load Balancer Security Group
 - EC2 Security Group
+- IAM Role
+- EC2 Instance Profile
 
 ---
 

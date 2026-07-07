@@ -281,7 +281,7 @@ Each module is designed to be:
 | Repository Structure      | Complete |
 | Networking                | Complete |
 | Security Groups           | Complete |
-| IAM                       | Pending  |
+| IAM                       | Complete |
 | Amazon S3                 | Pending  |
 | CloudFront                | Pending  |
 | Launch Template           | Pending  |
@@ -299,10 +299,11 @@ Each module is designed to be:
 
 # Next Milestone
 
-The next milestone implements Identity and Access Management (IAM), including:
+The next milestone provisions Amazon S3, including:
 
-- IAM Roles
-- IAM Policies
-- EC2 Instance Profile
-- Least Privilege permissions
-- IAM module integration
+- Website assests bucket
+- Versioning
+- Server-side encryption
+- Lifecycle configuration
+- Bucket policies
+- Public access configuration

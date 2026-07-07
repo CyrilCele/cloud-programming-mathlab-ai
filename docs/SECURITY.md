@@ -23,15 +23,14 @@ The infrastructure is designed according to the following principles:
 
 # Identity and Access Management
 
-IAM resources will be implemented in Milestone 3.
+The infrastructure provisions:
 
-The design goals are:
+- Dedicated IAM Role for EC2
+- EC2 Instance Profile
 
-- Least Privilege permissions
-- No AdministratorAccess policies
-- Dedicated IAM Roles
-- EC2 Instance Profiles
-- Temporary credentials
+The role follows the Principle of Least Privilege.
+
+Additional permissions will be granted only when required by future milestones, prventing unnecessary access to AWS services.
 
 ---
 

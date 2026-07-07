@@ -105,7 +105,7 @@ mathlab-ai/
 
 ## Current Architecture
 
-[AWS Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+[AWS-Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
 
 ### Current Implementation
 
@@ -121,6 +121,8 @@ The following components have been implemented:
 - Route Table Associations
 - Application Load Balancer Security Group
 - EC2 Security Group
+- IAM Role
+- EC2 Instance Profile
 
 ---
 
@@ -168,7 +170,7 @@ Current security controls include:
 | --------------- | -------- |
 | Networking      | Complete |
 | Security Groups | Complete |
-| IAM             | Pending  |
+| IAM             | Complete |
 | S3              | Pending  |
 | CloudFront      | Pending  |
 | Launch Template | Pending  |
@@ -217,7 +219,7 @@ terraform apply
 | ------------------------- | -------- |
 | Repository Initialization | Complete |
 | Networking                | Complete |
-| IAM                       | Pending  |
+| IAM                       | Complete |
 | Amazon S3                 | Pending  |
 | CloudFront                | Pending  |
 | Launch Template           | Pending  |
