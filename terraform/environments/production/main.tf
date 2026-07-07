@@ -53,6 +53,22 @@ module "alb" {
   tags = local.common_tags
 }
 
+module "autoscaling" {
+  source = "../../modules/autoscaling"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  launch_template_id             = module.launch_template.launch_template_id
+  launch_template_latest_version = module.launch_template.launch_template_latest_version
+
+  private_subnet_ids = module.networking.private_subnet_ids
+
+  target_group_arn = module.alb.target_group_arn
+
+  tags = local.common_tags
+}
+
 module "cloudfront" {
   source = "../../modules/cloudfront"
 

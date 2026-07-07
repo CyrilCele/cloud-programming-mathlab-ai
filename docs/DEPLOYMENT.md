@@ -246,6 +246,7 @@ The infrastructure currently provisions:
 - Target Group
 - HTTP Listener
 - Amazon CloudFront
+- Auto Scaling Group
 
 ---
 

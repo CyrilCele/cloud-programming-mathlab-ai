@@ -25,6 +25,27 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.8.0] - Milestone 8
+
+### Added
+
+#### Auto Scaling
+
+- Reusable Auto Scaling Terraform module
+- Launch Template integration
+- Multi-Availability Zone deployment
+- Application Load Balancer Target Group integration
+- ELB health checks
+- Zero-downtime replacement strategy
+
+#### Documentation
+
+- Updated README.md
+- Updated ARCHITECTURE.md
+- Updated DEPLOYMENT.md
+
+---
+
 ## [0.7.0] - Milestone 7
 
 ### Added
