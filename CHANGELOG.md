@@ -25,6 +25,26 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ---
 
+## [0.6.0] - Milestone 6
+
+### Added
+
+#### Launch Template
+
+- Reusable Launch Template module
+- IMDSv2 enforcement
+- Encrypted gp3 root volume
+- Detailed EC2 monitoring
+- IAM Instance Profile integration
+- User Data support
+
+#### Documentation
+
+- Updated README.md
+- Updated Launch Template module documentation
+
+---
+
 ## [0.5.0] - Milestone 5 (Phase A)
 
 ### Added

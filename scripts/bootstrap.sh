@@ -1,20 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -euo pipefail
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TERRAFORM_DIR="${PROJECT_ROOT}/terraform/environments/production"
+export DEBIAN_FRONTEND=noninteractive
 
-echo "=================================================="
-echo "AWS Static Website Infrastructure"
-echo "Terraform Bootstrap"
-echo "=================================================="
+apt-get update -y
+apt-get upgrade -y
 
-cd "${TERRAFORM_DIR}"
+apt-get install -y \
+    nginx \
+    unzip
 
-echo ""
-echo "Initializing Terraform..."
-terraform init
+systemctl enable nginx
+systemctl start nginx
 
-echo ""
-echo "Terraform initialization completed successfully"
+rm -rf /var/www/html/*
+
+
+chown -R www-data:www-data /var/www/html
+find /var/www/html -type d -exec chmod 755 {} \;
+find /var/www/html -type f -exec chmod 644 {} \;
+
+systemctl restart nginx
