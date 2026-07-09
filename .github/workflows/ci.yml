@@ -20,13 +20,34 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: 1.13.0
 
+      - name: Terraform Init
+        working-directory: terraform/environments/production
+        env:
+          TF_IN_AUTOMATION: true
+        run: |
+          terraform init \
+            -input=false \
+            -no-color \
+            -upgrade
+
+      - name: Terraform Validate
+        working-directory: terraform/environments/production
+        run: terraform validate -no-color
+
+      - name: Terraform Format
+        working-directory: terraform/environments/production
+        run: terraform fmt -recursive -check
+
       - name: Setup AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
+
+        # Provide required inputs even if the step is conditionally skipped
+        with:
+          aws-region: us-east-1
 
         if: false
 
