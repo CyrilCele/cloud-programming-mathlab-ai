@@ -43,7 +43,7 @@ jobs:
         run: terraform fmt -recursive -check
 
       - name: Setup AWS CLI
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
 
         # Provide required inputs even if the step is conditionally skipped
         with:
