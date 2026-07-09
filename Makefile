@@ -1,15 +1,34 @@
+.PHONY: init fmt validate plan apply destroy test lint security clean deploy
+
+init:
+	./scripts/init.sh
+
 fmt:
-	cd terraform/environments/production && terraform fmt -recursive
+	./scripts/fmt.sh
 
 validate:
-	cd terraform/environments/production && terraform init
-	cd terraform/environments/production && terraform validate
+	./scripts/validate.sh
 
 plan:
-	cd terraform/environments/production && terraform plan
+	./scripts/plan.sh
 
 apply:
-	cd terraform/environments/production && terraform apply
+	./scripts/apply.sh
 
 destroy:
-	cd terraform/environments/production && terraform destroy
+	./scripts/destroy.sh
+
+test:
+	./scripts/test.sh
+
+lint:
+	./scripts/lint.sh
+
+security:
+	./scripts/security.sh
+
+deploy:
+	./scripts/deploy.sh
+
+clean:
+	./scripts/clean.sh

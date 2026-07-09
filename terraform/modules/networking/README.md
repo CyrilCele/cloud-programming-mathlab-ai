@@ -1,53 +1,98 @@
 # Networking Module
 
-## Purpose
+## Overview
 
-This module provisions the foundational AWS networking infrastructure for the project.
+The Networking module provisions the foundational networking infrastructure for the MathLab AI AWS environment.
 
-## Resources
+It creates a highly available Virtual Private Cloud (VPC) spanning two Availability Zones and provides secure routing between public and private resources.
 
-The module provisions:
+This module is the foundation upon which all other infrastructure components are deployed.
 
-- Amazon VPC
-- Internet Gateway
-- Public Subnets
-- Private Subnets
-- Public Route Table
-- Private Route Table
-- Route Table Associations
-- Elastic IP
-- NAT Gateway
+---
 
-## Design
+# Features
 
-The network is deployed across two Availability Zones to provide High Availability and Fault Tolerance.
+- Creates a Virtual Private Cloud (VPC)
+- Creates two public subnets
+- Creates two private subnets
+- Creates an Internet Gateway
+- Creates a NAT Gateway
+- Allocates an Elastic IP for the NAT Gateway
+- Creates public and private route tables
+- Associates route tables with subnets
+- Supports Multi-AZ deployment
+- Applies consistent resource tagging
 
-### Public Subnets
+---
 
-Used for:
+# Resources Created
 
-- Application Load Balancer
+![Resources](../../../images/NetworkingResources.png)
 
-### Private Subnets
+---
 
-Used for:
+# Inputs
 
-- EC2 Instances
-- Auto Scaling Group
+![Inputs](../../../images/NetworkingInputs.png)
 
-The private subnets do not have direct Internet access.
+---
 
-Outbound Internet connectivity is provided through a NAT Gateway located in a public subnet, allowing instances to:
+# Outputs
 
-- Install operating system packages.
-- Receive security updates.
-- Download deployment artifacts.
-- Access AWS services that require Internet connectivity.
+![Outputs](../../../images/NetworkingOutputs.png)
 
-## Inputs
+---
 
-Refer to [variables.tf](./variables.tf).
+# Architecture
 
-## Outputs
+![Network Architecture](../../../images/NetworkArchitecture.png)
 
-Refer to [outputs.tf](./outputs.tf).
+---
+
+# Dependencies
+
+This module has no dependencies.
+
+It is deployed before all other infrastructure modules.
+
+---
+
+# Best Practices
+
+This module follows AWS networking best practices by:
+
+- Deploying resources across multiple Availability Zones.
+- Isolating application instances in private subnets.
+- Using a NAT Gateway for outbound Internet access.
+- Restricting inbound traffic to public-facing components only.
+- Applying consistent resource tagging.
+
+---
+
+# Example Usage
+
+```hcl
+module "networking" {
+  source = "../../modules/networking"
+
+  project_name = var.project_name
+
+  vpc_cidr = var.vpc_cidr
+
+  availability_zones = local.availability_zones
+
+  public_subnet_cidr_a = var.public_subnet_cidr_a
+  public_subnet_cidr_b = var.public_subnet_cidr_b
+
+  private_subnet_cidr_a = var.private_subnet_cidr_a
+  private_subnet_cidr_b = var.private_subnet_cidr_b
+
+  tags = local.common_tags
+}
+```
+
+---
+
+# Notes
+
+This module is intentionally isolated from compute resources to promote modularity, reuse, and maintainability. All networking resources are provisioned before dependent modules such as Security Groups, Application Load Balancer, Launch Template, and Auto Scaling.

@@ -64,3 +64,19 @@ variable "alert_email" {
   description = "Email address for CloudWatch alarm notifications."
   type        = string
 }
+
+#########################################
+# Domain
+#########################################
+
+variable "domain_name" {
+  description = "Custom domain."
+
+  type = string
+}
+
+
+variable "resource_prefix" {
+  description = "Short prefix used for AWS resources with strict name limits."
+  type        = string
+}

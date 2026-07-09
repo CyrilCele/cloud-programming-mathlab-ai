@@ -1,0 +1,32 @@
+name: Terraform
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - "terraform/**"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform/environments/production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+        with:
+          terraform_version: 1.13.0
+
+      - run: terraform init
+
+      - run: terraform fmt -recursive -check
+
+      - run: terraform validate
+
+      - run: terraform plan -input=false

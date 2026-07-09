@@ -1,229 +1,414 @@
 # Operations Guide
 
-This document defines the operational procedures for managing, monitoring, maintaining, and supporting the AWS Infrastructure after deployment.
+## Overview
 
-The objective is to ensure that the infrastructure remains secure, reliable, highly available, and maintainable throughout its lifecycle.
+This document defines the operational procedures for managing, monitoring, maintaining, and troubleshooting the MathLab AI Infrastructure.
 
----
+It is intended for cloud engineers, DevOps engineers, and system administrators responsible for the ongoing operation of the AWS environment.
 
-# Operations Objectives
+The objectives of this guide are to:
 
-The operational objectives of this project are to:
-
-- Maintain infrastructure availability.
-- Monitor infrastructure health.
-- Respond to operational incidents.
-- Maintain security best practices.
-- Perform controlled infrastructure updates.
-- Support repeatable deployments.
-- Minimize operational risk.
+- Maintain service availability.
+- Ensure infrastructure security.
+- Support operational consistency.
+- Minimise downtime.
+- Provide standard operating procedures.
+- Support incident response.
 
 ---
 
 # Operational Responsibilities
 
-The infrastructure administrator is responsible for:
-
-- Monitoring infrastructure health.
-- Reviewing CloudWatch metrics and alarms.
-- Maintaining Terraform configurations.
-- Updating project documentation.
-- Applying infrastructure changes.
-- Managing AWS resources.
-- Performing regular operational reviews.
-
----
-
-# Infrastructure Management
-
-All infrastructure changes must be performed using Terraform.
-
-Manual modification of AWS resources should be avoided unless explicitly required by AWS.
-
-Infrastructure changes should follow this workflow:
-
-1. Update Terraform configuration.
-2. Format the Terraform code.
-3. Validate the configuration.
-4. Review the execution plan.
-5. Apply the infrastructure changes.
-6. Verify successful deployment.
-7. Update project documentation.
-
----
-
-# Routine Operational Tasks
-
 Routine operational activities include:
 
-- Review infrastructure health.
-- Verify EC2 instance status.
-- Review Auto Scaling activity.
-- Confirm Load Balancer health.
-- Review CloudWatch metrics.
-- Verify CloudFront distribution status.
-- Confirm Route 53 DNS resolution.
-- Review AWS billing information.
+- Monitoring infrastructure health
+- Reviewing system logs
+- Applying infrastructure updates
+- Managing AWS resources
+- Monitoring costs
+- Performing operational verification
+- Responding to incidents
+
+---
+
+# Infrastructure Overview
+
+The deployed environment consists of:
+
+- Amazon VPC
+- Public Subnets
+- Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Security Groups
+- IAM
+- Amazon S3
+- Launch Template
+- Auto Scaling Group
+- Applciation Load Balancer
+- Amazon CloudFront
+- Amazon Route 53
+- AWS Certificate Manager
+- Amazon CloudWatch
+
+---
+
+# Daily Operational Checks
+
+The following checks should be completed regularly.
+
+## Compute
+
+Verify:
+
+- EC2 instances are running.
+- Desired Auto Scaling capacity is maintained.
+- No failed instance launches.
+- No unhealthy instances.
+
+---
+
+## Load Balancer
+
+Confirm:
+
+- Load Balancer is operational.
+- Target Group health checks pass.
+- Healthy targets match expected capacity.
+
+---
+
+## CloudFront
+
+Verify:
+
+- Distribution status is **Deployed**.
+- Requests are successfully served.
+- No origin connectivity errors.
+
+---
+
+## Route 53
+
+Confirm:
+
+- DNS records exist.
+- DNS resolution succeeds.
+- Alias records point to CloudFront.
+
+---
+
+## ACM
+
+Verify:
+
+- Certificate status is **Issued**.
+- No validation failures.
+- No renewal warnings.
+
+---
+
+## Amazon S3
+
+Review:
+
+- Bucket accessibility.
+- Versioning status.
+- Encryption configuration.
+- Lifecycle policy status.
 
 ---
 
 # Monitoring
 
-Infrastructure monitoring is performed using Amazon CloudWatch.
+Amazon CloudWatch provides operational metrics.
 
-Operational monitoring includes:
+Important metrics include:
 
-- CPU utilization.
-- Instance health.
-- Network activity.
-- Auto Scaling events.
-- Application Load Balancer health.
-- CloudFront metrics.
-- System logs.
+- CPU Utilization
+- Network In
+- Network Out
+- Disk Read Operations
+- Disk Write Operations
+- Auto Scaling Activity
+- Target Group Health
+- ALB Request Count
 
-Monitoring configuration will be documented during the CloudWatch milestone.
+Monitor trends rather than isolated values.
+
+---
+
+# Auto Scaling Operations
+
+The Auto Scaling Group automatically:
+
+- Launches replacement instances
+- Removes unhealthy instances
+- Maintains desired capacity
+- Responds to scaling policies
+
+Regularly verify:
+
+- Desired Capacity
+- Minimum Capacity
+- Maximum Capacity
+- Instance Health
+
+---
+
+# Website Deployment
+
+When website content changes:
+
+1. Package the website.
+
+```bash
+zip -r website.zip website/
+```
+
+2. Upload to Amazon S3.
+
+```bash
+aws s3 cp website.zip s3://<bucket-name>/website.zip
+```
+
+3. Refresh EC2 instances if necessary.
+
+4. Verify website availability.
+
+---
+
+# CloudFront Cache Management
+
+CloudFront caches static content.
+
+After significant website updates, invalidate cached objects.
+
+```bash
+aws cloudfront create-invalidation \
+--distribution-id <distribution-d> \
+--paths "/*"
+```
+
+Verify that new content is served after invalidation.
 
 ---
 
 # Infrastructure Updates
 
-Infrastructure updates should follow the standard Terraform workflow.
+Before making changes:
 
 ```bash
 terraform fmt -recursive
-
 terraform validate
-
 terraform plan
+```
 
+Review the execution plan.
+
+Apply approved changes.
+
+```bash
 terraform apply
 ```
 
-Infrastructure changes should always be reviewed before applying them.
+---
+
+# Backup Strategy
+
+Infrastructure is defined as code.
+
+Primary backup mechanisms include:
+
+- Git repository
+- Terraform configuration
+- Terraform state
+- S3 Versioning
+
+Website assets are protected through Amazon S3 Versioning.
 
 ---
 
-# Website Updates
+# Logging
 
-The infrastructure is designed so that the website can be updated independently.
+Operational logs may be obtained from:
 
-General update process:
+- CloudWatch
+- EC2 System Logs
+- Nginx Logs
+- Auto Scaling Activity History
+- Application Load Balancer Access Logs (if enabled)
 
-1. Replace the website files.
-2. Commit the changes.
-3. Deploy the updated website.
-
-Infrastructure modifications are only required if the hosting architecture changes.
+Review logs after deployments and incidents.
 
 ---
 
-# Backup and Recovery
+# Security Operations
 
-Infrastructure recovery is simplified through Infrastructure as Code.
+Regularly verify:
 
-Recovery process:
+- IAM permissions
+- Security Group rules
+- S3 bucket policies
+- CloudFront Origin Access Control
+- ACM certificate validity
+- Route 53 records
 
-1. Restore the Terraform configuration.
-2. Configure AWS credentials.
-3. Initialize Terraform.
-4. Validate the configuration.
-5. Apply the infrastructure.
-
-Terraform recreates the infrastructure based on the version-controlled configuration.
+Never expose unnecessary services to the public Internet.
 
 ---
 
 # Incident Response
 
-When an operational issue occurs:
+## Website Unavailable
 
-1. Identify the affected component.
-2. Review CloudWatch metrics.
-3. Review Terraform configuration.
-4. Verify AWS resource status.
-5. Apply corrective actions.
-6. Validate the infrastructure.
-7. Update documentation if necessary.
+Check:
+
+- CloudFront status
+- ALB health
+- Target Group health
+- EC2 instance status
+- Auto Scaling activity
+- Nginx service
+- Bootstrap logs
 
 ---
 
-# Change Management
+## EC2 Instance Failure
 
-Infrastructure changes should be:
+Auto Scaling should automatically launch a replacement instance.
 
-- Planned.
-- Documented.
-- Version controlled.
-- Validated before deployment.
-- Reviewed after deployment.
+Confirm:
 
-All infrastructure modifications should be committed to Git.
+- Launch Template
+- Auto Scaling events
+- Health checks
+
+---
+
+## DNS Failure
+
+Verify:
+
+- Route 53 Hosted Zone
+- Alias Records
+- Name Server configuration
+- DNS propagation
+
+---
+
+## Certificate Issues
+
+Confirm:
+
+- ACM certificate status
+- DNS validation records
+- CloudFront configuration
+
+---
+
+## Website Deployment Failure
+
+Verify:
+
+- website.zip exists.
+- S3 upload completed successfully.
+- Bootstrap script executed.
+- Nginx is running.
+- Website files exist in `/var/www/html`.
+
+---
+
+# Operational Verification
+
+After every deployment, confirm:
+
+- Infrastructure deployed successfully.
+- Terraform completed without errors.
+- EC2 instances are healthy.
+- Auto Scaling is operational.
+- ALB health checks pass.
+- CloudFront serves requests.
+- DNS resolves correctly.
+- HTTPS is operational.
+- Website loads successfully.
+
+---
+
+# Routine Maintenance
+
+Weekly:
+
+- Review CloudWatch metrics.
+- Check Auto Scaling activity.
+- Review AWS costs.
+- Verify website accessibility.
+
+Monthly:
+
+- Review IAM permissions.
+- Review Security Groups.
+- Validate backups.
+- Review Route 53 configuration.
+- Verify ACM certificate status.
+
+---
+
+# Cost Monitoring
+
+Monitor:
+
+- EC2 usage
+- NAT Gateway charges
+- CloudFront traffic
+- Route 53 usage
+- S3 storage
+- CloudWatch usage
+
+Use:
+
+- AWS Cost Explorer
+- AWS Budgets
+- AWS Billing Dashboard
 
 ---
 
 # Operational Best Practices
 
-The project follows these operational best practices:
-
-- Infrastructure as Code.
-- Version control.
-- Incremental documentation.
-- Least privilege.
-- Continuous monitoring.
-- Repeatable deployments.
-- Controlled infrastructure changes.
+- Keep Terraform as the single source of truth.
+- Never modify infrastructure manually unless required for emergency recovery.
+- Commit infrastructure changes to Git before deployment.
+- Review every Terraform execution plan.
+- Monitor CloudWatch regularly.
+- Apply the principle of least privilege.
+- Keep project documentation up to date.
+- Remove unused AWS resources promptly.
 
 ---
 
 # Operational Checklist
 
-Before completing an infrastructure update, verify:
+Daily:
 
-- Terraform formatting completed successfully.
-- Terraform validation completed successfully.
-- Terraform plan reviewed.
-- Infrastructure deployed successfully.
-- AWS resources verified.
-- Documentation updated.
-- Git repository committed.
-- Infrastructure ready for production.
+- Infrastructure healthy
+- Website available
+- DNS resolving
+- CloudFront operational
 
----
+Weekly:
 
-# Operational Documentation
+- Review monitoring
+- Review scaling
+- Review costs
 
-The following documentation should remain synchronized with the deployed infrastructure:
+Monthly:
 
-- README.md
-- ARCHITECTURE.md
-- DEPLOYMENT.md
-- SECURITY.md
-- TESTING.md
-- TROUBLESHOOTING.md
-- DECISIONS.md
-- COST_ESTIMATION.md
-- OPERATIONS.md
-
-Documentation should be updated after every completed milestone.
+- Security review
+- Documentation review
+- Infrastructure review
 
 ---
 
-# Future Updates
+# Conclusion
 
-As the project progresses, this document will be expanded to include:
-
-- Infrastructure maintenance procedures.
-- CloudWatch operational guidance.
-- Auto Scaling operational procedures.
-- CloudFront operations.
-- Route 53 operational procedures.
-- Disaster recovery considerations.
-- Production maintenance procedures.
-
----
-
-# Revision History
-
-| Version | Description                       |
-| ------- | --------------------------------- |
-| 0.1.0   | Initial operations guide created. |
+Following this operational guide ensures that the MathLab AI Infrastructure remains secure, reliable, scalable, and maintainable throughout its lifecycle. By combining Infrastructure as Code with consistent operational practices, the environment can be managed efficiently while reducing operational risk and supporting long-term sustainability.

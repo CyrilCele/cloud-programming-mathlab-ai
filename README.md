@@ -1,28 +1,61 @@
-# AWS Highly Available Auto-Scaling Web Hosting Architecture
+# MathLab AI Infrastructure
 
-> Enterprise-grade AWS Infrastructure for hosting a static website using Infrastructure as Code (Terraform).
+> Production-grade AWS Infrastructure as Code (IaC) built with Terraform.
 
 ---
 
 ## Overview
 
-This project provisions a production-ready AWS infrastructure for hosting a static website built with HTML, CSS and JavaScript.
+MathLab AI Infrastructure is a cloud-native Infrastructure as Code (IaC) project developed to provision a secure, scalable, highly available, and globally distributed web application environment on Amazon Web Services (AWS).
 
-The website itself is **not** modified. The focus of this project is designing, provisioning and managing a secure, scalable and highly available AWS infrastructure using Terraform.
+The project has been designed following production engineering standards rather than tutorial-level examples. Every infrastructure component is modular, reusable, version controlled, and fully documented.
 
-The infrastructure follows AWS Well-Architected Framework principles and Infrastructure as Code (IaC) best practices.
+The infrastructure is provisioned entirely using Terraform and follows AWS Well-Architected Framework principles, INfrastructure as Code best practices, least privilege security, and modular software engineering.
+
+This repository forms the cloud infrastructure foundation for the MathLab AI platform.
 
 ---
 
-## Objectives
+## Project Objectives
 
-- Provision infrastructure using Terraform
-- Deploy a static website
-- Achieve High Availability across multiple Availability Zones
-- Follow AWS security best practices
-- Use reusable Terraform modules
-- Maintain production-ready documentation
-- Enable deployment in another AWS account with minimal configuration
+The primary objectives of this project are to:
+
+- Provision AWS infrastructure using Infrastructure as Code
+- Design a highly available architecture spanning multiple Availability Zones
+- Implement secure networking following AWS best practices
+- Deploy scalable compute resources using Auto Scaling
+- Distribute traffic using an Application Load Balancer
+- Improve global performance using Amazon CloudFront
+- Secure public traffic using HTTPS with AWS Certificate Manager
+- Manage DNS using Amazon Route 53
+- Store static deployment artifacts securely using Amazon S3
+- Implement least privilege IAM persmissions
+- Produce production-quality documentation
+- Implement infrastructure validation and testing procedures
+
+---
+
+## Architecture Summary
+
+The deployed infrastructure consists of:
+
+- Amazon VPC
+- Public and Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Security Groups
+- IAM Roles
+- IAM Instance Profiles
+- Amazon S3
+- EC2 Launch Template
+- Auto Scaling Group
+- Application Load Balancer
+- Amazon CloudFront
+- AWS Certificate Manager (ACM)
+- Amazon Route 53
+- CloudWatch Monitoring
+
+The architecture is fully modular, allowing individual infrastructure components to be maintained independently.
 
 ---
 
@@ -30,11 +63,16 @@ The infrastructure follows AWS Well-Architected Framework principles and Infrast
 
 ### Cloud
 
-- AWS
+- Amazon Web Services (AWS)
 
 ### Infrastructure as Code
 
 - Terraform
+
+### Compute
+
+- Amazon EC2
+- Auto Scaling
 
 ### Networking
 
@@ -42,40 +80,31 @@ The infrastructure follows AWS Well-Architected Framework principles and Infrast
 - Internet Gateway
 - NAT Gateway
 - Route Tables
-- Public Subnets
-- Private Subnets
 - Security Groups
 
-### Compute
+### Load Balancing
 
-- Amazon EC2
-- Auto Scaling Group
-- Launch Template
-- Application Load Balancer
+- Application Load Balancer (ALB)
 
-### Content Delivery (Upcoming)
+### CDN
 
-- Amazon S3
-- Amazon CloudFront (Upcoming)
+- Amazon CloudFront
 
-### DNS (Upcoming)
+### DNS
 
 - Amazon Route 53
+
+### Certificates
+
+- AWS Certificate Manager
+
+### Storage
+
+- Amazon S3
 
 ### Monitoring
 
 - Amazon CloudWatch
-
-### Web Server
-
-- Ubuntu Server
-- Nginx
-
-### Website
-
-- HTML5
-- CSS3
-- JavaScript
 
 ---
 
@@ -103,119 +132,92 @@ mathlab-ai/
 
 ---
 
-## Current Architecture
+## Infrastructure Architecture
 
-![AWS Infrastructure](./Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+The infrastructure follows a layered architecture.
 
-### Current Implementation
+![AWS Infrastructure](./images/Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
 
-The following components have been implemented:
+---
 
-- VPC
-- Internet Gateway
-- NAT Gateway
-- Public Subnets
-- Private Subnets
-- Public Route Table
-- Private Route Table
-- Route Table Associations
-- Application Load Balancer Security Group
-- EC2 Security Group
-- IAM Role
-- EC2 Instance Profile
-- Amazon S3
-  - Private bucket
-  - Server-side encryption (AES-256)
-  - Versioning enabled
-  - Block Public Access enabled
-  - Lifecycle configuration
-- Application Load Balancer
-- Target Group
-- HTTP Listener
-- Amazon CloudFront
+## Key Features
+
+- Infrastructure as Code
+- Modular Terraform Design
+- High Availability
+- Auto Scaling
+- Least Privilege IAM
+- CloudFront CDN
+- HTTPS Encryption
+- Private Networking
+- Secure S3 Configuration
+- Production Documentation
+- Automated Infrastructure Testing
+
+---
+
+## Security Features
+
+The infrastructure implements multiple security controls including:
+
+- Private EC2 instances
+- Public ALB only
+- Least privilege IAM
+- S3 Public Access Block
+- Server-side encryption
+- HTTPS-only public traffic
+- CloudFront Origin Access Control
+- IMDSv2
+- Encrypted EBS volumes
+- Security Group isolation
+
+---
+
+## High Availability
+
+The infrastructure has been designed to eliminate single points of failure.
+
+Features include:
+
+- Multi-AZ deployment
 - Auto Scaling Group
-- CloudWatch Log Group
-- CloudWatch Monitoring
-- CloudWatch Alarms
+- Elastic Load Balancer
+- CloudFront Edge Locations
+- Route 53 DNS
+- Private application subnets
 
 ---
 
-## Networking Design
+## Scalability
 
-### Public Subnets
+Horizontal scaling is achieved using:
 
-Used for:
-
-- Internet Gateway
-- NAT Gateway
-- Application Load Balancer
-
-### Private Subnets
-
-Used for:
-
-- EC2 Instances
-- Auto Scaling Group
-
-Private instances are not directly accessible from the Internet.
-
-Outbound connectivity is provided through the NAT Gateway.
+- Launch Templates
+- Auto Scaling Groups
+- Elastic Load Balancer
+- CloudFront edge caching
 
 ---
 
-## Security
+## Prerequisites
 
-Current security controls include:
+Before deploying the infrastructure ensure the following software is installed:
 
-- Principle of Least Privilege
-- Private EC2 architecture
-- Dedicated security groups
-- No inbound SSH access
-- Internet traffic terminates at the Application Load Balancer
-- Common resource tagging
-- No hardcoded credentials
-- No hardcoded AWS account IDs
-
----
-
-## Terraform Modules
-
-| Module          | Status               |
-| --------------- | -------------------- |
-| Networking      | Complete             |
-| Security Groups | Complete             |
-| IAM             | Complete             |
-| S3              | Complete             |
-| CloudFront      | Phase A & B Complete |
-| Launch Template | Complete             |
-| ALB             | Complete             |
-| Auto Scaling    | Complete             |
-| CloudWatch      | Complete             |
-| Route 53        | Pending              |
-| ACM             | Pending              |
-
----
-
-## Deployment Prerequisites
-
-- AWS Account
-- AWS CLI
-- Terraform 1.13+
+- Terraform
+- AWS CLIS
 - Git
+- zip
+- SSH
+
+An AWS account with appropriate IAM permissions is required.
 
 ---
 
-## Initial Deployment
+## Deployment
+
+Terraform workflow:
 
 ```bash
-git clone <repository>
-
-cd mathlab-ai
-
-cp terraform/environments/production/terraform.tfvars
-
-cd terraform/environments/production
-
 terraform init
 
 terraform validate
@@ -225,46 +227,82 @@ terraform plan
 terraform apply
 ```
 
+Detailed deployment instructions are provided in [DEPLOYMENT.md](./docs/DEPLOYMENT.md).
+
 ---
 
-## Project Status
+## Testing
 
-| Milestone                 | Status               |
-| ------------------------- | -------------------- |
-| Repository Initialization | Complete             |
-| Networking                | Complete             |
-| IAM                       | Complete             |
-| Amazon S3                 | Complete             |
-| CloudFront                | Phase A & B Complete |
-| Launch Template           | Complete             |
-| Application Load Balancer | Complete             |
-| Auto Scaling              | Complete             |
-| CloudWatch                | Complete             |
-| Route 53                  | Pending              |
-| GitHub Actions            | Pending              |
-| Production Hardening      | Pending              |
-| Deployment                | Pending              |
-| Validation                | Pending              |
-| Final Submission          | Pending              |
+Infrastructure testing includes:
+
+- Terraform validation
+- Terraform plan verification
+- Infrastructure provisioning validation
+- Resource verification
+- Network connectivity testing
+- DNS validation
+- HTTPS validation
+- Auto Scaling verification
+- CloudFront verification
+
+Detailed testing procedures are documented in [TESTING.md](./docs/TESTING.md).
+
+---
+
+## Cost Considerations
+
+AWS resources used in this project may incur charges.
+
+Primary cost contributors include:
+
+- NAT Gateway
+- Route 53 Hosted Zone
+- CloudFront
+- EC2
+- Application Load Balancer
+
+Estimated costs are documented in [COST_ESTIMATION.md](./docs/COST_ESTIMATION.md).
 
 ---
 
 ## Documentation
 
-Project documentation is available in the `docs/` directory.
+Project documentation includes:
 
-- ARCHITECTURE.md
-- DEPLOYMENT.md
-- SECURITY.md
-- TESTING.md
-- TROUBLESHOOTING.md
-- DECISIONS.md
-- COST_ESTIMATION.md
-- OPERATIONS.md
+- README
+- Architecture Guide
+- Deployment Guide
+- Security Guide
+- Testing Guide
+- Troubleshooting Guide
+- Operational Procedures
+- Design Decisions
+- Cost Estimation
+
+---
+
+## Future Improvements
+
+Potential future improvements include:
+
+- CI/CD pipeline
+- Terraform Cloud
+- GitHub Actions
+- AWS WAF
+- AWS Shield Advanced
+- ECS Migration
+- Blue/Green Deployment
+- Canary Releases
+- Secrets Manager
+- AWS Config
+- GuardDuty
+- Security Hub
 
 ---
 
 ## License
+
+This repository has been developed as part of a university cloud programming project and demonstrates production-grade [Infrastructure as Code (IaC)](https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/infrastructure-as-code.html) practices using [Terraform](https://developer.hashicorp.com/terraform) and [AWS](https://aws.amazon.com/).
 
 This project is licensed under the MIT [License](./LICENSE).
 

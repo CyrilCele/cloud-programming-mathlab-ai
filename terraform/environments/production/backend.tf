@@ -1,17 +1,33 @@
 terraform {
   /*
-    The project intentionally uses Terraform's default local backend
-    during the initial implementation.
+  ==============================================================================
+  Backend Configuration
+  ==============================================================================
 
-    This allows any engineer to clone the repository and immediately run:
+  This project intentionally uses Terraform's default local backend.
+
+  Using the local backend allows the project to be cloned and executed
+  immediately without first provisioning a remote Terraform state backend.
+
+  New contributors can run:
 
       terraform init
       terraform validate
       terraform plan
 
-    without provisioning additional AWS infrastructure.
+  without requiring additional AWS resources.
 
-    The backend configuration can later be migrated to Amazon S3
-    with DynamoDB state locking if the deployment model changes.
+  For collaborative or production deployments, the backend can be migrated
+  to an Amazon S3 backend with DynamoDB state locking to provide:
+
+    • Centralized state management
+    • State locking
+    • Versioning
+    • Disaster recovery
+    • Team collaboration
+
+  Because this repository is intended for a university project and a
+  single operator workflow, the default local backend is sufficient.
+  ==============================================================================
   */
 }

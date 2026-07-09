@@ -5,7 +5,7 @@ resource "aws_launch_template" "this" {
   instance_type = var.instance_type
   user_data = base64encode(
     templatefile(
-      "${path.module}/../../../templates/bootstrap.sh.tftpl",
+      "${path.module}/../../templates/bootstrap.sh.tftpl",
       {
         assets_bucket_name = var.assets_bucket_name
       }

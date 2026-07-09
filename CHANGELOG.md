@@ -2,254 +2,166 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on Keep a Changelog and this project follows Semantic Versioning where applicable.
+The format follows the principles of Keep a Changelog and Semantic Versioning (SemVer).
 
 ---
 
-## [Unreleased]
-
-### Planned
-
-- Amazon S3
-- Route 53
-- GitHub Actions CI/CD
-- Production Hardening
-- Final Infrastructure Validation
-
----
-
-## [0.9.0] - Milestone 9
+## [1.0.0] - 2026-07-08
 
 ### Added
 
-#### Monitoring
+#### Infrastructure
 
-- CloudWatch Log Group
-- CloudWatch Alarms
-- CPU Utilization monitoring
-- EC2 Status Check monitoring
-- Application Load Balancer 5XX monitoring
-- Unhealthy Target monitoring
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-- Updated SECURITY.md
-- Updated COST_ESTIMATION.md
-
----
-
-## [0.8.0] - Milestone 8
-
-### Added
-
-#### Auto Scaling
-
-- Reusable Auto Scaling Terraform module
-- Launch Template integration
-- Multi-Availability Zone deployment
-- Application Load Balancer Target Group integration
-- ELB health checks
-- Zero-downtime replacement strategy
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-
----
-
-## [0.7.0] - Milestone 7
-
-### Added
-
-#### Application Load Balancer
-
-- Reusable ALB Terraform module
-- Target Group
-- HTTP Listener
-- Production environment integration
-
-#### Amazon CloudFront
-
-- CloudFront module integration
-- ALB origin configuration
-- Private S3 bucket access policy
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-- Updated SECURITY.md
-
----
-
-## [0.6.0] - Milestone 6
-
-### Added
-
-#### Launch Template
-
-- Reusable Launch Template module
-- IMDSv2 enforcement
-- Encrypted gp3 root volume
-- Detailed EC2 monitoring
-- IAM Instance Profile integration
-- User Data support
-
-#### Documentation
-
-- Updated README.md
-- Updated Launch Template module documentation
-
----
-
-## [0.5.0] - Milestone 5 (Phase A)
-
-### Added
-
-#### CloudFront
-
-- Reusable CloudFront Terraform module
-- Origin Access Control (OAC)
-- Configurable price class
-- Multi-origin support
-- HTTPS viewer redirection
-- Response compression
-- CloudFront module outputs
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-
----
-
-## [0.4.0] - Milestone 4
-
-### Added
-
-#### Amazon S3
-
-- Reusable S3 Terraform module
-- Private S3 bucket
-- Bucket versioning
-- Server-side encryption (AES-256)
-- Block Public Access
-- Lifecycle configuration
-
-#### Terraform
-
-- Production environment integration
-- S3 outputs
-- Configurable globally unique bucket name
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-- Updated SECURITY.md
-- Updated COST_ESTIMATION.md
-
----
-
-## [0.3.0] - Milestone 3
-
-### Added
-
-#### Identity and Access Management
-
-- EC2 IAM Role
-- EC2 Instance Profile
-- Reusable IAM Terraform module
-- Production environment integration
-
-#### Documentation
-
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
-- Updated SECURITY.md
-
----
-
-## [0.2.0] - Milestone 2
-
-### Added
+- Modular Terraform architecture
+- Environment-based deployment structure
+- Production deployment configuration
+- Reusable Terraform modules
 
 #### Networking
 
-- Production-ready VPC
-- Internet Gateway
+- Amazon VPC
 - Public Subnets
 - Private Subnets
-- Public Route Table
-- Private Route Table
-- Route Table Associations
+- Internet Gateway
 - NAT Gateway
-- Elastic IP for NAT Gateway
+- Route Tables
+- Route Table Associations
 
 #### Security
 
 - Application Load Balancer Security Group
 - EC2 Security Group
-- Least Privilege network access
-- Private EC2 architecture
-- Public ALB architecture
+- Least-Privilege IAM Roles
+- IAM Instance Profile
+- IAM Policies
+- IMDSv2 enforcement
+- Encrypted EBS volumes
+- Secure S3 bucket configuration
 
-#### Terraform
+#### Storage
 
-- Networking module
-- Security Groups module
-- Environment integration
-- Module outputs
-- Module variables
-- Common resource tagging
+- Amazon S3 Assets Bucket
+- Bucket Versioning
+- Server-Side Encryption
+- Public Access Block
+- Lifecycle Policies
+
+#### Compute
+
+- EC2 Launch Template
+- Auto Scaling Group
+- Auto Scaling Policies
+
+#### Load Balancing
+
+- Application Load Balancer
+- Target Group
+- HTTP Listener
+
+#### CDN
+
+- CloudFront Distribution
+- Origin Access Control
+- Static Asset Caching
+
+#### DNS
+
+- Route 53 Hosted Zone Module
+- Route 53 DNS Records Module
+
+#### SSL
+
+- AWS Certificate Manager Module
+- Automated DNS Validation
+
+#### Monitoring
+
+- CloudWatch Module
+- Auto Scaling Metrics
+
+#### Templates
+
+- EC2 Bootstrap Script
+- Automated Website Deployment
 
 #### Documentation
 
-- Updated README.md
-- Updated ARCHITECTURE.md
-- Updated DEPLOYMENT.md
+- README
+- CHANGELOG
+- ARCHITECTURE
+- DEPLOYMENT
+- OPERATIONS
+- SECURITY
+- TESTING
+- TROUBLESHOOTING
+- DECISIONS
+- COST_ESTIMATION
+
+#### Testing
+
+- Terraform Validation Framework
+- Infrastructure Test Framework
 
 ---
 
-## [0.1.0] - Milestone 1
+### Changed
 
-### Added
+- Refactored infrastructure into reusable Terraform modules.
+- Improved naming consistency across modules.
+- Updated Terraform outputs for modular integration.
+- Standardised variable naming.
+- Improved resource tagging strategy.
+- Enhanced bootstrap automation.
+- Improved CloudFront integration.
+- Improved Route 53 integration.
+- Improved ACM integration.
+- Improved Auto Scaling configuration.
 
-#### Repository
+---
 
-- Professional repository structure
-- Terraform project structure
-- Modular architecture
-- Environment separation
+### Security
 
-#### Terraform
+- Enforced least privilege IAM access.
+- Blocked public acces to S3.
+- Enabled HTTPS through ACM.
+- Enabled CloudFront Origin Access Control.
+- Enabled IMDSv2.
+- Enabled encrypted EBS volumes.
+- Enabeld encrypted S3 storage.
 
-- Provider configuration
-- Version constraints
-- Variables
-- Outputs
-- Locals
-- Data sources
-- Backend configuration
-- Example variable file
+---
 
-#### Documentation
+### Fixed
 
-- Initial README.md
-- Initial project documentation
-- Deployment structure
+- Corrected Terraform module dependencies.
+- Fixed CloudFront and ACM integration.
+- Fixed Route 53 alias configuration.
+- Corrected Launch Template bootstrap path.
+- Fixed IAM policy references.
+- Corrected S3 outputs.
+- Fixed Terraform validation issues.
+- Corrected Auto Scaling dependencies.
+- Fixed CloudFront distribution configuration.
 
-#### Project Files
+---
 
-- LICENSE
-- .gitignore
-- Makefile
+### Documentation
+
+- Added production deployment documentation.
+- Added architecture documenetation.
+- Added testing documentation.
+- Added operational documentation.
+- Added security documentation.
+- Added troubleshooting documentation.
+
+---
+
+### Notes
+
+Initial production-ready release prepared for deployment to AWS.
+
+Repository documentation completed to engineering standards.
+
+Terraform validation and planning completed successfully.
+
+Infrastructure ready for deployment.

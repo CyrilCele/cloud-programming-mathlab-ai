@@ -2,343 +2,387 @@
 
 ## Overview
 
-This document describes the architecture of the AWS Infrastructure project.
+The MathLab AI Infrastructure has been designed using Infrastructure as Code (IaC) principles to provide a secure, scalable, highly available, and maintainable cloud environment on Amazon Web Services (AWS).
 
-The objective is to deploy a static website using a secure, highly available, fault-tolerant, and production-ready AWS infrastructure provisioned entirely with Terraform.
+The solution adopts a modular Terraform architecture where each AWS service is encapsulated within its own reusable module. This approach promotes maintainability, code reuse, separation of concerns, and simplified lifecycle management.
 
-The architecture follows the AWS Well-Architected Framework and Infrastructure as Code (IaC) best practices.
+The deployed infrastructure follows AWS Well-Architected Framework principles, emphasizing:
+
+- Operational Excellence
+- Security
+- Reliability
+- Performance Efficiency
+- Cost Optimisation
+- Sustainability
 
 ---
 
 # High-Level Architecture
 
-```text
-                         Internet
-                             │
-                             ▼
-                       Amazon Route 53
-                             │
-                             ▼
-                    Amazon CloudFront
-                             │
-                             ▼
-                Application Load Balancer
-                             │
-                             ▼
-                  Auto Scaling Group (ASG)
-                             │
-                             ▼
-                  CloudWatch Monitoring
-            ┌────────────────┴────────────────┐
-            │                                 │
-            ▼                                 ▼
-      EC2 Instance (AZ-A)               EC2 Instance (AZ-B)
-            │                                 │
-            └────────────────┬────────────────┘
-                             │
-                       Static Website
-                             │
-                  HTML • CSS • JavaScript
-```
+![Infrastructure UML](../Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+
+The infrastructure is distributed across multiple Availability Zones to eliminate single points of failure.
+
+---
+
+# Infrastructure Layers
+
+The architecture has been divided into several logical layers.
+
+## Edge Layer
+
+Responsible for serving end users.
+
+Components
+
+- Amazon Route 53
+- Amazon CloudFront
+- AWS Certificate Manager
+
+Responsibilities
+
+- DNS resolution
+- HTTPS termination
+- Global caching
+- Static asset delivery
+- Low latency content distribution
+
+---
+
+## Load Balancing Layer
+
+Responsible for traffic distribution.
+
+Component
+
+- Application Load Balancer
+
+Responsibilities
+
+- Health checks
+- Traffic routing
+- High availability
+- Request distribution
+
+---
+
+## Compute Layer
+
+Responsible for application execution.
+
+Components
+
+- Launch Template
+- Auto Scaling Group
+- Amazon EC2
+
+Responsibilities
+
+- Website hosting
+- Automatic scaling
+- Self0healing infrastructure
+- Immutable infrastructure deployment
+
+---
+
+## Storage Layer
+
+Component
+
+- Amazon S3
+
+Responsibilities
+
+- Website deployment package
+- Static assets
+- Versioned object storage
+- Secure artifact storage
+
+---
+
+## Security Layer
+
+Components
+
+- IAM
+- Security Groups
+- S3 Encryption
+- CloudFront Origin Access Control
+- IMDSv2
+- EBS Encryption
+
+Responsibilities
+
+- Authentication
+- Authorization
+- Network isolation
+- Encryption
+- Least privilege access
 
 ---
 
 # Network Architecture
 
-```text
-                         AWS Region
-┌────────────────────────────────────────────────────────────┐
-│                                                            │
-│                       Amazon VPC                           │
-│                     10.0.0.0/16                            │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │                  Internet Gateway                    │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                           │                                │
-│                           ▼                                │
-│          ┌──────────────────────────────────┐              │
-│          │         Public Route Table       │              │
-│          └──────────────────────────────────┘              │
-│                   │                       │                │
-│                   ▼                       ▼                │
-│         Public Subnet A          Public Subnet B          │
-│          10.0.1.0/24             10.0.2.0/24              │
-│                   │                                       │
-│                   ▼                                       │
-│              NAT Gateway                                 │
-│                   │                                       │
-│                   ▼                                       │
-│          ┌──────────────────────────────────┐             │
-│          │        Private Route Table       │             │
-│          └──────────────────────────────────┘             │
-│                   │                       │               │
-│                   ▼                       ▼               │
-│        Private Subnet A          Private Subnet B         │
-│         10.0.11.0/24             10.0.12.0/24             │
-│                                                            │
-└────────────────────────────────────────────────────────────┘
-```
+The network is built using Amazon Virtual Private Cloud (VPC).
 
----
+Components
 
-# Availability Zone Strategy
+- One VPC
+- Two Public Subnets
+- Two Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Public Route Table
+- Private Route Table
 
-The infrastructure is distributed across two Availability Zones within a single AWS Region.
-
-This provides:
-
-- High Availability
-- Fault Tolerance
-- Load Distribution
-- Resilience against Availability Zone failures
-
-The Availability Zones are selected dynamically by Terraform to improve portability between AWS accounts and regions.
-
----
-
-# Monitoring Architecture
-
-Amazon CloudWatch provides centralized monitoring and logging for the infrastructure.
-
-Current monitoring includes:
-
-- CloudWatch Log Group
-- EC2 CPU Utilization alarms
-- EC2 Status Check alarms
-- Application Load Balancer 5XX alarms
-- Unhealthy Target alarms
-
-CloudWatch enables proactive monitoring and forms the foundation for future alerting and operational dashboards.
-
----
-
-# Network Components
-
-## VPC
-
-The Virtual Private Cloud provides an isolated network environment for all AWS resources.
-
-CIDR Block:
-
-```text
-10.0.0.0/16
-```
-
----
-
-## Public Subnets
-
-Public subnets contain resources that require direct internet connectivity.
-
-Resources deployed here include:
+Public resources include:
 
 - Application Load Balancer
 - NAT Gateway
 
----
+Private resources include:
 
-## Private Subnets
+- EC2 instances
 
-Private subnets contain application compute resources.
-
-Resources deployed here include:
-
-- EC2 Instances
-- Auto Scaling Group
-
-The private subnets do not have direct internet access.
-
-Outbound internet connectivity is provided through the NAT Gateway.
+This design prevents direct Internet access to application servers while allowing outbound connectivity for operating system updates and package installation.
 
 ---
 
-## Internet Gateway
+# Availability Strategy
 
-The Internet Gateway enables communication between the VPC and the public internet.
+The infrastructure is designed to tolerate Availability Zone failures.
 
-It is attached directly to the VPC.
+Measures include:
 
----
+- Multiple public subnets
+- Multiple private subnets
+- Multi-AZ Auto Scaling
+- Multi-AZ Load Balancer
+- CloudFront edge network
+- Route 53 global DNS
 
-## NAT Gateway
-
-The NAT Gateway enables outbound internet access for resources located in the private subnets.
-
-Typical use cases include:
-
-- Ubuntu package installation
-- Operating system updates
-- Downloading deployment artifacts
-
-Inbound internet connections to the private subnets are not permitted.
+This architecture minimizes downtime during infrastructure failures.
 
 ---
 
-## AMazon S3
+# Scalability Strategy
 
-Amazon S3 is provisioned as a private bucket for storing website assets and future deployment artifacts.
+Horizontal scaling is implemented using Auto Scaling Groups.
 
-The bucket includes:
+Scaling decisions are based on CloudWatch metrics.
 
-- Versioning enabled
-- Server-side encryption (AES-256)
-- Block Public Access enabled
-- Lifecycle configuration to clean up incomplete multipart uploads
+The Launch Template ensures every new instacne is configured identically.
 
-The bucket is intentionally provate and is designed for future integration with Amazon CloudFront using Origin Access Control (OAC).
+Benefits include:
+
+- Elastic capacity
+- Automatic recovery
+- Consistent deployments
+- Reduced operational overhead
 
 ---
 
 # Security Architecture
 
-## Application Load Balancer Security Group
+The infrastructure follows the principle of least privilege.
 
-### Inbound
+## IAM
 
-| Protocol | Port | Source    |
-| -------- | ---- | --------- |
-| TCP      | 80   | 0.0.0.0/0 |
-| TCP      | 443  | 0.0.0.0/0 |
+EC2 instances receive permissions using IAM Roles instead of long-term credentials.
 
-### Outbound
+## Network Security
 
-All traffic.
+Aplication traffic follows the path:
 
----
+![Network Security](../images/Network%20Security.png)
 
-## EC2 Security Group
+Direct Internet access to EC2 instances is prohibited.
 
-### Inbound
+## Encryption
 
-| Protocol | Port | Source             |
-| -------- | ---- | ------------------ |
-| TCP      | 80   | ALB Security Group |
+Data at rest
 
-### Outbound
+- Enhanced EBS volumes
+- Encrypted S3 bucket
 
-All traffic.
+Data in transit
 
----
+- HTTPS
+- TLS 1.2+
+- CloudFront encryption
 
-## Security Principles
+## S3 Protection
 
-The infrastructure follows the Principle of Least Privilege.
+The assets bucket includes:
 
-Key characteristics include:
-
-- No public EC2 instances
-- No inbound SSH access
-- Private compute layer
-- Public traffic terminates at the Application Load Balancer
-- Dedicated security groups
-- Network segmentation using public and private subnets
+- Public Access Block
+- Versioning
+- Server-side encryption
+- Lifecycle management
+- CloudFront Origin Access Control
 
 ---
 
-# Terraform Architecture
+# DNS Architecture
+
+Amazon Route 53 manages public DNS records.
+
+Responsibilities include:
+
+- Domain resolution
+- Alias records
+- CloudFront integration
+
+The DNS layer routes client traffic directly to CloudFront.
+
+---
+
+# Content Delivery
+
+Amazon CloudFront improves:
+
+- Global performance
+- Static asset caching
+- HTTPS delivery
+- Reduced origin load
+
+CloudFront retrieves static assets securely from Amazon S3 using Origin Access Control.
+
+Dynamic application traffic is forwarded to the Application Load Balancer.
+
+---
+
+# Deployment Workflow
+
+Infrastructure deployment follows this sequence.
+
+1. Terraform initialization
+2. Infrastructure validation
+3. Infrastructure planning
+4. Resource provisioning
+5. ACM validation
+6. Route 53 configuration
+7. Website artifact upload
+8. Auto Scaling deployment
+9. Infrastructure verification
+10. Operational testing
+
+---
+
+# Terraform Module Architecture
+
+Each infrastructure component is isolated into its own module.
+
+Modules include:
+
+- networking
+- security-group
+- iam
+- s3
+- alb
+- launch-template
+- autoscaling
+- cloudfront
+- acm
+- cloudwatch
+- route53-zone
+- route53-records
+
+Advantages
+
+- High cohesion
+- Low coupling
+- Easy maintenance
+- Reusability
+- Independent testing
+
+---
+
+# Resource Naming Strategy
+
+Resource names follow a consistent convention.
+
+Exampe:
 
 ```text
-terraform/
-│
-├── environments/
-│   └── production/
-│
-└── modules/
-    ├── networking/
-    ├── iam/
-    ├── security-groups/
-    ├── s3/
-    ├── cloudfront/
-    ├── launch-template/
-    ├── alb/
-    ├── autoscaling/
-    ├── cloudwatch/
-    ├── route53/
-    └── acm/
+project-resource-environment
+
+mathlab-ai-alb
+
+mathlab-ai-asg
+
+mathlab-ai-vpc
 ```
 
-Each module is designed to be:
-
-- Reusable
-- Modular
-- Environment independent
-- Production ready
+Consistent naming improves discoverability and operational management.
 
 ---
 
-# AWS Well-Architected Framework
+# Tagging Strategy
 
-## Operational Excellence
+Every AWS resource includes common tags.
 
-- Infrastructure as Code using Terraform
-- Modular repository structure
-- Version-controlled infrastructure
+Mandatory tags include:
 
-## Security
+- Project
+- Environment
+- ManagedBy
+- Owner
+- Name
 
+Tags support:
+
+- Cost allocation
+- Governance
+- Inventory
+- Automation
+
+---
+
+# Monitoring Strategy
+
+Amazon CloudWatch collects infrastructure metrics including:
+
+- CPU Utilization
+- Network Throughput
+- Instance Health
+- Auto Scaling Activity
+
+These metrics provide operational visibility into the deployed infrastructure.
+
+---
+
+# Disaster Recovery
+
+The infrastructure supports rapid recovery through:
+
+- Infrastructure as Code
+- Immutable deployments
+- Version-controlled configuration
+- Terraform state management
+- Automated resource recreation
+
+Recovery involves reapplying the Terraform configuration instead of manually rebuilding infrastructure.
+
+---
+
+# Design Principles
+
+This project was designed according to the following engineering principles:
+
+- Infrastructure as Code
+- Security by Default
 - Least Privilege
-- Private EC2 instances
-- Dedicated Security Groups
-- No hardcoded credentials
-
-## Reliability
-
-- Multi-AZ deployment
-- NAT Gateway
-- Route Tables
-- Reusable Terraform modules
-
-## Performance Efficiency
-
-- Amazon S3 for durable static asset storage
-- CloudFront module implemented
-- CloudFront integration pending Application Load Balancer deployment
-- Auto Scaling (planned)
-- Application Load Balancer (planned)
-
-## Cost Optimization
-
-- Single NAT Gateway selected to reduce operational costs while maintaining production-grade architecture suitable for this workload.
-
-## Sustainability
-
-- Infrastructure automation
-- Elastic scaling (planned)
-- Efficient resource provisioning
+- High Availability
+- Scalability
+- Automation
+- Modularity
+- Maintainability
+- Reproducibility
+- Documentation First
 
 ---
 
-# Current Implementation Status
+# Conclusion
 
-| Component                 | Status               |
-| ------------------------- | -------------------- |
-| Repository Structure      | Complete             |
-| Networking                | Complete             |
-| Security Groups           | Complete             |
-| IAM                       | Complete             |
-| Amazon S3                 | Complete             |
-| CloudFront                | Phase A & B Complete |
-| Launch Template           | Complete             |
-| Application Load Balancer | Complete             |
-| Auto Scaling              | Complete             |
-| CloudWatch                | Complete             |
-| Route 53                  | Pending              |
-| GitHub Actions            | Pending              |
-| Production Hardening      | Pending              |
-| Deployment                | Pending              |
-| Validation                | Pending              |
-| Final Submission          | Pending              |
-
----
-
-# Next Milestone
-
-The next milestone provisions the EC2 Launch Template, including:
-
-- Ubuntu Server
-- User Data
-- Automatic Nginx installation
-- Website deployment
-- Automatic service startup
-- Reboot persistence
+The MathLab AI Infrastructure provides a production-oriented AWS environment built using Terraform. Its modular design, layered architecture, strong security posture, and comprehensive documentation make it suitable for enterprise-style cloud deployments while serving as a practical demonstration of Infrastructure as Code principles.

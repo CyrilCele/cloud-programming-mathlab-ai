@@ -1,267 +1,390 @@
 # Testing Guide
 
-This document defines the testing strategy used to validate the AWS Infrastructure throughout development and before production deployment.
+## Overview
 
-The objective of testing is to ensure that the infrastructure is reliable, secure, reproducible, and production-ready.
+This document describes the testing strategy used to validate the MathLab AI Infrastructure.
+
+The projects adopts a layered testing approach to verify infrastructure configuration, deployment correctness, operational readiness, and application availability.
+
+Testing is performed before deployment, during deployment, and after deployment to ensure the infrastructure remains reliable, secure, and maintainable.
 
 ---
 
 # Testing Objectives
 
-The testing process aims to verify that:
+The objectives of testing are to:
 
-- Infrastructure provisions successfully.
-- Terraform configuration is valid.
-- AWS resources are created correctly.
-- Networking functions as expected.
-- Security controls are correctly implemented.
-- Monitoring is operational.
-- The website is accessible.
-- Infrastructure changes do not introduce regressions.
+- Validate Terraform configuration.
+- Detect syntax errors.
+- Detect infrastructure configuration errors.
+- Verify AWS resource provisioning.
+- Validate network connectivity.
+- Confirm website availability.
+- Verify security controls.
+- Validate infrastructure scalability.
+- Ensure repeatable deployments.
 
 ---
 
 # Testing Strategy
 
-Testing is performed throughout the project rather than only at the end.
+The project uses multiple levels of testing.
 
-Each milestone concludes with validation to ensure that the repository remains in a deployable state.
-
-Testing includes:
-
-- Terraform validation
-- Infrastructure verification
-- Functional testing
-- Security verification
-- Documentation review
+![Testing Strategy](../images/Testing%20Strategy.png)
 
 ---
 
-# Terraform Validation
+# Test Environment
 
-Terraform configurations must pass the following commands before deployment.
+Infrastructure is deployed into the AWS Production environment defined within:
 
-## Format Check
+```
+terraform/environments/production
+```
+
+Testing is performed using:
+
+- Terraform CLI
+- AWS CLI
+- AWS Management Console
+- Web Browser
+- Amazon CloudWatch
+
+---
+
+# Static Validation
+
+Terraform configuration must always be formulated before validation
 
 ```bash
 terraform fmt -recursive
 ```
 
-Purpose:
+Expected result:
 
-- Ensure consistent formatting.
-- Follow HashiCorp formatting standards.
-
-Expected Result:
-
-- No formatting errors.
+- All Terraform files are consistently formatted.
 
 ---
 
-## Configuration Validation
+## Terraform Validation
+
+Validate the configuration.
 
 ```bash
 terraform validate
 ```
 
-Purpose:
+Expected output:
 
-- Verify Terraform syntax.
-- Detect configuration errors.
-- Validate module references.
-
-Expected Result:
-
-```text
+```
 Success! The configuration is valid.
 ```
 
+No earnings or errors should prevent deployment.
+
 ---
 
-## Execution Plan
+# Execution Plan Validation
+
+Generate an execution plan.
 
 ```bash
 terraform plan
 ```
 
-Purpose:
+Verify:
 
-- Review infrastructure changes.
-- Verify planned resource creation.
-- Detect unintended modifications before deployment.
-
-Expected Result:
-
-- Terraform generates a valid execution plan without errors.
+- Resources are created as expected.
+- No unexpected resource deletions.
+- Resource dependencies are correct.
 
 ---
 
-# Infrastructure Testing
+# Deployment Testing
 
-Infrastructure testing verifies that AWS resources function correctly after deployment.
+Deploy the infrastructure.
 
-Resources to verify include:
+```bash
+terraform apply
+```
 
-- VPC
-- Subnets
+Expected result
+
+- Deployment completes successfully.
+- No failed resources.
+- Outputs are generated.
+
+---
+
+# Infrastructure Verification
+
+Verify the successful creation of:
+
+- Amazon VPC
+- Public Subnets
+- Private Subnets
 - Internet Gateway
-- Route Tables
+- NAT Gateway
 - Security Groups
-- IAM Roles
-- EC2 Instances
+- IAM Role
+- IAM Instance Profile
+- Amazon S3 Bucket
 - Launch Template
 - Auto Scaling Group
 - Application Load Balancer
 - CloudFront Distribution
-- Amazon S3
-- Route 53
-- CloudWatch
+- Route 53 Hosted Zone
+- Route 53 Records
+- ACM Certificate
+- CloudWatch Resources
 
-Verification procedures will be documented as each component is implemented.
+Each resource should be present and in a healthy state.
 
 ---
 
-# Website Testing
+# Networking Tests
 
-After deployment, verify that:
+Verify:
 
-- The website loads successfully.
-- HTML pages are accessible.
-- CSS files load correctly.
+- Internet connectivity through the Application Load Balancer.
+- Private subnet routing through the NAT Gateway.
+- DNS resolution using ROute 53.
+- CloudFront connectivity.
+
+Expected result:
+
+All network paths operate correctly.
+
+---
+
+# Compute Tests
+
+Verify:
+
+- EC2 instances launch successfully.
+- Auto Scaling maintains desired capacity.
+- Launch Template is applied.
+- Bootstrap script completes successfully.
+
+Expected result:
+
+Instances become healthy within the target group.
+
+---
+
+# Application Load Balancer Tests
+
+Verify:
+
+- Listener configuration.
+- Target Group health.
+- Healthy targets.
+- HTTP request routing.
+
+Expected result:
+
+Traffic is successfully forwarded to healthy EC2 instances.
+
+---
+
+# CloudFront Tests
+
+Verify:
+
+- Distribution status is **Deployed**.
+- HTTPS is operational.
+- Static assets are served correctly.
+- Caching functions correcttly.
+
+Expected result:
+
+CloudFront successfully serves application content.
+
+---
+
+# Route 53 Tests
+
+Verify:
+
+- Hosted Zone exists.
+- Alias records exist.
+- DNS resolves correctly.
+- Domain points to CloudFront.
+
+Expected result:
+
+The configured domain resolves successfully.
+
+---
+
+# ACM Tests
+
+Verify:
+
+- Certificate status is **Issued**.
+- DNS validation completed.
+- HTTPS is operational.
+
+Expected result:
+
+Secure TLS connections are established.
+
+---
+
+# Amazon S3 Tests
+
+Verify:
+
+- Bucket exists.
+- Versioning enabled.
+- Encryption enabled.
+- Public access blocked.
+- Website package uploaded successfully.
+
+Expected result:
+
+CloudFront retrieves website assets successfully.
+
+---
+
+# Security Tests
+
+Verify:
+
+- EC2 instances are inaccessible directly from the Internet.
+- Security Group rules are correct.
+- IAM permissions follow least privilege.
+- HTTPS is enforced.
+- S3 objects are inaccessible without CloudFront.
+
+Expected result:
+
+Security controls function as designed.
+
+---
+
+# Auto Scaling Tests
+
+Verify:
+
+- Desired capacity maintained.
+- Healthy instances replaced automatically.
+- Launch Template used for new instances.
+- Scaling policies available.
+
+Expected result:
+
+Auto Scaling maintains application availability.
+
+---
+
+# CloudWatch Tests
+
+Verify:
+
+- Metrics available.
+- Health monitoring active.
+- Infrastructure reporting correctly.
+
+Expected result:
+
+Operational visibility is available.
+
+---
+
+# Website Validation
+
+Verify:
+
+- Homepage loads.
+- CSS loads correctly.
 - JavaScript executes correctly.
-- Images are displayed.
-- Static assets are served successfully.
+- Images display correctly.
+- Static assets load successfully.
+- HTTPS functions correctly.
 
-The website source code is not modified as part of this project.
+Expected result:
 
----
-
-# Network Testing
-
-Network testing verifies:
-
-- Internet connectivity.
-- Public subnet accessibility.
-- Security Group configuration.
-- Load Balancer connectivity.
-- Route 53 resolution.
-- CloudFront routing.
-
-Additional network validation procedures will be added during the Networking milestone.
+The website operates normally.
 
 ---
 
-# Security Testing
+# Regression Testing
 
-Security validation includes:
+After every infrastructure modification:
 
-- IAM least privilege verification.
-- Security Group review.
-- Public exposure review.
-- Encryption verification.
-- Credential management review.
-- Terraform state protection.
+Run:
 
-Detailed security testing procedures will be added as infrastructure components are implemented.
+```bash
+terraform fmt -recursive
 
----
+terraform validate
 
-# Monitoring Verification
+terraform plan
 
-Monitoring tests verify:
+terraform apply
+```
 
-- CloudWatch metrics.
-- CloudWatch alarms.
-- CloudWatch dashboards.
-- EC2 instance health.
-- Auto Scaling metrics.
-
-These tests will be documented during the CloudWatch milestone.
+Repeat all operational verification tests.
 
 ---
 
-# Deployment Verification Checklist
+# Test Automation
 
-After infrastructure deployment, verify the following.
+Infrastructure testing is organised within:
 
-| Component        | Verification                         |
-| ---------------- | ------------------------------------ |
-| Terraform        | Configuration validates successfully |
-| VPC              | Created successfully                 |
-| Subnets          | Created successfully                 |
-| Internet Gateway | Attached to VPC                      |
-| Route Tables     | Associated correctly                 |
-| Security Groups  | Rules configured correctly           |
-| IAM              | Roles and policies attached          |
-| EC2              | Instances running                    |
-| Nginx            | Service running                      |
-| Website          | Accessible                           |
-| ALB              | Healthy targets                      |
-| Auto Scaling     | Desired capacity achieved            |
-| CloudFront       | Distribution deployed                |
-| Route 53         | DNS resolution successful            |
-| CloudWatch       | Metrics and alarms available         |
+```
+tests/
+├── infrastructure/
+└── terraform/
+```
+
+Automated tests should validate:
+
+- Terraform formatting
+- Terraform validation
+- Infrastructure deployment
+- Resource health
+- Website accessibility
 
 ---
 
-# Documentation Verification
+# Acceptance Criteria
 
-Documentation should be reviewed after every milestone to ensure that it accurately reflects the current infrastructure.
+The deployment is considered successful when:
 
-Review includes:
-
-- README.md
-- ARCHITECTURE.md
-- DEPLOYMENT.md
-- SECURITY.md
-- TESTING.md
-- TROUBLESHOOTING.md
-- DECISIONS.md
-- COST_ESTIMATION.md
-- OPERATIONS.md
+- Terraform validation succeeds.
+- Infrastructure deploys successfully.
+- EC2 instances become healthy.
+- ALB health checks pass.
+- CloudFront is deployed.
+- DNS resolves correctly.
+- HTTPS works correctly.
+- Website is accessible.
+- Security controls are operational.
 
 ---
 
-# Quality Gate
+# Test Checklist
 
-Before completing a milestone, verify that:
+Before deployment:
 
-- Terraform formatting passes.
-- Terraform validation passes.
-- Infrastructure is deployable.
-- Documentation is updated.
-- Repository structure is maintained.
-- Security has been reviewed.
-- AWS best practices are followed.
+- Terraform formatted
+- Validation successful
+- Plan reviewed
 
-No milestone should be considered complete until all quality checks pass.
+After deployment:
 
----
-
-# Future Updates
-
-This document will be expanded throughout the project to include:
-
-- Networking validation procedures
-- IAM validation procedures
-- CloudFront verification
-- Load Balancer testing
-- Auto Scaling testing
-- Route 53 verification
-- CloudWatch testing
-- Production validation checklist
-- Final infrastructure acceptance testing
+- Infrastructure healthy
+- Website available
+- HTTPS operational
+- DNS operational
+- CloudFront operational
+- Auto Scaling healthy
+- Monitoring active
 
 ---
 
-# Current Status
+# Conclusion
 
-| Testing Area           | Status         |
-| ---------------------- | -------------- |
-| Testing Strategy       | ✅ Defined     |
-| Terraform Validation   | 🟡 In Progress |
-| Infrastructure Testing | ⏳ Pending     |
-| Network Testing        | ⏳ Pending     |
-| Security Testing       | ⏳ Pending     |
-| Monitoring Testing     | ⏳ Pending     |
-| Production Validation  | ⏳ Pending     |
+The testing strategy ensures that the MathLab AI Infrastructure is validated throughout its lifecycle, from infrastructure provisioning to operational verification. By combining Terraform validation, deployment testing, functional verification, and security testing, the project delivers a reliable, repeatable, and production-oriented cloud infrastructure.

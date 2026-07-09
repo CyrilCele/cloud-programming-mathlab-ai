@@ -2,121 +2,239 @@
 
 ## Overview
 
-This document provides an estimated monthly cost for the AWS infrastructure.
+This document provides an overview of the expected operational costs associated with the MathLab AI Infrastructure deployed on Amazon Web Services (AWS).
 
-Actual costs depend on:
+The infrastructure has been designed to balance security, scalability, and high availability while remaining cost-conscious for a university project.
 
-- AWS Region
+Actual costs will vary depending on:
+
+- Deployment duration
 - Traffic volume
+- Number of EC2 instances
 - Data transfer
-- Compute usage
-- Storage consumption
+- Geographic location
+- AWS pricing changes
+
+The estimates in this document are intended for planning purposes only.
 
 ---
 
-# Current Infrastructure
+# Infrastructure Components
 
-| Service          | Quantity |
-| ---------------- | -------: |
-| Amazon VPC       |        1 |
-| Internet Gateway |        1 |
-| NAT Gateway      |        1 |
-| Elastic IP       |        1 |
-| Public Subnets   |        2 |
-| Private Subnets  |        2 |
-| Route Tables     |        2 |
-| Security Groups  |        2 |
-| Amazon S3 Bucket |        1 |
+The following AWS services are provisioned by this project.
 
----
-
-# Planned Infrastructure
-
-| Service                 |
-| ----------------------- |
-| Amazon Route 53         |
-| AWS Certificate Manager |
+![AWS Services Snapshot](../images/AWS%20Services.png)
 
 ---
 
 # Major Cost Drivers
 
-## NAT Gateway
+The following resources contribute the majority of operational costs.
 
-The NAT Gateway is expected to be one of the largest recurring networking costs.
+## Amazon EC2
 
-A single NAT Gateway has been selected to balance:
-
-- Production readiness
-- Cost optimization
-- Simplicity
-
----
-
-## EC2 Instances
-
-Compute costs depend on:
+Compute charges depend on:
 
 - Instance type
 - Number of running instances
-- Auto Scaling configuration
+- Operating hours
+
+Auto Scaling can increase or decrease the number of instances based on demand.
 
 ---
 
-## CloudFront
+## NAT Gateway
 
-CloudFront costs depend on:
+The NAT Gateway is one of the most significant recurring costs.
 
-- Requests
-- Data transfer
-- Cache hit ratio
+Charges include:
+
+- Hourly usage
+- Data processed
+
+Since the project uses private subnets, a NAT Gateway is required for outbound Internet connectivity (for example, software updates and package installation).
 
 ---
 
 ## Application Load Balancer
 
-Costs depend on:
+Costs are based on:
 
 - Running hours
 - Load Balancer Capacity Units (LCUs)
 
 ---
 
-## Amazon CloudWatch
+CloudFront
 
-CloudWatch costs depend on:
+Pricing depends on:
 
-- Number of alarms
-- Log ingestion
+- Data transffered
+- HTTP/HTTPS requests
+- Geographic distribution of users
+
+CloudFront can also reduce origin traffic, lowering EC2 and ALB utilization.
+
+---
+
+## Route 53
+
+Charges include:
+
+- Public Hosted Zone
+- DNS queries
+
+The cost remains relatively low for projects with modest traffic.
+
+---
+
+## Amazon S3
+
+Storage costs depend on:
+
+- Total storage used
+- Number of requests
+- Data transfer
+
+Because website assets are relatively small, storage costs are expected to remain minimal.
+
+---
+
+## CloudWatch
+
+Charges may apply for:
+
+- Custom metrics
+- Alarms
 - Log storage
-- Metric collection
+- Log ingestion
+
+Basic monitoring provided by AWS is available at no additional cost.
 
 ---
 
-# Cost Optimization Decisions
+# Free Tier Eligibility
 
-The project incorporates the following cost optimization strategies:
+Several services used in this project are covered, either fully or partially, by the AWS Free Tier (subject to AWS eligibility rules).
 
-- Single NAT Gateway
-- Auto Scaling (planned)
-- CloudFront caching (planned)
-- Infrastructure as Code
-- Modular Terraform
-- Resource tagging
+Examples include:
 
----
+- Amazon VPC
+- IAM
+- Security Groups
+- Launch Templates
+- ACM
+- Limited EC2 usage
+- Limited S3 usage
+- Limited CloudWatch usage
 
-# AWS Well-Architected Cost Optimization
-
-The infrastructure is designed to:
-
-- Avoid unnecessary resources
-- Scale automatically
-- Minimize operational overhead
-- Support efficient resource utilization
+Always verify current Free Tier limits before deployment.
 
 ---
 
 # Estimated Monthly Cost
 
-A detailed cost estimate will be completed after all infrastructure components have been implemented in later milestones using the AWS Pricing Calculator.
+The following table provides a qualitative estimate rather than fixed pricing.
+
+![AWS Cost Expectation](../images/AWS%20Cost%20Expectation.png)
+
+The NAT Gateway and Application Load Balancer are expected to represent the largest proportion of infrastructure costs.
+
+---
+
+# Cost Optimisation Strategies
+
+The following practices have been adopted to reduce operational expenses.
+
+## Auto Scaling
+
+Compute capacity automatically adjusts to demand.
+
+Benefits include:
+
+- Reduced idle resources
+- Lower compute costs
+
+---
+
+## CloudFront Caching
+
+CloudFront caches static content closer to end users.
+
+Benefits include:
+
+- Reduced EC2 workload
+- Reduced ALB requests
+- Lower latency
+
+---
+
+## Amazon S3 Lifecycle Policies
+
+Lifecycle rules automatically clean up incomplete multipart uploads.
+
+Benefits include:
+
+- Reduced storage waste
+- Lower operational costs
+
+---
+
+## Versioned Infrastructure
+
+Terraform allows infrastructure to be recreated on demand.
+
+This makes it practical to destroy non-production environments when not in use.
+
+---
+
+# Cost Monitoring
+
+AWS provides several services for monitoring expenditure.
+
+Recommended services include:
+
+- AWS Cost Explorer
+- AWS Budgets
+- AWS Cost and Usage Reports
+- Amazon CloudWatch
+
+These services help identify unusual spending and forecast future costs.
+
+---
+
+# Cost Management Recommendations
+
+To minimise expenses during development:
+
+- Destroy infrastructure when not in use.
+- Keep Auto Scaling limits conservative.
+- Use small EC2 instance types where appropriate.
+- Minitor CloudFront traffic.
+- Remove unused S3 objects.
+- Review AWS Cost Explorer regularly.
+- Configure AWS Budgets with spending alerts.
+
+---
+
+# Resource Cleanup
+
+After completing the project, resources should be removed to prevent unnecessary changes.
+
+Terraform simplifies this process.
+
+```bash
+terraform destroy
+```
+
+Always verify that all billable resources have been removed from the AWS Management Console after destruction.
+
+---
+
+# Conclusion
+
+The MathLab AI Infrastructure has been designed to balance functionality, availability, security, and operational cost.
+
+While services such as the NAT Gateway, Application Load Balancer, and CloudFront introduce ongoing charges, they provide essential capabilities required for a production-grade architecture.
+
+By combining Infrastructure as Code with AWS cost management best practices, the infrastructure remains both maintainable and economically efficient.

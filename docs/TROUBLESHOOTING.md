@@ -1,70 +1,50 @@
 # Troubleshooting Guide
 
-This document provides guidance for identifying, diagnosing, and resolving common issues encountered during the deployment, operation, and maintenance of the AWS Infrastructure.
+## Overview
 
-The procedures documented here are intended to reduce downtime, improve operational efficiency, and support consistent issue resolution.
+This document provides troubleshooting procedures for common issues that may occur during the deployment and operation of the MathLab AI Infrastructure.
+
+Each issue includes:
+
+- Symptoms
+- Possible causes
+- Resolution steps
+- Verification procedures
+
+The objective is to minimise downtime and provide a consistent approach to diagnosing infrastructure problems.
 
 ---
 
-# Troubleshooting Process
+# General Troubleshooting Process
 
-When an issue occurs, follow this sequence:
+Before making changes:
 
 1. Identify the affected component.
-2. Review the error message.
-3. Verify the Terraform configuration.
-4. Check AWS resource status.
-5. Review CloudWatch metrics and logs (where applicable).
-6. Apply the appropriate resolution.
-7. Revalidate the infrastructure.
+2. Review Terraform outputs.
+3. Check AWS service health.
+4. Review CloudWatch metrics and logs.
+5. Verify recent infrastructure changes.
+6. Confirm IAM permissions.
+7. Validate network connectivity.
+8. Apply the least disruptive fix.
+9. Verify that the issue has been resolved.
 
 ---
 
 # Terraform Issues
 
-## Terraform Initialization Fails
+## Terraform Validation Failed
 
 ### Symptoms
 
-- `terraform init` returns an error.
-- Providers fail to download.
-- Backend initialization fails.
+- `terraform validate` returns one or more errors.
 
 ### Possible Causes
 
-- Internet connectivity issues.
-- Incorrect provider configuration.
-- Backend configuration errors.
-- Unsupported Terraform version.
-
-### Resolution
-
-- Verify the internet connection.
-- Confirm the Terraform version.
-- Verify provider configuration.
-- Review backend configuration.
-- Re-run:
-
-```bash
-terraform init
-```
-
----
-
-## Terraform Validation Fails
-
-### Symptoms
-
-```text
-Error: Invalid configuration
-```
-
-### Possible Causes
-
-- Syntax errors.
-- Invalid resource references.
+- Invalid Terraform syntax.
 - Missing variables.
-- Module configuration errors.
+- Incorrect resource references.
+- Unsupported provider configuration.
 
 ### Resolution
 
@@ -76,27 +56,35 @@ terraform fmt -recursive
 terraform validate
 ```
 
-Correct all reported issues before continuing.
+Correct the reported errors before continuing.
 
 ---
 
 ## Terraform Plan Fails
 
+### Symptoms
+
+```
+terraform plan
+```
+
+returns one or more errors.
+
 ### Possible Causes
 
-- Invalid variables.
+- Missing variables.
+- Incorrect module outputs.
+- Invalid resource dependencies.
 - Authentication failure.
-- Missing AWS permissions.
-- Invalid resource configuration.
 
 ### Resolution
 
 Verify:
 
 - AWS credentials.
-- Required variables.
-- IAM permissions.
-- Terraform configuration.
+- Module inputs.
+- Terraform variables.
+- Resource references.
 
 Re-run:
 
@@ -108,291 +96,484 @@ terraform plan
 
 ## Terraform Apply Fails
 
+### Symptoms
+
+Infrastructure deployment stops unexpectedly.
+
 ### Possible Causes
 
-- AWS service quota exceeded.
-- Invalid AWS configuration.
-- Missing IAM permissions.
-- Dependency errors.
-- Resource conflicts.
+- AWS service limits.
+- Existing resources.
+- Invalid IAM permissions.
+- Incorrect resource configuration.
 
 ### Resolution
 
-Review the Terraform output.
+Review the Terraform error message.
 
-Resolve the reported issue.
+Correct the reported issue.
 
-Re-run:
+Run:
 
 ```bash
 terraform apply
 ```
+
+again.
 
 ---
 
 # AWS Authentication Issues
 
-## AWS CLI Authentication Failure
+## Invalid AWS Credentials
 
 ### Symptoms
 
-```text
-Unable to locate credentials
+```
+AccessDenied
+```
+
+or
+
+```
+ExpiredToken
 ```
 
 ### Resolution
 
-Verify the AWS CLI configuration.
+Verify credentials.
+
+```bash
+aws sts get-caller-identity
+```
+
+Reconfigure credentials if required.
 
 ```bash
 aws configure
 ```
 
-Confirm the active identity.
+---
 
-```bash
-aws sts get-caller-identity
-```
+# Networking Issues
+
+## Internet Connectivity Failure
+
+### Symptoms
+
+Website unavailable.
+
+### Possible Causes
+
+- Internet Gateway missing.
+- Route Table misconfigured.
+- NAT Gateway failure.
+- Security Group rules.
+
+### Resolution
+
+Verify:
+
+- Internet Gateway
+- NAT Gateway
+- Route Tables
+- Subnet Associations
+- Security Groups
+
+---
+
+## DNS Resolution Failure
+
+### Symptoms
+
+Domain cannot be resolved.
+
+### Possible Causes
+
+- Route 53 record missing.
+- Incorrect Alias record.
+- DNS propagation incomplete.
+- Incorrect Hosted Zone.
+
+### Resolution
+
+Verify:
+
+- Hosted Zone
+- Alias Records
+- Name Servers
+- CloudFront Domain Name
+
+Wait for DNS propagation if necessary.
 
 ---
 
 # EC2 Issues
 
-## EC2 Instance Not Running
+## EC2 Instance Not Launching
+
+### Symptoms
+
+Auto Scaling reports failed launches.
 
 ### Possible Causes
 
-- Launch Template configuration.
-- Auto Scaling issues.
-- IAM permissions.
-- User Data execution failure.
+- Invalid AMI.
+- Incorrect Launch Template.
+- IAM Instance Profile missing.
+- Security Group issue.
 
 ### Resolution
 
 Verify:
 
-- EC2 instance status.
-- Auto Scaling Group status.
-- Launch Template configuration.
-- System logs.
+- AMI ID
+- Launch Template
+- Instance Profile
+- Auto Scaling Activity History
 
 ---
 
-## Website Not Loading
+## Bootstrap Script Failed
+
+### Symptoms
+
+Website unavailable after EC2 launch.
 
 ### Possible Causes
 
-- Nginx not running.
-- Website files missing.
-- Security Group configuration.
-- Load Balancer configuration.
-
-### Resolution
-
-Verify:
-
-- Nginx service.
-- Website deployment.
-- Security Group rules.
-- Target Group health.
-
----
-
-# Load Balancer Issues
-
-## Unhealthy Targets
-
-### Possible Causes
-
-- Nginx unavailable.
-- Incorrect health check configuration.
-- Security Group restrictions.
-- Incorrect target registration.
-
-### Resolution
-
-Verify:
-
-- EC2 instance health.
-- Nginx status.
-- Target Group health checks.
-- Security Groups.
-
----
-
-# Auto Scaling Issues
-
-## Instances Not Launching
-
-### Possible Causes
-
-- Launch Template errors.
-- IAM permissions.
-- Insufficient capacity.
-- Invalid subnet configuration.
+- S3 download failed.
+- Incorrect bucket name.
+- Website archive missing.
+- Nginx installation failure.
 
 ### Resolution
 
 Review:
 
-- Auto Scaling Activity History.
-- Launch Template.
-- EC2 console.
-- CloudWatch events.
+```text
+/var/log/cloud-init-output.log
+```
+
+Verify:
+
+- website.zip exists.
+- S3 permissions.
+- Bootstrap script.
+
+---
+
+# Application Load Balancer Issues
+
+## Unhealthy Targets
+
+### Symptoms
+
+Target Group reports unhealthy instances.
+
+### Possible Causes
+
+- Nginx not running.
+- Incorrect Health Check path.
+- Security Group restrictions.
+- Application startup failure.
+
+### Resolution
+
+Verify:
+
+- EC2 status
+- Nginx service
+- Target Group Health Checks
+- Security Groups
+
+---
+
+# Auto Scaling Issues
+
+## Instances Continuously Replaced
+
+### Symptoms
+
+Instances terminate shortly after launching.
+
+### Possible Causes
+
+- Failed Health Checks.
+- Bootstrap errors.
+- Incorrect Launch Template.
+
+### Resolution
+
+Review:
+
+- Auto Scaling Activity
+- EC2 System Logs
+- CloudWatch Metrics
+- Target Group Health
+
+---
+
+# Amazon S3 Issues
+
+## Website Archive Missing
+
+### Symptoms
+
+Bootstrap cannot download website files.
+
+### Resolution
+
+Verify:
+
+```bash
+aws s3 ls s3://<bucket-name>
+```
+
+Upload the archive.
+
+```bash
+aws s3 cp website.zip s3://<bucket-name>/website.zip
+```
+
+---
+
+## Access Denied
+
+### Symptoms
+
+403 Forbidden.
+
+### Possible Causes
+
+- Bucket Policy.
+- IAM Policy.
+- Origin Access Control.
+
+### Resolution
+
+Review:
+
+- Bucket Policy
+- IAM Permissions
+- CloudFront OAC
 
 ---
 
 # CloudFront Issues
 
-## Distribution Not Serving Content
+## Distribution Still Deploying
 
-### Possible Causes
+### Symptoms
 
-- Origin configuration.
-- Cache configuration.
-- Origin Access Control.
-- Deployment still in progress.
+CloudFront status remains **In Progress**.
 
 ### Resolution
 
-Verify:
+Wait until deployment status becomes:
 
-- Distribution status.
-- Origin settings.
-- Cache behavior.
-- Distribution deployment status.
+```
+Deployed
+```
+
+CloudFront deployments may require several minutes.
+
+---
+
+## Cached Content
+
+### Symptoms
+
+Old website content is displayed.
+
+### Resolution
+
+Invalidate the cache.
+
+```bash
+aws cloudfront create-invalidation \
+--distribution-id <distribution-id> \
+--paths "/*"
+```
 
 ---
 
 # Route 53 Issues
 
-## Domain Does Not Resolve
+## Hosted Zone Created but Domain Does Not Resolve
 
 ### Possible Causes
 
-- Incorrect hosted zone.
-- Missing DNS records.
+- Incorrect Name Servers.
 - DNS propagation.
+- Alias record missing.
 
 ### Resolution
 
 Verify:
 
-- Hosted Zone.
-- Alias records.
-- Domain registration.
-- DNS propagation.
+- Hosted Zone
+- Name Servers
+- Alias Records
+- CloudFront Domain
+
+---
+
+# ACM Issues
+
+## Certificate Pending Validation
+
+### Symptoms
+
+Certificate remains in:
+
+```
+Pending Validation
+```
+
+### Resolution
+
+Verify:
+
+- DNS validation records.
+- Route 53 Hosted Zone.
+- Correct domain.
+
+Allow time for DNS propagation.
 
 ---
 
 # CloudWatch Issues
 
-## Metrics Missing
+## Missing Metrics
 
 ### Possible Causes
 
-- Metrics not enabled.
-- Resource not running.
-- Incorrect dashboard configuration.
+- Monitoring disabled.
+- Instance not running.
 
 ### Resolution
 
 Verify:
 
-- Resource status.
-- CloudWatch dashboard.
-- Metric namespace.
-- Alarm configuration.
+- EC2 Monitoring
+- CloudWatch configuration
+- Instance Health
 
 ---
 
-# Security Issues
+# Website Issues
 
-Review the following:
+## Website Displays 403
 
-- IAM Roles
-- IAM Policies
-- Security Groups
-- Encryption
-- Public access
-- S3 Bucket Policies
-- CloudFront configuration
+### Resolution
 
-Refer to `SECURITY.md` for detailed security guidance.
+Verify:
+
+- Bucket Policy
+- CloudFront
+- Website deployment
+- File permissions
 
 ---
 
-# Diagnostic Commands
+## Website Displays 404
+
+### Resolution
+
+Verify:
+
+- Website extracted successfully.
+- index.html exists.
+- Bootstrap completed successfully.
+
+---
+
+## Website Loads Without CSS
+
+### Resolution
+
+Verify:
+
+- Assets uploaded.
+- CloudFront cache.
+- Asset paths.
+- Browser cache.
+
+---
+
+## Website Loads Slowly
+
+### Resolution
+
+Review:
+
+- CloudFront
+- ALB Metrics
+- EC2 CPU
+- Network Metrics
+
+---
+
+# Operational Commands
 
 Terraform
 
 ```bash
 terraform fmt -recursive
+
 terraform validate
+
 terraform plan
+
 terraform apply
-terraform destroy
 ```
 
-AWS CLI
+AWS Identity
 
 ```bash
-aws configure
-
 aws sts get-caller-identity
 ```
 
-Git
+Terraform Outputs
 
 ```bash
-git status
+terraform output
+```
+
+S3 Upload
+
+```bash
+aws s3 cp website.zip s3://<bucket-name>/website.zip
+```
+
+CloudFront Cache Invalidation
+
+```bash
+aws cloudfront create-invalidation \
+--distribution-id <distribution-id> \
+--paths "/*"
 ```
 
 ---
 
 # Escalation Checklist
 
-Before escalating an issue, verify:
+Before escalating an issue, confirm:
 
-- Terraform configuration.
-- AWS credentials.
-- Required IAM permissions.
-- Variable configuration.
-- Infrastructure status.
-- CloudWatch metrics.
-- Relevant documentation.
-
----
-
-# Future Updates
-
-This document will be expanded throughout the project.
-
-Future milestones will include troubleshooting guidance for:
-
-- Networking
-- IAM
-- S3
-- CloudFront
-- Launch Template
-- Application Load Balancer
-- Auto Scaling
-- CloudWatch
-- Route 53
-- Production Hardening
+- Terraform validation succeeds.
+- Terraform plan succeeds.
+- AWS credentials are valid.
+- EC2 instances are healthy.
+- Target Group health checks pass.
+- CloudFront is deployed.
+- Route 53 records are correct.
+- ACM certificate is issued.
+- Website archive exists.
+- CloudWatch metrics are available.
 
 ---
 
-# Current Status
+# Conclusion
 
-| Component             | Status         |
-| --------------------- | -------------- |
-| Terraform             | 🟡 In Progress |
-| AWS Authentication    | 🟡 In Progress |
-| EC2                   | ⏳ Pending     |
-| Load Balancer         | ⏳ Pending     |
-| Auto Scaling          | ⏳ Pending     |
-| CloudFront            | ⏳ Pending     |
-| Route 53              | ⏳ Pending     |
-| CloudWatch            | ⏳ Pending     |
-| Production Operations | ⏳ Pending     |
+This troubleshooting guide provides a structured approach for diagnosing and resolving common infrastructure issues within the MathLab AI Infrastructure. Following these procedures helps reduce downtime, maintain operational consistency, and support reliable cloud operations throughout the project's lifecycle.

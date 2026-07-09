@@ -24,3 +24,15 @@ variable "tags" {
   description = "Common resource tags."
   type        = map(string)
 }
+
+variable "certificate_arn" {
+  description = "Validate ACM certificate ARN."
+
+  type = string
+}
+
+variable "domain_name" {
+  description = "Custom CloudFront domain."
+
+  type = string
+}

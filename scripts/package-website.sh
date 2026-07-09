@@ -2,20 +2,16 @@
 
 set -euo pipefail
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WEBSITE_DIR="${PROJECT_ROOT}/website"
-OUTPUT_DIR="${PROJECT_ROOT}/assets"
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-ARCHIVE_NAME="website.zip"
+BUILD_DIR="${PROJECT_ROOT}/build"
 
-echo "Packaging website..."
+mkdir -p "${BUILD_DIR}"
 
-rm -f "${OUTPUT_DIR}/${ARCHIVE_NAME}"
+rm -f "${BUILD_DIR}/website.zip"
 
-cd "${WEBSITE_DIR}"
+cd "${PROJECT_ROOT}/website"
 
-zip -r "${OUTPUT_DIR}/${ARCHIVE_NAME}" .
-
-echo ""
-echo "Website package created:"
-echo "${OUTPUT_DIR}/${ARCHIVE_NAME}"
+zip -r \
+    "${BUILD_DIR}/website.zip" \
+    .

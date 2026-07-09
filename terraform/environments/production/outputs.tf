@@ -77,3 +77,16 @@ output "assets_bucket_arn" {
 
   value = module.s3.bucket_arn
 }
+
+
+output "route53_name_servers" {
+  description = "Route 53 name servers."
+
+  value = module.route53_zone.name_servers
+}
+
+output "route53_hosted_zone_id" {
+  description = "Route 53 hosted zone ID."
+
+  value = module.route53_zone.hosted_zone_id
+}
