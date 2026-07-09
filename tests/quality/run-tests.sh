@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
 source "${SCRIPT_DIR}/utils.sh"
+
+set -euo pipefail
 
 section "Repository Quality Tests"
 

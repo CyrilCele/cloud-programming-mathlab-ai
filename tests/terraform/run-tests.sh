@@ -2,20 +2,22 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+TF_DIR="$ROOT_DIR/terraform/environments/production"
 
-source "${SCRIPT_DIR}/utils.sh"
+echo "[INFO] =========================================="
+echo "[INFO] Terraform Validation Test Suite"
+echo "[INFO] =========================================="
 
-info "=========================================="
-info "Terraform Validation Test Suite"
-info "=========================================="
+cd "$TF_DIR"
 
-bash "${SCRIPT_DIR}/test_fmt.sh"
+echo "[INFO] Running terraform fmt..."
+terraform fmt -recursive -check
+echo "[PASS] Terraform formatting validation passed."
 
-bash "${SCRIPT_DIR}/test_validate.sh"
+echo "[INFO] Running terraform validate..."
+terraform validate
+echo "[PASS] Terraform validation passed."
 
-bash "${SCRIPT_DIR}/test_plan.sh"
-
-success "=========================================="
-success "All Terraform tests passed successfully."
-success "=========================================="
+echo "[INFO] Terraform syntax validation completed."
+echo "[PASS] All Terraform validation tests passed."

@@ -2,24 +2,22 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/utils.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DIRECTORIES=(
-terraform
-website
-docs
-scripts
-tests
-.github
-)
+source "${SCRIPT_DIR}/utils.sh"
 
 section "Directory Structure"
 
+DIRECTORIES=(
+    terraform
+    website
+    docs
+    scripts
+    tests
+    .github
+)
+
 for DIR in "${DIRECTORIES[@]}"
 do
-    if [[ -d "../../${DIR}" ]]; then
-        pass "${DIR}"
-    else
-        fail "${DIR}"
-    fi
+    require_directory "${PROJECT_ROOT}/${DIR}"
 done

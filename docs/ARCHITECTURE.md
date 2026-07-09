@@ -19,7 +19,7 @@ The deployed infrastructure follows AWS Well-Architected Framework principles, e
 
 # High-Level Architecture
 
-![Infrastructure UML](../Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
+![Infrastructure-UML](../images/Highly%20Available%20Auto-Scaling%20AWS%20Web%20Hosting%20Architecture.png)
 
 The infrastructure is distributed across multiple Availability Zones to eliminate single points of failure.
 
@@ -302,7 +302,7 @@ Advantages
 
 Resource names follow a consistent convention.
 
-Exampe:
+Example:
 
 ```text
 project-resource-environment

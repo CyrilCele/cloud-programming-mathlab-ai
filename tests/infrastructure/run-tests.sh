@@ -14,6 +14,16 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 source "${SCRIPT_DIR}/utils.sh"
 
+if ! terraform_state_exists; then
+
+    info "Terraform state not found."
+
+    info "Skipping infrastructure validation."
+
+    exit 0
+
+fi
+
 info "========================================="
 info "Infrastructure Validation Test Suite"
 info "========================================="

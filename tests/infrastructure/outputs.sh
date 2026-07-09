@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/utils.sh"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+source "$ROOT_DIR/tests/infrastructure/utils.sh"
 
 ###############################################################################
 # Required Outputs

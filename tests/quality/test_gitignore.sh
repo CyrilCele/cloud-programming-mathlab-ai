@@ -4,16 +4,37 @@ set -euo pipefail
 
 source "$(dirname "$0")/utils.sh"
 
-section ".gitignore"
+# Fallback in case PROJECT_ROOT isn't defined globally yet
+if [[ -z "${PROJECT_ROOT:-}" ]]; then
+    PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+fi
 
-grep ".terraform/" ../../.gitignore >/dev/null
+section ".gitignore Validation"
 
-pass ".terraform ignored"
+GITIGNORE_FILE="$PROJECT_ROOT/.gitignore"
 
-grep "*.tfstate" ../../.gitignore >/dev/null
+# Verify the file actually exists first
+if [[ ! -f "$GITIGNORE_FILE" ]]; then
+    fail ".gitignore file is missing from repository root!"
+    exit 1
+fi
 
-pass "Terraform state ignored"
+# Safe pattern verification helper
+check_ignore_rule() {
+    local pattern="$1"
+    local description="$2"
+    
+    if grep -q "$pattern" "$GITIGNORE_FILE"; then
+        pass "$description ignored"
+    else
+        fail "Missing rule: $description ($pattern) is not ignored!"
+    fi
+}
 
-grep "*.tfplan" ../../.gitignore >/dev/null
+###############################################################################
+# Run Validation Rules
+###############################################################################
 
-pass "Terraform plans ignored"
+check_ignore_rule ".terraform/" "Terraform internal cache"
+check_ignore_rule "\*.tfstate" "Terraform state files"
+check_ignore_rule "\*.tfplan" "Terraform plans"

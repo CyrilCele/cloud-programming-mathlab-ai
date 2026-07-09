@@ -1,29 +1,33 @@
 name: Security
 
 on:
-
   push:
+    branches:
+      - main
 
   pull_request:
+    branches:
+      - main
 
 jobs:
-
   security:
+    name: Terraform Security Scan
 
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
+      - name: Install tfsec
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 
       - name: Run tfsec
-
-        uses: aquasecurity/tfsec-action@v1
+        run: |
+          tfsec terraform/
 
       - name: Run Checkov
-
         uses: bridgecrewio/checkov-action@master
-
         with:
-
           directory: terraform
