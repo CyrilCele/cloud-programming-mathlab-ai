@@ -46,7 +46,7 @@ module "alb" {
 module "launch_template" {
   source       = "../../modules/launch-template"
   project_name = var.project_name
-  ami_id       = var.ami_id
+  ami_id       = data.aws_ami.amazon_linux.id
 
   instance_type         = var.instance_type
   instance_profile_name = module.iam.instance_profile_name

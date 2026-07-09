@@ -33,8 +33,8 @@ resource "aws_iam_role" "ec2" {
 # IAM Policy
 #########################################
 
-resource "aws_iam_role_policy" "cloudwatch" {
-  name = "${var.project_name}-cloudwatch"
+resource "aws_iam_role_policy" "ec2" {
+  name = "${var.project_name}-ec2-policy"
 
   role = aws_iam_role.ec2.id
 
@@ -42,6 +42,11 @@ resource "aws_iam_role_policy" "cloudwatch" {
     Version = "2012-10-17"
 
     Statement = [
+
+      #########################################
+      # CloudWatch Logs
+      #########################################
+
       {
         Effect = "Allow"
 
@@ -54,10 +59,34 @@ resource "aws_iam_role_policy" "cloudwatch" {
 
         Resource = "*"
       },
+
+      #########################################
+      # CloudWatch Metrics
+      #########################################
+
       {
         Effect   = "Allow"
         Action   = ["cloudwatch:PutMetricData"]
         Resource = "*"
+      },
+
+      #########################################
+      # S3 Bucket Listing
+      #########################################
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = [var.assets_bucket_arn]
+      },
+
+      #########################################
+      # S3 Object Access
+      #########################################
+
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject"]
+        Resource = ["${var.assets_bucket_arn}/*"]
       }
     ]
   })

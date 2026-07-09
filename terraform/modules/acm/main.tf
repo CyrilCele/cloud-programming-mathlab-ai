@@ -25,7 +25,7 @@ resource "aws_route53_record" "validation" {
 
   zone_id = var.hosted_zone_id
   name    = each.value.resource_record_name
-  type    = each.value.resource_record_name
+  type    = each.value.resource_record_type
   ttl     = 300
 
   records = [
