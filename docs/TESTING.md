@@ -2,71 +2,40 @@
 
 ## Overview
 
-This document describes the testing strategy used to validate the MathLab AI Infrastructure.
+This document describes the testing procedures used to verify the AWS Terraform Infrastructure project.
 
-The projects adopts a layered testing approach to verify infrastructure configuration, deployment correctness, operational readiness, and application availability.
-
-Testing is performed before deployment, during deployment, and after deployment to ensure the infrastructure remains reliable, secure, and maintainable.
+Testing ensures that the infrastructure is correctly provisioned, secure, and functioning as expected.
 
 ---
 
-# Testing Objectives
+# Testing Workflow
 
-The objectives of testing are to:
+The project includes multiple levels of testing:
 
-- Validate Terraform configuration.
-- Detect syntax errors.
-- Detect infrastructure configuration errors.
-- Verify AWS resource provisioning.
-- Validate network connectivity.
-- Confirm website availability.
-- Verify security controls.
-- Validate infrastructure scalability.
-- Ensure repeatable deployments.
-
----
-
-# Testing Strategy
-
-The project uses multiple levels of testing.
-
-![Testing Strategy](../images/Testing%20Strategy.png)
+- Terraform formatting
+- Terraform validation
+- Terraform planning
+- Infrastructure deployment
+- DNS validation
+- SSL certificate validation
+- Load Balancer health checks
+- Website accessibility
+- Infrastructure verification
+- Security scanning
 
 ---
 
-# Test Environment
+# Terraform Formatting
 
-Infrastructure is deployed into the AWS Production environment defined within:
-
-```
-terraform/environments/production
-```
-
-Testing is performed using:
-
-- Terraform CLI
-- AWS CLI
-- AWS Management Console
-- Web Browser
-- Amazon CloudWatch
-
----
-
-# Static Validation
-
-Terraform configuration must always be formulated before validation
+Ensure consistent formatting.
 
 ```bash
 terraform fmt -recursive
 ```
 
-Expected result:
-
-- All Terraform files are consistently formatted.
-
 ---
 
-## Terraform Validation
+# Terraform Validation
 
 Validate the configuration.
 
@@ -74,317 +43,121 @@ Validate the configuration.
 terraform validate
 ```
 
-Expected output:
-
-```
-Success! The configuration is valid.
-```
-
-No earnings or errors should prevent deployment.
-
 ---
 
-# Execution Plan Validation
+# Terraform Plan
 
-Generate an execution plan.
+Review planned infrastructure changes.
 
 ```bash
 terraform plan
 ```
-
-Verify:
-
-- Resources are created as expected.
-- No unexpected resource deletions.
-- Resource dependencies are correct.
-
----
-
-# Deployment Testing
-
-Deploy the infrastructure.
-
-```bash
-terraform apply
-```
-
-Expected result
-
-- Deployment completes successfully.
-- No failed resources.
-- Outputs are generated.
 
 ---
 
 # Infrastructure Verification
 
-Verify the successful creation of:
-
-- Amazon VPC
-- Public Subnets
-- Private Subnets
-- Internet Gateway
-- NAT Gateway
-- Security Groups
-- IAM Role
-- IAM Instance Profile
-- Amazon S3 Bucket
-- Launch Template
-- Auto Scaling Group
-- Application Load Balancer
-- CloudFront Distribution
-- Route 53 Hosted Zone
-- Route 53 Records
-- ACM Certificate
-- CloudWatch Resources
-
-Each resource should be present and in a healthy state.
-
----
-
-# Networking Tests
-
-Verify:
-
-- Internet connectivity through the Application Load Balancer.
-- Private subnet routing through the NAT Gateway.
-- DNS resolution using ROute 53.
-- CloudFront connectivity.
-
-Expected result:
-
-All network paths operate correctly.
-
----
-
-# Compute Tests
-
-Verify:
-
-- EC2 instances launch successfully.
-- Auto Scaling maintains desired capacity.
-- Launch Template is applied.
-- Bootstrap script completes successfully.
-
-Expected result:
-
-Instances become healthy within the target group.
-
----
-
-# Application Load Balancer Tests
-
-Verify:
-
-- Listener configuration.
-- Target Group health.
-- Healthy targets.
-- HTTP request routing.
-
-Expected result:
-
-Traffic is successfully forwarded to healthy EC2 instances.
-
----
-
-# CloudFront Tests
-
-Verify:
-
-- Distribution status is **Deployed**.
-- HTTPS is operational.
-- Static assets are served correctly.
-- Caching functions correcttly.
-
-Expected result:
-
-CloudFront successfully serves application content.
-
----
-
-# Route 53 Tests
-
-Verify:
-
-- Hosted Zone exists.
-- Alias records exist.
-- DNS resolves correctly.
-- Domain points to CloudFront.
-
-Expected result:
-
-The configured domain resolves successfully.
-
----
-
-# ACM Tests
-
-Verify:
-
-- Certificate status is **Issued**.
-- DNS validation completed.
-- HTTPS is operational.
-
-Expected result:
-
-Secure TLS connections are established.
-
----
-
-# Amazon S3 Tests
-
-Verify:
-
-- Bucket exists.
-- Versioning enabled.
-- Encryption enabled.
-- Public access blocked.
-- Website package uploaded successfully.
-
-Expected result:
-
-CloudFront retrieves website assets successfully.
-
----
-
-# Security Tests
-
-Verify:
-
-- EC2 instances are inaccessible directly from the Internet.
-- Security Group rules are correct.
-- IAM permissions follow least privilege.
-- HTTPS is enforced.
-- S3 objects are inaccessible without CloudFront.
-
-Expected result:
-
-Security controls function as designed.
-
----
-
-# Auto Scaling Tests
-
-Verify:
-
-- Desired capacity maintained.
-- Healthy instances replaced automatically.
-- Launch Template used for new instances.
-- Scaling policies available.
-
-Expected result:
-
-Auto Scaling maintains application availability.
-
----
-
-# CloudWatch Tests
-
-Verify:
-
-- Metrics available.
-- Health monitoring active.
-- Infrastructure reporting correctly.
-
-Expected result:
-
-Operational visibility is available.
-
----
-
-# Website Validation
-
-Verify:
-
-- Homepage loads.
-- CSS loads correctly.
-- JavaScript executes correctly.
-- Images display correctly.
-- Static assets load successfully.
-- HTTPS functions correctly.
-
-Expected result:
-
-The website operates normally.
-
----
-
-# Regression Testing
-
-After every infrastructure modification:
-
-Run:
+Run the automated verification script.
 
 ```bash
-terraform fmt -recursive
-
-terraform validate
-
-terraform plan
-
-terraform apply
+make verify
 ```
 
-Repeat all operational verification tests.
+The script verifies:
+
+- AWS authentication
+- Terraform outputs
+- S3 bucket access
+- HTTPS availability
+- Load Balancer accessibility
+- Target Group health
+- Website availability
 
 ---
 
-# Test Automation
+# Manual AWS Verification
 
-Infrastructure testing is organised within:
+Verify the Application Load Balancer.
 
+```bash
+aws elbv2 describe-load-balancers
 ```
-tests/
-├── infrastructure/
-└── terraform/
+
+Verify target health.
+
+```bash
+aws elbv2 describe-target-health \
+    --target-group-arn <target-group-arn>
 ```
 
-Automated tests should validate:
+Verify Auto Scaling.
 
-- Terraform formatting
-- Terraform validation
-- Infrastructure deployment
-- Resource health
-- Website accessibility
+```bash
+aws autoscaling describe-auto-scaling-groups
+```
 
----
+Verify S3.
 
-# Acceptance Criteria
+```bash
+aws s3 ls s3://<bucket-name>
+```
 
-The deployment is considered successful when:
+Verify Route 53.
 
-- Terraform validation succeeds.
-- Infrastructure deploys successfully.
-- EC2 instances become healthy.
-- ALB health checks pass.
-- CloudFront is deployed.
-- DNS resolves correctly.
-- HTTPS works correctly.
-- Website is accessible.
-- Security controls are operational.
+```bash
+aws route53 list-hosted-zones
+```
 
 ---
 
-# Test Checklist
+# Website Testing
 
-Before deployment:
+Verify that:
 
-- Terraform formatted
-- Validation successful
-- Plan reviewed
+- The website loads successfully.
+- HTTPS is enabled.
+- Static assets load correctly.
+- The website returns HTTP 200.
 
-After deployment:
+Example:
 
-- Infrastructure healthy
-- Website available
-- HTTPS operational
-- DNS operational
-- CloudFront operational
-- Auto Scaling healthy
-- Monitoring active
+```bash
+curl -I https://<your-domain>
+```
 
 ---
 
-# Conclusion
+# Expected Results
 
-The testing strategy ensures that the MathLab AI Infrastructure is validated throughout its lifecycle, from infrastructure provisioning to operational verification. By combining Terraform validation, deployment testing, functional verification, and security testing, the project delivers a reliable, repeatable, and production-oriented cloud infrastructure.
+A successful deployment should produce:
+
+- Successful Terraform validation
+- Successful Terraform plan
+- Healthy Load Balancer targets
+- Valid ACM certificate
+- Successful HTTPS connection
+- Website accessible from the browser
+
+---
+
+# Quality Assurance
+
+The project includes automated quality checks using:
+
+- Terraform Validate
+- Terraform Plan
+- TFLint
+- Checkov
+- GitHub Actions
+
+Run all quality checks.
+
+```bash
+make quality
+```
+
+---
+
+# Testing Summary
+
+The project combines automated and manual testing to ensure the infrastructure is reliable, secure, and ready for production deployment.

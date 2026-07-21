@@ -1,333 +1,115 @@
-# Security Guide
+# Security
 
 ## Overview
 
-Security is a fundamental design principle of the MathLab AI Infrastructure.
+Security is implemented throughout the infrastructure using AWS security best practices.
 
-The infrastructure has been designed according to AWS security best practices, the principle of least privilege, and Infrastructure as Code (IaC) principles to provide a secure, repeatable, and auditable deployment.
-
-This document describes the security architecture, controls, and operational practices implemented throughout the project.
+The deployment follows the principle of least privilege while protecting both infrastructure and application resources.
 
 ---
 
-# Security Objectives
+# IAM
 
-The infrastructure is designed to achieve the following objectives:
+IAM Roles are used instead of long-term access keys.
 
-- Protect infrastructure resources.
-- Protect application availability.
-- Protect data in transit.
-- Protect data at rest.
-- Reduce the attack surface.
-- Enforce least privilege.
-- Support secure operations.
-- Enable repeatable secure deployments.
+EC2 instances receive permissions through an IAM Instance Profile.
 
----
+The IAM policy grants only the permissions required for:
 
-# Shared Responsibility Model
-
-Security within AWS follows the Shared Responsibility Model.
-
-AWS is responsible for:
-
-- Physical data centres
-- Networking infrastructure
-- Hypervisor security
-- Hardware maintenance
-
-This project is responsible for:
-
-- IAM configuration
-- Network security
-- Security Groups
-- EC2 configuration
-- Operating system updates
-- TLS configuration
-- S3 permissions
-- Terraform configuration
-
----
-
-# Identity and Access Management
-
-Identity management is implemented using AWS Identity and Access Management (AIM).
-
-The infrastructure includes:
-
-- IAM Role
-- IAM Policy
-- IAM Instance Profile
-
-No long-term AWS credentials are stored on EC2 instances.
-
-Instead, temporary credentials are automatically provided through the EC2 Instance Profile.
-
----
-
-# Least Privilege
-
-The project follows the Principle of Least Privilege.
-
-Permissions are granted only where required.
-
-Examples include:
-
-- EC2 instances only access the S3 assets bucket.
-- CloudFront only acccesses approved S3 objects.
-- Public Internet users never access S3 directly.
+- Amazon S3
+- CloudWatch Logs
+- CloudWatch Metrics
 
 ---
 
 # Network Security
 
-The network is isolated using Amazon VPC.
+Security Groups restrict inbound and outbound traffic.
 
-Architecture:
-
-![Network Isolation](../images/Network%20Isolation.png)
-
-Only the Application Load Balancer is publicly accessible.
-
-EC2 instances reside within private subnets.
-
----
-
-# Security Groups
-
-## Application Load Balancer
-
-Inbound
+Application Load Balancer
 
 - HTTP (80)
 - HTTPS (443)
 
-Outbound
-
-- All outbound traffic
-
----
-
-## Ec2
-
-Inbound
+EC2 Instances
 
 - HTTP only from the ALB Security Group
 
-Outbound
-
-- All outbound traffic
-
-Direct Internet access to EC2 instances is prohibited.
+No direct public access is permitted to EC2 instances.
 
 ---
 
-# Data Encryption
+# Encryption
 
-## Encryption at Rest
+Encryption is enabled for:
 
-- Amazon S3
-- Amazon EBS
-
-Amazon S3 uses:
-
-- AES-256 Server-Side Encryption
-
-EBS volumes are encrypted by default.
+- Amazon EBS volumes
+- HTTPS traffic
+- ACM SSL/TLS certificate
 
 ---
 
-## Encryption in Transit
+# S3 Security
 
-HTTPS is used between users and CloudFront.
-
-CloudFront uses TLS 1.2 or later.
-
-AWS Certificate Manager provides managed TLS certificates.
-
----
-
-# Amazon S3 Security
-
-The assets bucket implements:
+The S3 bucket includes:
 
 - Block Public Access
+- Server-side encryption
 - Versioning
-- Server-Side Encryption
-- Lifecycle Configuration
-- CloudFront Origin Access Control
+- IAM-based access
 
-Objects cannot be aceessed directly from the public Internet.
+Website files are accessed only by authorised AWS services.
 
 ---
 
-# CloudFront Security
+# Instance Security
 
-CloudFront improves both performance and security.
+EC2 instances use:
 
-Security controls include:
-
-- HTTPS
-- Origin Access Control
-- TLS 1.2+
-- Cached content isolation
-
-CloudFront is the only approved entry point for static assets.
-
----
-
-# Route 53 Security
-
-Amazon Route 53 provides:
-
-- Managed DNS
-- Alias records
-- AWS-native integration
-
-DNS records are managed through Terraform to prevent configuration drift.
-
----
-
-# AWS Certificate Manager
-
-AWS Certificate Manager provides:
-
-- Automatic certificate management
-- DNS validation
-- Secure TLS termination
-
-Certificates are integrated directly with CloudFront.
-
----
-
-# Launch Template Security
-
-The Launch Template implements:
-
+- Amazon Linux 2023
 - IMDSv2
-- Encrypted EBS volumes
-- IAM Instance Profile
-- Security Groups
-- Cloud-init bootstrap
-- Monitoring enabled
-
-IMDSv1 is disabled.
+- Private subnets
+- IAM Instance Profiles
 
 ---
 
-# Operating System Security
+# HTTPS
 
-During bootstrap:
+HTTPS is implemented using:
 
-- Operating system packages are updated.
-- Security updates are installed.
-- Required packages are installed.
+- AWS Certificate Manager
+- Amazon CloudFront
+- Route 53
 
-Nginx is installed from the Ubuntu repositories.
-
----
-
-# Auto Scaling Security
-
-Auto Scaling provides:
-
-- Automatic replacement of unhealthy instances
-- Consistent instance configuration
-- Immutable infrastructure deployment
-
-Every new instance is created from the same Launch Template.
+All user traffic is encrypted.
 
 ---
 
-# Infrastructure as Code Security
+# Monitoring
 
-Terraform provides:
+Amazon CloudWatch monitors:
 
-- Version control
-- Change tracking
-- Peer review
-- Repeatable deployments
+- CPU utilisation
+- Instance health
+- Load Balancer health
+- Application metrics
 
-Infrastructure changes should never be performed manually unless required duuring emergency recovery.
-
----
-
-# Logging and Monitoring
-
-Operational monitoring is provided through Amazon CloudWatch.
-
-Metrics include:
-
-- CPU Utilization
-- Network Throughput
-- Auto Scaling Activity
-- Instance Health
-
-Logs should be reviewed regularly.
+CloudWatch Alarms generate notifications when thresholds are exceeded.
 
 ---
 
-# Threat Mitigation
+# Terraform Security
 
-![Threat Mitigation](../images/Threat%20Mitigation.png)
+Security validation includes:
 
----
+- Terraform Validate
+- TFLint
+- Checkov
 
-# Security Best Practices
-
-The project follows these practices:
-
-- Principle of Least Privilege
-- Infrastructure as Code
-- Security by Default
-- Multi-AZ Deployment
-- Immutable Infrastructure
-- Encryption Everywhere
-- Version Control
-- Automated Deployment
+These tools identify configuration errors and security risks before deployment.
 
 ---
 
-# Security Review Checklist
+# Security Summary
 
-Before deployment:
-
-- IAM permissions reviewed
-- Security Groups validated
-- S3 encryption enabled
-- Block Public Access enabled
-- CloudFront configured
-- TLS certificate issued
-- Route 53 records validated
-
-After deployment:
-
-- HTTPS working
-- EC2 instances private
-- ALB healthy
-- CloudFront serving requests
-- Terraform state secured
-- Website accessible
-
----
-
-# Future Security Improvements
-
-Potential enhancements include:
-
-- AWS WAF
-- AWS SHield Advanced
-- AWS GuardDuty
-- AWS Config
-- AWS Security Hub
-- Amazon Inspector
-- AWS Systems Manager Session Manager
-- AWS Secrets Manager
-
-These services were not included because they fail outside the scope of this project.
-
----
-
-# Conclusion
-
-The MathLab AI Infrastructure incorporates security throughout every layer of the architecture, from networking and identity management to encryption and Infrastructure as Code. By combining AWS-managed security services with disciplined operational practices, the environment provides a strong security posture while remaining maintainable, scalable, and suitable for production-oriented deployments.
+The project applies multiple layers of defence, including IAM, network isolation, encryption, monitoring, and automated validation to provide a secure and production-ready AWS environment.

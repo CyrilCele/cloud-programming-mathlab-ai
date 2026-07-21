@@ -2,98 +2,56 @@
 
 ## Overview
 
-This document describes the complete deployment process for the MathLab AI Infrastructure using Terraform.
+This document describes the deployment process for the AWS Terraform Infrastructure project.
 
-The deployment provisions all AWS resources required for a production-ready environment, including networking, security, compute, storage, content delivery, monitoring, DNS, and SSL/TLS.
-
-This guide assumes that the infrastructure is deployed from a Linux, macOS, or Windows workstation with the required software installed.
+The infrastructure is provisioned using Terraform Infrastructure as Code (IaC), ensuring repeatable, automated, and consistent deployments.
 
 ---
 
-# Deployment Architecture
+# Deployment Workflow
 
-The deployment provisions the following AWS services:
+The deployment process consists of the following stages:
 
-- Amazon VPC
-- Public Subnets
-- Private Subnets
-- Internet Gateway
-- NAT Gateway
-- Security Groups
-- IAM
-- Amazon S3
-- Launch Template
-- Auto Scaling Group
-- Application Load Balancer
-- Amazon CloudFront
-- AWS Certificate Manager
-- Amazon Route 53
-- Amazon CloudWatch
+1. Verify prerequisites
+2. Configure AWS credentials
+3. Initialize Terraform
+4. Validate Terraform configuration
+5. Generate an execution plan
+6. Provision AWS infrastructure
+7. Deploy the website
+8. Verify infrastructure health
+9. Access the website
 
 ---
 
 # Prerequisites
 
-Before deploying, ensure the following requirements are met.
+Ensure the following software is installed:
 
-## AWS Account
+- Terraform 1.13 or later
+- AWS CLI v2
+- Git
+- Bash (Linux/macOS or Git Bash on Windows)
 
-An active AWS account with permissions to create infrastructure resources.
-
----
-
-## AWS CLI
-
-Install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-
-Verify installation.
-
-```bash
-aws --version
-```
-
----
-
-## Terraform
-
-Install [Terraform](https://developer.hashicorp.com/terraform/install).
-
-Verify installation.
+Verify the installations:
 
 ```bash
 terraform version
-```
-
----
-
-## Git
-
-Clone the project repository.
-
-```bash
-git clone https://github.com/CyrilCele/cloud-programming-mathlab-ai
-
-cd mathlab-ai
+aws --version
+git --version
 ```
 
 ---
 
 # Configure AWS Credentials
 
-Authenticate using AWS CLI.
+Authenticate with AWS using the AWS CLI.
 
 ```bash
 aws configure
 ```
 
-Provide:
-
-- AWS Access Key ID
-- AWS Secret Access Key
-- Default Region
-- Output Format
-
-Verify access.
+Verify authentication:
 
 ```bash
 aws sts get-caller-identity
@@ -101,7 +59,7 @@ aws sts get-caller-identity
 
 ---
 
-# Project Structure
+# Initialize Terraform
 
 Navigate to the production environment.
 
@@ -109,368 +67,157 @@ Navigate to the production environment.
 cd terraform/environments/production
 ```
 
----
-
-# Configure Variables
-
-Review and update the Terraform variables.
-
-```text
-terraform.tfvars
-```
-
-Typical values include:
-
-- AWS Region
-- Enviromnment
-- Project Name
-- VPC CIDR
-- Subnet CIDRs
-- EC2 Instance Type
-- S3 Bucket Name
-- Domain Name
-
----
-
-# Initialize Terraform
-
-Download providers and initialize the working directory.
+Initialize Terraform.
 
 ```bash
 terraform init
 ```
 
-Expected result:
-
-```
-Terraform has been successfully initialized.
-```
-
 ---
 
-# Format Configuration
+# Validate the Configuration
 
-Ensure consistent formatting.
+Format the Terraform configuration.
 
 ```bash
 terraform fmt -recursive
 ```
 
----
-
-# Validate Configuration
-
-Validate the Terraform configuration.
+Validate the configuration.
 
 ```bash
 terraform validate
 ```
 
-Expected output:
-
-```
-Success! The configuration is valid.
-```
-
----
-
-# Generate Execution Plan
-
-Preview the infrastructure changes.
+Generate a deployment plan.
 
 ```bash
 terraform plan
 ```
 
-Carefully review:
-
-- Resources to create
-- Resources to modify
-- Resources to destroy
-
-No unexpected changes should appear.
-
 ---
 
-# Deploy Infrastructure
+# Deploy the Infrastructure
 
-Provision the infrastructure.
+Deploy the AWS infrastructure.
 
 ```bash
 terraform apply
 ```
 
-Approve the execution.
+Alternatively, use the automated deployment script.
 
+```bash
+make deploy
 ```
-yes
-```
-
-Terraform will provision all AWS resources.
-
-Deployment time may range from several minutes to over twenty minutes depending on AWS service provisioning times.
 
 ---
 
-# Verify Deployment
+# Infrastructure Components
 
-After deployment, confirm that the following resources exist:
+The deployment provisions:
 
-## Networking
-
-- VPC
+- Amazon VPC
 - Public Subnets
 - Private Subnets
+- Internet Gateway
 - NAT Gateway
 - Route Tables
-
----
-
-## Compute
-
+- Security Groups
+- IAM Roles
+- IAM Instance Profile
 - Launch Template
 - Auto Scaling Group
-- EC2 Instances
-
----
-
-## Storage
-
-- Amazon S3 Bucket
-
----
-
-## Load Balancing
-
 - Application Load Balancer
+- Amazon EC2 (Amazon Linux 2023)
+- Amazon S3
+- Amazon CloudFront
+- Amazon Route 53
+- AWS Certificate Manager (ACM)
+- Amazon CloudWatch
 
 ---
 
-## CDN
+# Website Deployment
 
-- CloudFront Distribution
+The website deployment process is fully automated.
 
----
+During instance startup:
 
-## DNS
-
-- Route 53 Hosted Zone
-- Route 53 Records
-
----
-
-## SSL
-
-- ACM Certificate
+1. The bootstrap script executes.
+2. Nginx is installed.
+3. The website archive is downloaded from Amazon S3.
+4. The archive is extracted to `/usr/share/nginx/html`.
+5. File permissions are configured.
+6. Nginx starts automatically.
 
 ---
 
-# Upload Website
+# Verify the Deployment
 
-Package the website.
+Run the automated verification script.
 
 ```bash
-zip-r website.zip website/
+make verify
 ```
 
-Upload to Amazon S3.
+The verification process checks:
 
-```bash
-aws s3 cp website.zip s3://<bucket-name>/website.zip
-```
-
----
-
-# Bootstrap Verification
-
-The EC2 bootstrap script automatically:
-
-- Updates the operating system
-- Installs Nginx
-- Installs AWS CLI
-- Downloads the website package
-- Extracts website files
-- Configures permissions
-- Starts Nginx
-
-Confirm successful execution through:
-
-- EC2 System Logs
-- CloudWatch Logs (if enabled)
-- SSH troubleshooting (if applicable)
-
----
-
-# Validate Application
-
-Open the application using:
-
-- CloudFront URL
-- Custom domain (if configured)
-
-Confirm:
-
-- Website loads successfully
-- HTTPS is enabled
-- Static assets load correctly
-- Images display correctly
-- CSS loads correctly
-- JavaScript functions correctly
-
----
-
-# Terraform Outputs
-
-Display deployment outputs/
-
-```bash
-terraform output
-```
-
-Useful outputs include:
-
-- ALB DNS Name
-- CloudFront Domain Name
-- Route 53 Hosted Zone ID
-- ACM certificate ARN
-- s3 Bucket Name
-
----
-
-# Updating Infrastructure
-
-After modifying Terraform:
-
-```bash
-terraform fmt -recursive
-
-terraform validate
-
-terraform plan
-
-terraform apply
-```
-
-Always review the execution plan before applying changes.
-
----
-
-# Updating Website Content
-
-Create a new archive.
-
-```bash
-zip -r website.zip website/
-```
-
-Upload the updated archive.
-
-```bash
-aws s3 cp website.zip s3://<bucket-name>/website.zip
-```
-
-Recycle EC2 instances if required to trigger the bootstrap process, or implement an automated deployment pipeline for production environments.
-
----
-
-# Destroy Infrastructure
-
-To remove all AWS resources:
-
-```bash
-terraform destroy
-```
-
-Confirm the operation.
-
-```
-yes
-```
-
-Verify in the AWS Management Console that all billable resources have been removed.
-
----
-
-# Common Deployment Issues
-
-## Terraform Validation Errors
-
-Run:
-
-```bash
-terraform validate
-```
-
-Review the reported file and line number.
-
----
-
-## AWS Authentication Failure
-
-Verify:
-
-```bash
-aws sts get-caller-identity
-```
-
----
-
-## ACM Certificate Pending Validation
-
-Ensure:
-
-- Route 53 validation records exist.
-- DNS propagation has completed.
-
----
-
-## CloudFront Not Updating
-
-Invalidate the cache.
-
-```bash
-aws cloudfront create-invalidation \
---distribution-id <distribution-id> \
---paths "/*"
-```
-
----
-
-## EC2 Website Not Loading
-
-Check:
-
-- Auto Scaling Group
+- AWS authentication
+- Terraform outputs
+- S3 bucket accessibility
+- Application Load Balancer
 - Target Group health
-- Security Groups
-- Nginx status
-- Bootstrap logs
+- HTTPS connectivity
+- Website availability
 
 ---
 
-# Deployment Checklist
+# Access the Website
 
-Before deployment:
+Open the deployed website:
 
-- AWS credentials configured
-- Terraform installed
-- AWS CLI installed
-- Variables reviewed
-- Domain configured
-- Website packaged
-
-After deployment:
-
-- Infrastructure healthy
-- EC2 instances running
-- ALB healthy
-- CloudFront operational
-- DNS resolving correctly
-- HTTPS working
-- Website accessible
+```text
+https://<your-domain>
+```
 
 ---
 
-# Conclusion
+# Update the Website
 
-Following this deployment guide results in a fully provisioned AWS infrastructure built using Terraform and aligned with Infrastructure as Code best practices. The documented workflow ensures deployments are repeatable, auditable, and suitable for production-oriented engineering practices.
+Create a new website archive.
+
+Upload it to Amazon S3.
+
+```bash
+aws s3 cp website.zip s3://<bucket-name>/website.zip
+```
+
+Refresh the Auto Scaling Group.
+
+```bash
+aws autoscaling start-instance-refresh \
+    --auto-scaling-group-name <asg-name>
+```
+
+The new EC2 instances automatically download the updated website during boot.
+
+---
+
+# Destroy the Infrastructure
+
+Destroy all AWS resources.
+
+```bash
+make destroy
+```
+
+If the S3 bucket contains objects or versioned files, empty the bucket before destroying the infrastructure.
+
+---
+
+# Deployment Summary
+
+The deployment process is fully automated and reproducible.
+
+A new environment can be created using only a few commands, making the project suitable for collaboration, testing, and academic assessment.
