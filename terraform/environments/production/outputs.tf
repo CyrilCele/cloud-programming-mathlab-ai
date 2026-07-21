@@ -90,3 +90,23 @@ output "route53_hosted_zone_id" {
 
   value = module.route53_zone.hosted_zone_id
 }
+
+#########################################
+# ALB
+#########################################
+
+output "alb_dns_name" {
+  description = "Application Load Balancer DNS name."
+
+  value = module.alb.dns_name
+}
+
+#########################################
+# Website
+#########################################
+
+output "website_url" {
+  description = "Website URL."
+
+  value = "https://${var.domain_name}"
+}
