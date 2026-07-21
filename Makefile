@@ -79,3 +79,22 @@ clean:
 	find . -type d -name ".terraform" -exec rm -rf {} +
 	find . -name ".terraform.lock.hcl" -delete
 	find . -name "*.tfplan" -delete
+
+################################################################################
+# Scripts
+################################################################################
+
+prerequisites:
+	./scripts/prerequisites.sh
+
+deploy:
+	./scripts/deploy.sh
+
+verify:
+	./scripts/verify.sh
+
+destroy:
+	./scripts/destroy.sh
+
+cleanup:
+	./scripts/cleanup.sh
