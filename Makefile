@@ -98,3 +98,17 @@ destroy:
 
 cleanup:
 	./scripts/cleanup.sh
+
+################################################################################
+# Quality
+################################################################################
+
+lint:
+	tflint --init
+	tflint --recursive
+
+security:
+	checkov -d .
+
+quality:
+	./scripts/quality.sh

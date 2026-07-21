@@ -1,44 +1,24 @@
-name: Security
+name: Terraform Security
 
 on:
   push:
-    branches:
-      - main
 
   pull_request:
-    branches:
-      - main
+
+permissions:
+  contents: read
 
 jobs:
-  security:
-    name: Terraform Security Scan
-
+  checkov:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: terraform
-          additional_args: >
-            --exclude
-            aws-elb-http-not-used,
-            aws-elb-drop-invalid-headers,
-            aws-elb-alb-not-public,
-            aws-cloudfront-enable-waf,
-            aws-sns-enable-topic-encryption,
-            aws-iam-no-policy-wildcards,
-            aws-ec2-no-public-ip-subnet,
-            aws-s3-encryption-customer-key,
-            aws-cloudfront-enable-logging,
-            aws-ec2-require-vpc-flow-logs-for-all-vpcs,
-            aws-s3-enable-bucket-logging,
-            aws-cloudwatch-log-group-customer-key
+      - uses: actions/checkout@v4
 
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12
+
+        uses: bridgecrewio/checkov-action@master
+
         with:
-          directory: terraform
+          directory: .
+          framework: terraform

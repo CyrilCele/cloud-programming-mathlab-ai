@@ -6,6 +6,7 @@
 *.tfstate.*
 *.tfplan
 *.tfplan.*
+*.backup
 crash.log
 crash.*.log
 override.tf
@@ -60,3 +61,9 @@ temp/
 # ===========================
 .env
 .env.*
+
+# TFLint
+.tflint.d
+
+# Checkov
+.checkov.report*

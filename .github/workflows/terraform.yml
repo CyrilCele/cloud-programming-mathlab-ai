@@ -1,11 +1,14 @@
-name: Terraform
+name: Terraform CI
 
 on:
-  workflow_dispatch:
+  pull_request:
 
   push:
-    paths:
-      - "terraform/**"
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   terraform:
@@ -16,17 +19,23 @@ jobs:
         working-directory: terraform/environments/production
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: hashicorp/setup-terraform@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
         with:
           terraform_version: 1.13.0
 
-      - run: terraform init
+      - name: Terraform Format
+        run: terraform fmt -recursive -check
 
-      - run: terraform fmt -recursive -check
+      - name: Terraform Init
+        run: terraform init
 
-      - run: terraform validate
+      - name: Terraform Validate
+        run: terraform validate
 
-      - run: terraform plan -input=false
+      - name: Terraform Plan
+        run: terraform plan -lock=false
