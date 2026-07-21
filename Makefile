@@ -1,34 +1,81 @@
-.PHONY: init fmt validate plan apply destroy test lint security clean deploy
+################################################################################
+# Project Configuration
+################################################################################
 
-init:
-	./scripts/init.sh
+SHELL := /bin/bash
+
+ENV ?= production
+TF_DIR := terraform/environments/$(ENV)
+
+TERRAFORM := terraform
+AWS := aws
+
+################################################################################
+# Help
+################################################################################
+
+.DEFAULT_GOAL := help
+
+help:
+	@echo ""
+	@echo "AWS Terraform Infrastructure"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make init"
+	@echo "  make fmt"
+	@echo "  make validate"
+	@echo "  make plan"
+	@echo "  make apply"
+	@echo "  make verify"
+	@echo "  make destroy"
+	@echo "  make clean"
+	@echo ""
+
+################################################################################
+# Dependency Checks
+################################################################################
+
+check:
+	@command -v $(TERRAFORM) >/dev/null || (echo "Terraform not installed." && exit 1)
+	@command -v $(AWS) >/dev/null || (echo "AWS CLI not installed." && exit 1)
+
+	@terraform version
+	@aws --version
+
+################################################################################
+# Terraform
+################################################################################
+
+init: check
+	cd $(TF_DIR) && terraform init
 
 fmt:
-	./scripts/fmt.sh
+	cd terraform && terraform fmt -recursive
 
-validate:
-	./scripts/validate.sh
+validate: init
+	cd $(TF_DIR) && terraform validate
 
-plan:
-	./scripts/plan.sh
+plan: validate
+	cd $(TF_DIR) && terraform plan
 
-apply:
-	./scripts/apply.sh
+apply: validate
+	cd $(TF_DIR) && terraform apply
 
-destroy:
-	./scripts/destroy.sh
+destroy: validate
+	cd $(TF_DIR) && terraform destroy
 
-test:
-	./scripts/test.sh
+################################################################################
+# Verification
+################################################################################
 
-lint:
-	./scripts/lint.sh
+verify:
+	./scripts/verify.sh
 
-security:
-	./scripts/security.sh
-
-deploy:
-	./scripts/deploy.sh
+################################################################################
+# Cleanup
+################################################################################
 
 clean:
-	./scripts/clean.sh
+	find . -type d -name ".terraform" -exec rm -rf {} +
+	find . -name ".terraform.lock.hcl" -delete
+	find . -name "*.tfplan" -delete
