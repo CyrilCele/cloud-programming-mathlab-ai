@@ -13,12 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Run Checkov
-
-        uses: bridgecrewio/checkov-action@master
-
+        uses: bridgecrewio/checkov-action@v12.3114.0
         with:
-          directory: .
+          directory: terraform
           framework: terraform
+          compact: true
+          download_external_modules: true

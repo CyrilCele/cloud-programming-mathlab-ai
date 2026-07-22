@@ -19,11 +19,18 @@ module "networking" {
   ]
 }
 
+data "aws_ec2_managed_prefix_list" "cloudfront_origin_facing" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
+
 module "security_groups" {
   source       = "../../modules/security-group"
   project_name = var.project_name
   vpc_id       = module.networking.vpc_id
-  tags         = local.common_tags
+
+  cloudfront_origin_prefix_list_id = data.aws_ec2_managed_prefix_list.cloudfront_origin_facing.id
+
+  tags = local.common_tags
 }
 
 module "iam" {
@@ -40,7 +47,15 @@ module "s3" {
   source      = "../../modules/s3"
   bucket_name = var.assets_bucket_name
   aws_region  = var.aws_region
-  tags        = local.common_tags
+
+  access_logs_bucket_id = aws_s3_bucket.access_logs.id
+  access_logs_prefix    = "s3-assets/"
+
+  tags = local.common_tags
+
+  depends_on = [
+    aws_s3_bucket_policy.access_logs
+  ]
 }
 
 module "alb" {

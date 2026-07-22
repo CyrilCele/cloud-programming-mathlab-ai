@@ -10,6 +10,8 @@ data "aws_partition" "current" {}
 # Central Access Logs Bucket
 #########################################
 
+#checkov:skip=CKV_AWS_18:Enabling server access logging on the central logging destination would create recursive log delivery.
+#checkov:skip=CKV2_AWS_62:The central infrastructure logging bucket is a destination, not an application event source; notifications require a defined security or operations consumer.
 resource "aws_s3_bucket" "access_logs" {
   bucket = "${var.resource_prefix}-access-logs-${data.aws_caller_identity.current.account_id}"
 
@@ -24,6 +26,7 @@ resource "aws_s3_bucket" "access_logs" {
   )
 }
 
+#checkov:skip=CKV2_AWS_65:AWS log-delivery services and CloudFront standard logging require ACL-compatible ownership semantics on the central logging bucket.
 resource "aws_s3_bucket_ownership_controls" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 
@@ -96,7 +99,7 @@ resource "aws_s3_bucket_policy" "access_logs" {
 
         Action = "s3:PutObject"
 
-        Resource = "${aws_s3_bucket.access_logs.arn}/alb/AWSLogs/${data.aws_caller_identity.current.account_id}/"
+        Resource = "${aws_s3_bucket.access_logs.arn}/alb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
 
         Condition = {
           ArnLike = {
@@ -137,10 +140,10 @@ resource "aws_s3_bucket_policy" "access_logs" {
 
         Resource = "${aws_s3_bucket.access_logs.arn}/vpc-flow-logs/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
 
-        COndition = {
+        Condition = {
           StringEquals = {
             "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-            "s3:x-amz-ac1"      = "bucket-owner-full-control"
+            "s3:x-amz-acl"      = "bucket-owner-full-control"
           }
 
           ArnLike = {

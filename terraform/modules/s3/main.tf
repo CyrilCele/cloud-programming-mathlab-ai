@@ -100,6 +100,7 @@ resource "aws_kms_alias" "assets" {
 # S3 Bucket
 #########################################
 
+#checkov:skip=CKV2_AWS_62:The assets bucket has no approved event-driven consumer; creating an unused notification destination would add cost and dead infrastructure.
 resource "aws_s3_bucket" "assets" {
   bucket = var.bucket_name
 
@@ -111,6 +112,17 @@ resource "aws_s3_bucket" "assets" {
       Name = var.bucket_name
     }
   )
+}
+
+#########################################
+# Server Access Logging
+#########################################
+
+resource "aws_s3_bucket_logging" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  target_bucket = var.access_logs_bucket_id
+  target_prefix = var.access_logs_prefix
 }
 
 #########################################

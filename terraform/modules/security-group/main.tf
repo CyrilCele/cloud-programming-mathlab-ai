@@ -68,25 +68,14 @@ resource "aws_security_group" "ec2" {
   )
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ec2_http" {
-  security_group_id = aws_security_group.ec2.id
+resource "aws_vpc_security_group_ingress_rule" "alb_http_from_cloudfront" {
+  security_group_id = aws_security_group.alb.id
 
-  description = "Allow HTTP from the Application Load Balancer."
+  description = "Allow HTTP only from AWS CloudFront origin-facing infrastructure."
 
   ip_protocol = "tcp"
+  from_port   = 80
+  to_port     = 80
 
-  from_port = 80
-  to_port   = 80
-
-  referenced_security_group_id = aws_security_group.alb.id
-}
-
-resource "aws_vpc_security_group_egress_rule" "ec2_outbound" {
-  security_group_id = aws_security_group.ec2.id
-
-  description = "Allow all outbound traffic."
-
-  ip_protocol = "-1"
-
-  cidr_ipv4 = "0.0.0.0/0"
+  prefix_list_id = var.cloudfront_origin_prefix_list_id
 }

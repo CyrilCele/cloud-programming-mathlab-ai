@@ -22,6 +22,9 @@ resource "aws_cloudfront_origin_access_control" "assets" {
 # CloudFront Distribution
 #########################################
 
+#checkov:skip=CKV_AWS_310:The application currently has one authoritative dynamic origin; failover requires an independently deployable secondary application origin and replicated state.
+#checkov:skip=CKV_AWS_374:The application has no approved geographic allowlist or denylist; imposing one would block legitimate users without a business or regulatory requirement.
+#checkov:skip=CKV2_AWS_47:The associated WAF includes AWSManagedRulesKnownBadInputsRuleSet, which provides managed protection for known malicious payloads including Log4j-style exploit input; this graph check does not resolve the module association correctly.
 resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   is_ipv6_enabled     = true
