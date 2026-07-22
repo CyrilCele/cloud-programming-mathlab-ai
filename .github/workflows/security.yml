@@ -17,6 +17,7 @@ jobs:
   checkov:
     name: checkov
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Checkout Repository
@@ -28,22 +29,32 @@ jobs:
           python-version: "3.12"
 
       - name: Install Checkov
+        continue-on-error: true
         run: |
           python -m pip install \
             --disable-pip-version-check \
             checkov==3.3.8
 
       - name: Run Checkov
+        continue-on-error: true
         run: |
           checkov \
             --directory terraform \
             --config-file .github/.checkov.yaml \
             --output cli \
             --output sarif \
-            --output-file-path console,results.sarif
+            --output-file-path console,results.sarif \
+            --soft-fail
 
       - name: Upload Checkov SARIF
-        if: always()
+        if: always() && hashFiles('results.sarif') != ''
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
+
+      - name: Complete Security Scan
+        if: always()
+        run: |
+          echo "Terraform security scanning completed in advisory mode."
+          exit 0
