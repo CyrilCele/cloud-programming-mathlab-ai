@@ -101,8 +101,12 @@ echo ""
 echo "Checking HTTPS..."
 
 curl \
+    --fail \
     --silent \
+    --show-error \
     --head \
+    --connect-timeout 5 \
+    --max-time 10 \
     "${WEBSITE_URL}" >/dev/null
 
 echo "✓ HTTPS working"
@@ -114,12 +118,28 @@ echo "✓ HTTPS working"
 echo ""
 echo "Checking ALB..."
 
-curl \
-    --silent \
-    --head \
-    "http://${ALB_DNS}" >/dev/null
+ALB_ARN=$(aws elbv2 describe-load-balancers \
+    --region "$AWS_REGION" \
+    --query "LoadBalancers[?DNSName=='${ALB_DNS}'].LoadBalancerArn | [0]" \
+    --output text)
 
-echo "✓ ALB reachable"
+if [[ -z "$ALB_ARN" || "$ALB_ARN" == "None" ]]; then
+    echo "ALB not found for DNS name: ${ALB_DNS}"
+    exit 1
+fi
+
+ALB_STATE=$(aws elbv2 describe-load-balancers \
+    --region "$AWS_REGION" \
+    --load-balancer-arns "$ALB_ARN" \
+    --query "LoadBalancers[0].State.Code" \
+    --output text)
+
+if [[ "$ALB_STATE" != "active" ]]; then
+    echo "ALB is not active. Current state: ${ALB_STATE}"
+    exit 1
+fi
+
+echo "✓ ALB active"
 
 ################################################################################
 # Verify Target Health
@@ -128,11 +148,19 @@ echo "✓ ALB reachable"
 echo ""
 echo "Checking Target Health..."
 
+ALB_ARN=$(aws elbv2 describe-load-balancers \
+    --names mathlab-ai-alb \
+    --query 'LoadBalancers[0].LoadBalancerArn' \
+    --output text)
+
 TG_ARN=$(aws elbv2 describe-target-groups \
-    --query "TargetGroups[0].TargetGroupArn" \
+    --region "$AWS_REGION" \
+    --load-balancer-arn "$ALB_ARN" \
+    --query 'TargetGroups[0].TargetGroupArn' \
     --output text)
 
 UNHEALTHY=$(aws elbv2 describe-target-health \
+    --region "$AWS_REGION" \
     --target-group-arn "$TG_ARN" \
     --query "TargetHealthDescriptions[?TargetHealth.State!='healthy']" \
     --output json)

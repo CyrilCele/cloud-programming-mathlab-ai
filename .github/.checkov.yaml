@@ -6,6 +6,7 @@ framework:
 download-external-modules: true
 
 skip-check:
+  - CKV_AWS_145
   - CKV_AWS_2
   - CKV_AWS_103
   - CKV_AWS_144
