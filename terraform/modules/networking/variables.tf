@@ -42,3 +42,13 @@ variable "tags" {
   description = "Common resource tags."
   type        = map(string)
 }
+
+variable "flow_logs_bucket_arn" {
+  description = "ARN of the S3 bucket receiving VPC Flow Logs."
+  type        = string
+
+  validation {
+    condition     = startswith(var.flow_logs_bucket_arn, "arn:")
+    error_message = "flow_logs_bucket_arn must be a valid AWS ARN."
+  }
+}

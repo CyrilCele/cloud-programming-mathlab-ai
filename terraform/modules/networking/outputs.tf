@@ -45,3 +45,9 @@ output "nat_gateway_id" {
 
   value = aws_nat_gateway.this.id
 }
+
+output "vpc_flow_log_id" {
+  description = "ID of the VPC Flow Log."
+
+  value = aws_flow_log.vpc.id
+}

@@ -36,3 +36,14 @@ variable "domain_name" {
 
   type = string
 }
+
+variable "access_logs_bucket_domain_name" {
+  description = "Domain name of the S3 bucket receiving CloudFront access logs."
+  type        = string
+}
+
+variable "access_logs_prefix" {
+  description = "S3 object prefix used for CloudFront access logs."
+  type        = string
+  default     = "cloudfront/"
+}

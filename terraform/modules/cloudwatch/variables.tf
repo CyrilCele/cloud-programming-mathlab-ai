@@ -6,8 +6,7 @@ variable "project_name" {
 variable "log_retention_days" {
   description = "Number of days to retain CloudWatch Logs."
   type        = number
-
-  default = 30
+  default     = 365
 }
 
 variable "tags" {
@@ -35,4 +34,9 @@ variable "alert_email" {
   type        = string
 
   default = ""
+}
+
+variable "aws_region" {
+  description = "AWS region containing the CloudWatch and SNS resources."
+  type        = string
 }

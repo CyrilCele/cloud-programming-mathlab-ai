@@ -15,3 +15,9 @@ output "sns_topic_arn" {
 
   value = aws_sns_topic.alerts.arn
 }
+
+output "kms_key_arn" {
+  description = "ARN of the KMS key protecting CloudWatch Logs and SNS."
+
+  value = aws_kms_key.observability.arn
+}

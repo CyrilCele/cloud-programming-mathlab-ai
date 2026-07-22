@@ -96,9 +96,8 @@ output "route53_hosted_zone_id" {
 #########################################
 
 output "alb_dns_name" {
-  description = "Application Load Balancer DNS name."
-
-  value = module.alb.dns_name
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
 }
 
 #########################################
@@ -109,4 +108,32 @@ output "website_url" {
   description = "Website URL."
 
   value = "https://${var.domain_name}"
+}
+
+#########################################
+# Observability and Security
+#########################################
+
+output "access_logs_bucket_name" {
+  description = "Name of the central ALB, CloudFront, and VPC Flow Logs bucket."
+
+  value = aws_s3_bucket.access_logs.bucket
+}
+
+output "cloudfront_web_acl_arn" {
+  description = "ARN of the CloudFront AWS WAF Web ACL."
+
+  value = module.cloudfront.web_acl_arn
+}
+
+output "assets_kms_key_arn" {
+  description = "ARN of the KMS key protecting the assets bucket."
+
+  value = module.s3.kms_key_arn
+}
+
+output "observability_kms_key_arn" {
+  description = "ARN of the KMS key protecting CloudWatch Logs and SNS."
+
+  value = module.cloudwatch.kms_key_arn
 }

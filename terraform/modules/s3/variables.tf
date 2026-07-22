@@ -7,3 +7,8 @@ variable "tags" {
   description = "Common resource tags."
   type        = map(string)
 }
+
+variable "aws_region" {
+  description = "AWS region containing the assets bucket."
+  type        = string
+}

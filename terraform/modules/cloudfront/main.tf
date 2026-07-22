@@ -1,4 +1,12 @@
 #########################################
+# Managed Response Headers Policy
+#########################################
+
+data "aws_cloudfront_response_headers_policy" "security_headers" {
+  name = "Managed-SecurityHeadersPolicy"
+}
+
+#########################################
 # Origin Access Control
 #########################################
 
@@ -19,6 +27,7 @@ resource "aws_cloudfront_distribution" "this" {
   is_ipv6_enabled     = true
   comment             = "${var.project_name} CloudFront Distribution"
   default_root_object = "index.html"
+  web_acl_id          = aws_wafv2_web_acl.cloudfront.arn
 
   origin {
     domain_name = var.alb_dns_name
@@ -42,8 +51,9 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   default_cache_behavior {
-    target_origin_id       = "alb-origin"
-    viewer_protocol_policy = "redirect-to-https"
+    target_origin_id           = "alb-origin"
+    viewer_protocol_policy     = "redirect-to-https"
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security_headers.id
 
     allowed_methods = [
       "GET",
@@ -67,9 +77,10 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   ordered_cache_behavior {
-    path_pattern           = "/assets/*"
-    target_origin_id       = "assets-origin"
-    viewer_protocol_policy = "redirect-to-https"
+    path_pattern               = "/assets/*"
+    target_origin_id           = "assets-origin"
+    viewer_protocol_policy     = "redirect-to-https"
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security_headers.id
 
     allowed_methods = [
       "GET",
@@ -94,6 +105,12 @@ resource "aws_cloudfront_distribution" "this" {
     min_ttl     = 0
     default_ttl = 86400
     max_ttl     = 31536000
+  }
+
+  logging_config {
+    bucket          = var.access_logs_bucket_domain_name
+    include_cookies = false
+    prefix          = var.access_logs_prefix
   }
 
   restrictions {

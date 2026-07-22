@@ -3,11 +3,6 @@ variable "project_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "Deployment environment."
-  type        = string
-}
-
 variable "vpc_id" {
   description = "VPC ID."
   type        = string
@@ -31,5 +26,21 @@ variable "tags" {
 variable "enable_deletion_protection" {
   description = "Enable deletion protection on the ALB."
   type        = bool
-  default     = false
+  default     = true
+}
+
+variable "access_logs_bucket_name" {
+  description = "Name of the S3 bucket receiving ALB access logs."
+  type        = string
+}
+
+variable "access_logs_bucket_prefix" {
+  description = "S3 object prefix used for ALB access logs."
+  type        = string
+  default     = "alb"
+
+  validation {
+    condition     = !strcontains(var.access_logs_bucket_prefix, "AWSLogs")
+    error_message = "The ALB access-log prefix must not contain AWSLogs."
+  }
 }

@@ -10,7 +10,13 @@ module "networking" {
   private_subnet_cidr_a = var.private_subnet_cidr_a
   private_subnet_cidr_b = var.private_subnet_cidr_b
 
+  flow_logs_bucket_arn = aws_s3_bucket.access_logs.arn
+
   tags = local.common_tags
+
+  depends_on = [
+    aws_s3_bucket_policy.access_logs
+  ]
 }
 
 module "security_groups" {
@@ -21,26 +27,38 @@ module "security_groups" {
 }
 
 module "iam" {
-  source            = "../../modules/iam"
-  project_name      = var.project_name
-  assets_bucket_arn = module.s3.bucket_arn
-  tags              = local.common_tags
+  source = "../../modules/iam"
+
+  project_name                = var.project_name
+  assets_bucket_arn           = module.s3.bucket_arn
+  cloudwatch_metric_namespace = "${var.project_name}/Application"
+
+  tags = local.common_tags
 }
 
 module "s3" {
   source      = "../../modules/s3"
   bucket_name = var.assets_bucket_name
+  aws_region  = var.aws_region
   tags        = local.common_tags
 }
 
 module "alb" {
   source            = "../../modules/alb"
   project_name      = var.resource_prefix
-  environment       = var.environment
   vpc_id            = module.networking.vpc_id
   public_subnet_ids = module.networking.public_subnet_ids
   security_group_id = module.security_groups.alb_security_group_id
-  tags              = local.common_tags
+
+  access_logs_bucket_name    = aws_s3_bucket.access_logs.id
+  access_logs_bucket_prefix  = "alb"
+  enable_deletion_protection = true
+
+  tags = local.common_tags
+
+  depends_on = [
+    aws_s3_bucket_policy.access_logs
+  ]
 }
 
 module "launch_template" {
@@ -88,7 +106,15 @@ module "cloudfront" {
   assets_bucket_regional_domain_name = module.s3.bucket_regional_domain_name
   certificate_arn                    = module.acm.certificate_arn
   domain_name                        = var.domain_name
-  tags                               = local.common_tags
+
+  access_logs_bucket_domain_name = aws_s3_bucket.access_logs.bucket_domain_name
+  access_logs_prefix             = "cloudfront/"
+
+  tags = local.common_tags
+
+  depends_on = [
+    aws_s3_bucket_ownership_controls.access_logs
+  ]
 }
 
 module "route53_records" {
@@ -103,10 +129,12 @@ module "route53_records" {
 module "cloudwatch" {
   source                   = "../../modules/cloudwatch"
   project_name             = var.project_name
+  aws_region               = var.aws_region
   autoscaling_group_name   = module.autoscaling.autoscaling_group_name
   load_balancer_arn_suffix = module.alb.alb_arn_suffix
   target_group_arn_suffix  = module.alb.target_group_arn_suffix
   alert_email              = var.alert_email
+  log_retention_days       = var.log_retention_days
   tags                     = local.common_tags
 }
 

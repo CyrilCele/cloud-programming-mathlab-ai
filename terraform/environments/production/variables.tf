@@ -13,12 +13,6 @@ variable "environment" {
   type        = string
 }
 
-variable "aws_profile" {
-  description = "AWS CLI profile used for authentication."
-  type        = string
-  default     = "default"
-}
-
 variable "vpc_cidr" {
   description = "CIDR block assigned to the VPC."
   type        = string
@@ -49,11 +43,6 @@ variable "assets_bucket_name" {
   type        = string
 }
 
-variable "ami_id" {
-  description = "Ubuntu Server AMI ID."
-  type        = string
-}
-
 variable "instance_type" {
   description = "EC2 instance type."
   type        = string
@@ -79,4 +68,30 @@ variable "domain_name" {
 variable "resource_prefix" {
   description = "Short prefix used for AWS resources with strict name limits."
   type        = string
+}
+
+#########################################
+# Observability
+#########################################
+
+variable "log_retention_days" {
+  description = "Number of days CloudWatch application logs are retained."
+  type        = number
+  default     = 365
+
+  validation {
+    condition     = contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653], var.log_retention_days)
+    error_message = "log_retention_days must be a retention period supported by CloudWatch Logs."
+  }
+}
+
+variable "access_log_retention_days" {
+  description = "Number of days ALB, CloudFront, and VPC Flow Logs are retained."
+  type        = number
+  default     = 365
+
+  validation {
+    condition     = var.access_log_retention_days >= 1
+    error_message = "access_log_retention_days must be at least one day."
+  }
 }

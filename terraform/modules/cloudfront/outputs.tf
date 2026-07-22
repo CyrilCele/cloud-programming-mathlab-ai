@@ -27,3 +27,9 @@ output "hosted_zone_id" {
 
   value = aws_cloudfront_distribution.this.hosted_zone_id
 }
+
+output "web_acl_arn" {
+  description = "ARN of the AWS WAF Web ACL attached to CloudFront."
+
+  value = aws_wafv2_web_acl.cloudfront.arn
+}

@@ -6,6 +6,7 @@ resource "aws_cloudwatch_log_group" "application" {
   name = "/aws/ec2/${var.project_name}"
 
   retention_in_days = var.log_retention_days
+  kms_key_id        = aws_kms_key.observability.arn
 
   tags = merge(
     var.tags,

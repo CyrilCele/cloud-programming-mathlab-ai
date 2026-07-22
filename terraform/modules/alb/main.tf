@@ -53,6 +53,13 @@ resource "aws_lb" "this" {
   subnets                    = var.public_subnet_ids
   idle_timeout               = 60
   enable_deletion_protection = var.enable_deletion_protection
+  drop_invalid_header_fields = true
+
+  access_logs {
+    bucket  = var.access_logs_bucket_name
+    prefix  = var.access_logs_bucket_prefix
+    enabled = true
+  }
 
   tags = merge(
     var.tags,

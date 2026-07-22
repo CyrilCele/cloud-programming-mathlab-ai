@@ -1,22 +1,45 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 
-echo ""
-echo "Terraform Formatting..."
-terraform fmt -recursive
+readonly ROOT_DIR="$(
+  cd "$(dirname "${BASH_SOURCE[0]}")/.."
+  pwd
+)"
+readonly TERRAFORM_DIR="${ROOT_DIR}/terraform"
+readonly PRODUCTION_DIR="${TERRAFORM_DIR}/environments/production"
 
-echo ""
-echo "Terraform Validation..."
-make validate
+printf '\nTerraform Formatting...\n\n'
+terraform fmt -check -recursive "${TERRAFORM_DIR}"
 
-echo ""
-echo "Terraform Lint..."
-make lint
+printf '\nTerraform Initialization...\n\n'
+terraform \
+  -chdir="${PRODUCTION_DIR}" \
+  init \
+  -backend=false \
+  -input=false \
+  -no-color
 
-echo ""
-echo "Terraform Security..."
-make security
+printf '\nTerraform Validation...\n\n'
+terraform \
+  -chdir="${PRODUCTION_DIR}" \
+  validate \
+  -no-color
 
-echo ""
-echo "Quality checks completed successfully."
+printf '\nTFLint Initialization...\n\n'
+tflint --init
+
+printf '\nTFLint Validation...\n\n'
+tflint --recursive
+
+if command -v checkov >/dev/null 2>&1; then
+  printf '\nCheckov Validation...\n\n'
+  checkov \
+    --directory "${TERRAFORM_DIR}" \
+    --framework terraform \
+    --compact
+else
+  printf '\nCheckov is not installed; skipping Checkov validation.\n'
+fi
+
+printf '\nAll quality checks passed.\n'

@@ -1,4 +1,102 @@
 #########################################
+# AWS Identity
+#########################################
+
+data "aws_caller_identity" "current" {}
+
+data "aws_partition" "current" {}
+
+#########################################
+# Assets KMS Key
+#########################################
+
+resource "aws_kms_key" "assets" {
+  description             = "KMS key protecting objects in ${var.bucket_name}"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Sid    = "EnableAccountAdministration"
+        Effect = "Allow"
+
+        Principal = {
+          AWS = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowAccountPrincipalsToUseKeyThroughS3"
+        Effect = "Allow"
+
+        Principal = {
+          AWS = "*"
+        }
+
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey",
+          "kms:Encrypt",
+          "kms:GenerateDataKey*",
+          "kms:ReEncrypt*"
+        ]
+
+        Resource = "*"
+
+        Condition = {
+          StringEquals = {
+            "aws:PrincipalAccount" = data.aws_caller_identity.current.account_id
+            "kms:ViaService"       = "s3.${var.aws_region}.amazonaws.com"
+          }
+        }
+      },
+      {
+        Sid    = "AllowCloudFrontToDecryptAssets"
+        Effect = "Allow"
+
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey"
+        ]
+
+        Resource = "*"
+
+        Condition = {
+          StringEquals = {
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+
+          ArnLike = {
+            "AWS:SourceArn" = "arn:${data.aws_partition.current.partition}:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/*"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.bucket_name}-kms"
+    }
+  )
+}
+
+resource "aws_kms_alias" "assets" {
+  name          = "alias/${var.bucket_name}"
+  target_key_id = aws_kms_key.assets.key_id
+}
+
+#########################################
 # S3 Bucket
 #########################################
 
@@ -28,15 +126,18 @@ resource "aws_s3_bucket_versioning" "assets" {
 }
 
 #########################################
-# Server-Side Encryption
+# KMS Server-Side Encryption
 #########################################
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
   bucket = aws_s3_bucket.assets.id
 
   rule {
+    bucket_key_enabled = true
+
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      kms_master_key_id = aws_kms_key.assets.arn
+      sse_algorithm     = "aws:kms"
     }
   }
 }
@@ -64,6 +165,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "assets" {
   rule {
     id     = "abort-incomplete-multipart-uploads"
     status = "Enabled"
+
+    filter {}
 
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
