@@ -33,3 +33,8 @@ variable "assets_bucket_name" {
   description = "S3 bucket containing deployment artifacts."
   type        = string
 }
+
+variable "website_deployment_version" {
+  description = "Website artifact identifier used to create a new launch-template version when website.zip changes."
+  type        = string
+}

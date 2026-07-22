@@ -48,11 +48,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 
   rule {
-    bucket_key_enabled = true
+    bucket_key_enabled = false
 
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.access_logs.arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm = "AES256"
     }
   }
 }

@@ -154,6 +154,24 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
   }
 }
 
+resource "aws_s3_object" "website" {
+  bucket = aws_s3_bucket.assets.id
+  key    = "website.zip"
+
+  source = var.website_zip_path
+
+  server_side_encryption = "aws:kms"
+  kms_key_id             = aws_kms_key.assets.arn
+
+  source_hash = filemd5(var.website_zip_path)
+
+  depends_on = [
+    aws_s3_bucket_public_access_block.assets,
+    aws_s3_bucket_server_side_encryption_configuration.assets,
+    aws_s3_bucket_versioning.assets
+  ]
+}
+
 #########################################
 # Public Access Block
 #########################################

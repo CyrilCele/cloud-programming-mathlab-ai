@@ -48,6 +48,8 @@ module "s3" {
   bucket_name = var.assets_bucket_name
   aws_region  = var.aws_region
 
+  website_zip_path = abspath("${path.root}/../../../website.zip")
+
   access_logs_bucket_id = aws_s3_bucket.access_logs.id
   access_logs_prefix    = "s3-assets/"
 
@@ -84,9 +86,10 @@ module "launch_template" {
   instance_type         = var.instance_type
   instance_profile_name = module.iam.instance_profile_name
 
-  security_group_id  = module.security_groups.ec2_security_group_id
-  assets_bucket_name = module.s3.bucket_name
-  tags               = local.common_tags
+  security_group_id          = module.security_groups.ec2_security_group_id
+  assets_bucket_name         = module.s3.bucket_name
+  website_deployment_version = module.s3.website_object_hash
+  tags                       = local.common_tags
 }
 
 module "autoscaling" {

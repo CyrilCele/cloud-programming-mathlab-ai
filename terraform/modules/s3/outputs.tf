@@ -33,3 +33,13 @@ output "kms_key_id" {
 
   value = aws_kms_key.assets.key_id
 }
+
+output "website_object_hash" {
+  description = "Hash of the deployed website archive."
+  value       = filemd5(var.website_zip_path)
+}
+
+output "website_object_version_id" {
+  description = "S3 version ID of the uploaded website deployment archive."
+  value       = aws_s3_object.website.version_id
+}

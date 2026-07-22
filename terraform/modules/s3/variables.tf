@@ -28,3 +28,13 @@ variable "access_logs_prefix" {
   type        = string
   default     = "s3-assets/"
 }
+
+variable "website_zip_path" {
+  description = "Absolute path to the website deployment ZIP archive."
+  type        = string
+
+  validation {
+    condition     = fileexists(var.website_zip_path)
+    error_message = "website_zip_path must reference an existing ZIP archive."
+  }
+}

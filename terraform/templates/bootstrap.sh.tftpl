@@ -1,17 +1,40 @@
 #!/bin/bash
 
-set -euxo pipefail
-
-# Log all output
-exec > >(tee /var/log/bootstrap.log | logger -t bootstrap -s 2>/dev/console) 2>&1
-
-echo "===== Bootstrap started: $(date) ====="
+set -Eeuo pipefail
 
 #########################################
-# Update the system
+# Logging
 #########################################
 
-dnf update -y
+exec > >(tee -a /var/log/bootstrap.log | logger -t bootstrap -s 2>/dev/console) 2>&1
+
+echo "===== Bootstrap started: $(date --iso-8601=seconds) ====="
+
+#########################################
+# Error handling
+#########################################
+
+bootstrap_error() {
+    local exit_code="$?"
+    local line_number="$1"
+
+    echo "ERROR: Bootstrap failed on line $${line_number} with exit code $${exit_code}."
+    echo "===== Bootstrap failed: $(date --iso-8601=seconds) ====="
+
+    exit "$${exit_code}"
+}
+
+trap 'bootstrap_error "$${LINENO}"' ERR
+
+#########################################
+# Configuration
+#########################################
+
+readonly ASSETS_BUCKET_NAME="${assets_bucket_name}"
+readonly WEBSITE_OBJECT_KEY="website.zip"
+readonly WEBSITE_ARCHIVE="/tmp/website.zip"
+readonly WEBSITE_STAGING_DIRECTORY="/tmp/website-staging"
+readonly NGINX_DOCUMENT_ROOT="/usr/share/nginx/html"
 
 #########################################
 # Install required packages
@@ -20,74 +43,126 @@ dnf update -y
 dnf install -y \
     nginx \
     unzip \
-    awscli
+    awscli \
+|| {
+    echo "Package installation failed."
+    exit 1
+}
 
 #########################################
-# Enable and start Nginx
+# Prepare deployment directories
 #########################################
 
-systemctl enable nginx
-systemctl start nginx
+rm -f "$${WEBSITE_ARCHIVE}"
+rm -rf "$${WEBSITE_STAGING_DIRECTORY}"
+
+mkdir -p "$${WEBSITE_STAGING_DIRECTORY}"
+mkdir -p "$${NGINX_DOCUMENT_ROOT}"
 
 #########################################
-# Prepare web directory
-#########################################
-
-rm -rf /usr/share/nginx/html/*
-mkdir -p /tmp/website
-
-#########################################
-# Download website from S3
+# Download website artifact from S3
 #########################################
 
 aws s3 cp \
-    "s3://${assets_bucket_name}/website.zip" \
-    /tmp/website/website.zip
+    "s3://$${ASSETS_BUCKET_NAME}/$${WEBSITE_OBJECT_KEY}" \
+    "$${WEBSITE_ARCHIVE}" \
+    --only-show-errors
+
+if ! unzip -o \
+    "$${WEBSITE_ARCHIVE}" \
+    -d "$${WEBSITE_STAGING_DIRECTORY}"; then
+    echo "ERROR: Failed to extract website archive. Ensure ZIP entry names use forward slashes."
+    exit 1
+fi
+
+echo "Website archive downloaded successfully."
 
 #########################################
-# Verify download
+# Validate website archive
 #########################################
 
-if [ ! -f /tmp/website/website.zip ]; then
-    echo "ERROR: website.zip was not downloaded from S3."
+unzip -t "$${WEBSITE_ARCHIVE}"
+
+#########################################
+# Extract website into staging directory
+#########################################
+
+unzip -o \
+    "$${WEBSITE_ARCHIVE}" \
+    -d "$${WEBSITE_STAGING_DIRECTORY}"
+
+#########################################
+# Validate extracted website
+#########################################
+
+if [ ! -f "$${WEBSITE_STAGING_DIRECTORY}/index.html" ]; then
+    echo "ERROR: website.zip must contain index.html at the archive root."
     exit 1
 fi
 
 #########################################
-# Extract website
+# Replace existing website atomically
 #########################################
 
-unzip -o \
-    /tmp/website/website.zip \
-    -d /usr/share/nginx/html
+find "$${NGINX_DOCUMENT_ROOT}" \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -exec rm -rf {} +
 
-#########################################
-# Set ownership and permissions
-#########################################
-
-chown -R nginx:nginx /usr/share/nginx/html
-
-find /usr/share/nginx/html -type d -exec chmod 755 {} \;
-find /usr/share/nginx/html -type f -exec chmod 644 {} \;
+cp -a \
+    "$${WEBSITE_STAGING_DIRECTORY}/." \
+    "$${NGINX_DOCUMENT_ROOT}/"
 
 #########################################
 # Create ALB health check endpoint
 #########################################
 
-echo "healthy" > /usr/share/nginx/html/health
+printf '%s\n' "healthy" > "$${NGINX_DOCUMENT_ROOT}/health"
 
 #########################################
-# Restart Nginx
+# Set ownership and permissions
 #########################################
 
+chown -R nginx:nginx "$${NGINX_DOCUMENT_ROOT}"
+
+find "$${NGINX_DOCUMENT_ROOT}" \
+    -type d \
+    -exec chmod 755 {} \;
+
+find "$${NGINX_DOCUMENT_ROOT}" \
+    -type f \
+    -exec chmod 644 {} \;
+
+#########################################
+# Enable and restart Nginx
+#########################################
+
+nginx -t
+
+systemctl enable nginx
 systemctl restart nginx
 
 #########################################
-# Verify Nginx
+# Verify deployment
 #########################################
 
-systemctl status nginx --no-pager
+systemctl is-active --quiet nginx
 
-curl -I http://localhost
+curl \
+    --fail \
+    --silent \
+    --show-error \
+    --retry 10 \
+    --retry-delay 3 \
+    --retry-connrefused \
+    http://127.0.0.1/health
 
-echo "===== Bootstrap completed successfully: $(date) ====="
+curl \
+    --fail \
+    --silent \
+    --show-error \
+    --head \
+    http://127.0.0.1/
+
+echo "Website deployed successfully."
+echo "===== Bootstrap completed successfully: $(date --iso-8601=seconds) ====="
