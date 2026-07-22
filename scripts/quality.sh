@@ -37,6 +37,7 @@ if command -v checkov >/dev/null 2>&1; then
   checkov \
     --directory "${TERRAFORM_DIR}" \
     --framework terraform \
+    --config-file "${ROOT_DIR}/.github/.checkov.yaml" \
     --compact
 else
   printf '\nCheckov is not installed; skipping Checkov validation.\n'

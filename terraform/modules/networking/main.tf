@@ -16,6 +16,24 @@ resource "aws_vpc" "this" {
 }
 
 #########################################
+# Default Security Group Restrictions
+#########################################
+
+resource "aws_default_security_group" "this" {
+  vpc_id = aws_vpc.this.id
+
+  ingress = []
+  egress  = []
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.project_name}-default-sg-restricted"
+    }
+  )
+}
+
+#########################################
 # Internet Gateway
 #########################################
 

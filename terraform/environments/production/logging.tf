@@ -48,14 +48,21 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 
   rule {
+    bucket_key_enabled = true
+
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      kms_master_key_id = aws_kms_key.access_logs.arn
+      sse_algorithm     = "aws:kms"
     }
   }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
   bucket = aws_s3_bucket.access_logs.id
+
+  depends_on = [
+    aws_s3_bucket_versioning.access_logs
+  ]
 
   rule {
     id     = "expire-access-logs"
@@ -65,6 +72,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
 
     expiration {
       days = var.access_log_retention_days
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.access_log_retention_days
     }
 
     abort_incomplete_multipart_upload {
@@ -171,4 +182,77 @@ resource "aws_s3_bucket_policy" "access_logs" {
       }
     ]
   })
+}
+
+resource "aws_s3_bucket_versioning" "access_logs" {
+  bucket = aws_s3_bucket.access_logs.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+#########################################
+# Central Logging KMS Key
+#########################################
+
+resource "aws_kms_key" "access_logs" {
+  description             = "KMS key protecting central AWS access and network logs"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Sid    = "EnableAccountAdministration"
+        Effect = "Allow"
+
+        Principal = {
+          AWS = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowAWSLogDeliveryServices"
+        Effect = "Allow"
+
+        Principal = {
+          Service = [
+            "delivery.logs.amazonaws.com",
+            "logdelivery.elasticloadbalancing.amazonaws.com"
+          ]
+        }
+
+        Action = [
+          "kms:Encrypt",
+          "kms:GenerateDataKey*"
+        ]
+
+        Resource = "*"
+
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name    = "${var.resource_prefix}-access-logs-kms"
+      Purpose = "Central access and network log encryption"
+    }
+  )
+}
+
+resource "aws_kms_alias" "access_logs" {
+  name          = "alias/${var.resource_prefix}-access-logs"
+  target_key_id = aws_kms_key.access_logs.key_id
 }
