@@ -30,17 +30,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
 
       - name: Install Checkov
-        run: python -m pip install --disable-pip-version-check checkov==3.3.8
+        run: |
+          python -m pip install \
+            --disable-pip-version-check \
+            checkov==3.3.8
 
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12.3114.0
-        with:
-          directory: terraform
-          framework: terraform
-          config_file: .github/.checkov.yaml
+        run: |
+          checkov \
+            --directory terraform \
+            --config-file .github/.checkov.yaml
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v4
