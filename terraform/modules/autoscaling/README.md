@@ -35,7 +35,7 @@ Combined with the Launch Template, this module provides a resilient, fault-toler
 
 # Architecture
 
-```
+```text
                     CloudFront
                          │
                          ▼
@@ -141,7 +141,7 @@ These metrics provide operational visibility into the health and scaling behavio
 
 The lifecycle of a new EC2 instance is as follows:
 
-```
+```text
 Launch Template
        │
        ▼

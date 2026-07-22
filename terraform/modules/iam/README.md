@@ -37,7 +37,7 @@ The module follows the Principle of Least Privilege by granting only the permiss
 
 The IAM module implements AWS best practices by using temporary credentials provided through an Instance Profile.
 
-```
+```text
 EC2 Instance
       │
       ▼

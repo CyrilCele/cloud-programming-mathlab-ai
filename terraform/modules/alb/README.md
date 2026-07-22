@@ -35,7 +35,7 @@ This module serves as the primary origin for the CloudFront distribution.
 
 # Architecture
 
-```
+```text
                  Internet
                      │
                      ▼
@@ -79,7 +79,7 @@ If an instance becomes unhealthy, the ALB automatically stops routing traffic to
 
 Incoming requests follow this path:
 
-```
+```text
 Client
    │
    ▼

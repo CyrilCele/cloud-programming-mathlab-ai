@@ -34,19 +34,19 @@ The certificate is created in the **US East (N. Virginia)** Region (`us-east-1`)
 
 # Architecture
 
-```
-                 User
-                   │
-             HTTPS Request
-                   │
-                   ▼
-          CloudFront Distribution
-                   │
-                   ▼
-          ACM Certificate (TLS)
-                   │
-                   ▼
-         Route 53 DNS Validation
+```text
+        User
+        │
+HTTPS Request
+        │
+        ▼
+CloudFront Distribution
+        │
+        ▼
+ACM Certificate (TLS)
+        │
+        ▼
+Route 53 DNS Validation
 ```
 
 The ACM certificate secures all HTTPS traffic delivered through CloudFront.
@@ -59,7 +59,7 @@ The module uses **DNS validation**, the AWS-recommended validation method.
 
 Validation workflow:
 
-```
+```text
 Request Certificate
         │
         ▼
@@ -131,7 +131,7 @@ This module is consumed by:
 
 # Example Usage
 
-```hcl
+`````hcl
 module "acm" {
   source = "../../modules/acm"
 
@@ -153,7 +153,7 @@ module "acm" {
 
 Amazon CloudFront requires ACM certificates to be created in:
 
-```
+````text
 us-east-1
 ```
 
@@ -241,3 +241,5 @@ Ensure:
 # Conclusion
 
 The ACM module provides secure certificate management for the MathLab AI Infrastructure. By automating certificate provisioning, DNS validation, and renewal, it enables secure HTTPS communication while reducing operational overhead and ensuring compliance with AWS best practices.
+```
+`````

@@ -37,7 +37,7 @@ The module integrates with Amazon EC2, Auto Scaling Groups, Application Load Bal
 
 # Architecture
 
-```
+```text
                 EC2 Instances
                      │
                      ▼
@@ -87,7 +87,7 @@ Typical metrics include:
 
 # Alarm Workflow
 
-```
+```text
 Infrastructure Metric
           │
           ▼

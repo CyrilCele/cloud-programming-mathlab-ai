@@ -258,47 +258,47 @@ Infrastructure verification includes:
 
 ## Terraform
 
-https://developer.hashicorp.com/terraform/docs
+<https://developer.hashicorp.com/terraform/docs>
 
 ## AWS
 
-https://docs.aws.amazon.com/
+<https://docs.aws.amazon.com/>
 
 ## Amazon EC2
 
-https://docs.aws.amazon.com/ec2/
+<https://docs.aws.amazon.com/ec2/>
 
 ## Amazon S3
 
-https://docs.aws.amazon.com/s3/
+<https://docs.aws.amazon.com/s3/>
 
 ## Amazon CloudFront
 
-https://docs.aws.amazon.com/cloudfront/
+<https://docs.aws.amazon.com/cloudfront/>
 
 ## Amazon Route 53
 
-https://docs.aws.amazon.com/route53/
+<https://docs.aws.amazon.com/route53/>
 
 ## Elastic Load Balancing
 
-https://docs.aws.amazon.com/elasticloadbalancing/
+<https://docs.aws.amazon.com/elasticloadbalancing/>
 
 ## Auto Scaling
 
-https://docs.aws.amazon.com/autoscaling/
+<https://docs.aws.amazon.com/autoscaling/>
 
 ## Amazon CloudWatch
 
-https://docs.aws.amazon.com/cloudwatch/
+<https://docs.aws.amazon.com/cloudwatch/>
 
 ## AWS IAM
 
-https://docs.aws.amazon.com/iam/
+<https://docs.aws.amazon.com/iam/>
 
 ## Amazon VPC
 
-https://docs.aws.amazon.com/vpc/
+<https://docs.aws.amazon.com/vpc/>
 
 ---
 

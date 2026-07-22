@@ -35,7 +35,7 @@ Every EC2 instance launched by the Auto Scaling Group is created from this templ
 
 # Architecture
 
-```
+```text
                  Auto Scaling Group
                          │
                          ▼

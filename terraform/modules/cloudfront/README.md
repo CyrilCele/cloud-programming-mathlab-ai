@@ -36,7 +36,7 @@ The distribution uses the Application Load Balancer as its primary origin and Am
 
 # Architecture
 
-```
+```text
                 User
                   │
                   ▼
@@ -119,7 +119,7 @@ This behaviour serves all dynamic application requests.
 
 Path Pattern:
 
-```
+```text
 /assets/*
 ```
 

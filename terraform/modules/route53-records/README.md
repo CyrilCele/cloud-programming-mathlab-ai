@@ -32,7 +32,7 @@ The hosted zone serves as the foundation of the project's DNS architecture and a
 
 # Architecture
 
-```
+```text
                     Internet
                         │
                         ▼
@@ -52,7 +52,7 @@ The hosted zone becomes the central DNS authority for the application's AWS-mana
 
 The module creates a public hosted zone for:
 
-```
+```text
 mathlab-ai.publicvm.com
 ```
 
@@ -60,7 +60,7 @@ AWS automatically assigns four authoritative name servers.
 
 Example:
 
-```
+```text
 ns-xxxx.awsdns-xx.com
 ns-xxxx.awsdns-xx.net
 ns-xxxx.awsdns-xx.org
@@ -75,7 +75,7 @@ These name servers are used when delegating the subdomain from the parent DNS pr
 
 The deployment uses **subdomain delegation**.
 
-```
+```text
 publicvm.com
         │
         ▼
@@ -89,7 +89,7 @@ The parent DNS provider delegates authority for the subdomain by creating NS rec
 
 Once delegated, Route 53 becomes authoritative for all records under:
 
-```
+```text
 mathlab-ai.publicvm.com
 ```
 

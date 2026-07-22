@@ -122,7 +122,7 @@ The module follows AWS security best practices by:
 
 # Example Usage
 
-```hcl
+````hcl
 module "security_groups" {
   source = "../../modules/security-group"
 
@@ -132,7 +132,7 @@ module "security_groups" {
 
   tags = local.common_tags
 }
-```
+```text
 
 ---
 
@@ -142,7 +142,7 @@ Only the Application Load Balancer is exposed to the public Internet.
 
 All application traffic must follow this path:
 
-```
+```text
 Internet
       │
       ▼
@@ -150,7 +150,7 @@ Application Load Balancer
       │
       ▼
 EC2 Instances
-```
+````
 
 This architecture significantly reduces the attack surface by ensuring that compute resources remain isolated within private subnets.
 

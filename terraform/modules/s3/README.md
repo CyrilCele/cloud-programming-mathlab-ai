@@ -36,7 +36,7 @@ The bucket is not publicly accessible. All requests for static assets are served
 
 # Architecture
 
-```
+```text
 Developer
      │
      ▼
@@ -80,7 +80,7 @@ These settings prevent accidental exposure of bucket contents.
 
 Server-side encryption is enabled using:
 
-```
+```text
 AES-256 (SSE-S3)
 ```
 
@@ -143,7 +143,7 @@ It provides outputs consumed by:
 
 # Example Usage
 
-```hcl
+````hcl
 module "s3" {
   source = "../../modules/s3"
 
@@ -151,7 +151,7 @@ module "s3" {
 
   tags = local.common_tags
 }
-```
+```text
 
 ---
 
@@ -163,7 +163,7 @@ The deployment workflow is:
 
 ```bash
 zip -r website.zip website/
-```
+````
 
 2. Upload the archive.
 
@@ -175,7 +175,7 @@ aws s3 cp website.zip s3://<bucket-name>/website.zip
 
 4. The bootstrap script extracts the website into:
 
-```
+```text
 /var/www/html
 ```
 
