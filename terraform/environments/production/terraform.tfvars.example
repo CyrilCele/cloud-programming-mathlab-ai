@@ -11,7 +11,7 @@ public_subnet_cidr_b = "10.0.2.0/24"
 private_subnet_cidr_a = "10.0.11.0/24"
 private_subnet_cidr_b = "10.0.12.0/24"
 
-assets_bucket_name = "replace-with-globally-unique-bucket-name"
+assets_bucket_name = "mathlab-ai-assets-nkululeko-cele-2026"
 alert_email        = "replace-with-valid-email-address"
 domain_name        = "mathlab-ai.publicvm.com"
 
