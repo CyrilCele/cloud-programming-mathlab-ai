@@ -1,60 +1,27 @@
 # Quick Start
 
-## 1. Clone the Repository
+Clone the repository.
 
 ```bash
 git clone <repository-url>
 cd <repository-folder>
 ```
 
----
-
-## 2. Configure AWS
+Configure AWS credentials.
 
 ```bash
 aws configure
-```
-
-Verify your credentials.
-
-```bash
 aws sts get-caller-identity
 ```
 
----
-
-## 3. Verify Prerequisites
+Deploy the infrastructure.
 
 ```bash
-make prerequisites
+bash scripts/deploy.sh
 ```
 
----
-
-## 4. Deploy Infrastructure
+Verify the deployment.
 
 ```bash
-make deploy
+bash scripts/verify.sh
 ```
-
----
-
-## 5. Verify Deployment
-
-```bash
-make verify
-```
-
----
-
-## 6. Destroy Infrastructure
-
-```bash
-make destroy
-```
-
----
-
-## Summary
-
-The project is fully automated. A new developer or lecturer can deploy, verify, and remove the infrastructure using only the commands above with minimal manual configuration.

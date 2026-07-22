@@ -108,7 +108,7 @@ terraform apply
 Alternatively, use the automated deployment script.
 
 ```bash
-make deploy
+bash scripts/deploy.sh
 ```
 
 ---
@@ -158,7 +158,7 @@ During instance startup:
 Run the automated verification script.
 
 ```bash
-make verify
+bash scripts/verify.sh
 ```
 
 The verification process checks:
@@ -209,7 +209,7 @@ The new EC2 instances automatically download the updated website during boot.
 Destroy all AWS resources.
 
 ```bash
-make destroy
+bash scripts/destroy.sh
 ```
 
 If the S3 bucket contains objects or versioned files, empty the bucket before destroying the infrastructure.

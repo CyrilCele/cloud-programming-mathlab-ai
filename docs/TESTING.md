@@ -60,7 +60,7 @@ terraform plan
 Run the automated verification script.
 
 ```bash
-make verify
+bash scripts/verify.sh
 ```
 
 The script verifies:
@@ -153,7 +153,7 @@ The project includes automated quality checks using:
 Run all quality checks.
 
 ```bash
-make quality
+bash scripts/quality.sh
 ```
 
 ---
