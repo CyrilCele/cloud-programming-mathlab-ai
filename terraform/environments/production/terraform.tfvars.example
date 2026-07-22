@@ -13,6 +13,6 @@ private_subnet_cidr_b = "10.0.12.0/24"
 
 assets_bucket_name = "replace-with-globally-unique-bucket-name"
 alert_email        = "replace-with-valid-email-address"
-domain_name        = "replace-with-registered-domain"
+domain_name        = "mathlab-ai.publicvm.com"
 
 resource_prefix = "mathlab-ai-production"
