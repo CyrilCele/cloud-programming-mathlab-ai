@@ -21,19 +21,31 @@ permissions:
   contents: read
 
 concurrency:
-  group: terraform-ci-${{ github.ref }}
+  group: terraform-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   TF_IN_AUTOMATION: "true"
   TF_INPUT: "false"
+
+  TF_VAR_aws_region: ${{ vars.AWS_REGION }}
+  TF_VAR_project_name: ${{ vars.PROJECT_NAME }}
+  TF_VAR_environment: ${{ vars.ENVIRONMENT }}
+  TF_VAR_vpc_cidr: ${{ vars.VPC_CIDR }}
+  TF_VAR_public_subnet_cidr_a: ${{ vars.PUBLIC_SUBNET_CIDR_A }}
+  TF_VAR_public_subnet_cidr_b: ${{ vars.PUBLIC_SUBNET_CIDR_B }}
+  TF_VAR_private_subnet_cidr_a: ${{ vars.PRIVATE_SUBNET_CIDR_A }}
+  TF_VAR_private_subnet_cidr_b: ${{ vars.PRIVATE_SUBNET_CIDR_B }}
+  TF_VAR_assets_bucket_name: ${{ vars.ASSETS_BUCKET_NAME }}
   TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
+  TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+  TF_VAR_resource_prefix: ${{ vars.RESOURCE_PREFIX }}
 
 jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     defaults:
       run:
@@ -51,24 +63,87 @@ jobs:
           terraform_wrapper: false
 
       - name: Verify Required Configuration
-        env:
-          ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
         run: |
           set -euo pipefail
 
-          if [[ -z "${ALERT_EMAIL:-}" ]]; then
-            echo "::error title=Missing repository variable::The GitHub repository variable ALERT_EMAIL is not configured."
-            echo "Create it under:"
+          required_variables=(
+            TF_VAR_aws_region
+            TF_VAR_project_name
+            TF_VAR_environment
+            TF_VAR_vpc_cidr
+            TF_VAR_public_subnet_cidr_a
+            TF_VAR_public_subnet_cidr_b
+            TF_VAR_private_subnet_cidr_a
+            TF_VAR_private_subnet_cidr_b
+            TF_VAR_assets_bucket_name
+            TF_VAR_alert_email
+            TF_VAR_domain_name
+            TF_VAR_resource_prefix
+          )
+
+          missing_variables=()
+
+          for variable_name in "${required_variables[@]}"; do
+            variable_value="${!variable_name:-}"
+
+            if [[ -z "${variable_value}" ]]; then
+              missing_variables+=("${variable_name#TF_VAR_}")
+            fi
+          done
+
+          if (( ${#missing_variables[@]} > 0 )); then
+            echo "::error title=Missing Terraform configuration::One or more required GitHub repository variables are not configured."
+            echo
+            echo "Missing Terraform variables:"
+
+            for variable_name in "${missing_variables[@]}"; do
+              echo "  - ${variable_name}"
+            done
+
+            echo
+            echo "Configure the corresponding repository variables under:"
             echo "Settings > Secrets and variables > Actions > Variables"
             exit 1
           fi
 
-          if [[ ! "${ALERT_EMAIL}" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
-            echo "::error title=Invalid repository variable::ALERT_EMAIL does not contain a valid email address."
+          if [[ ! "${TF_VAR_alert_email}" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+            echo "::error title=Invalid alert email::ALERT_EMAIL must contain a valid email address."
             exit 1
           fi
 
-          echo "Required Terraform configuration is available."
+          if [[ ! "${TF_VAR_aws_region}" =~ ^[a-z]{2}(-gov)?-[a-z]+-[0-9]+$ ]]; then
+            echo "::error title=Invalid AWS region::AWS_REGION does not appear to be a valid AWS region."
+            exit 1
+          fi
+
+          cidr_variables=(
+            TF_VAR_vpc_cidr
+            TF_VAR_public_subnet_cidr_a
+            TF_VAR_public_subnet_cidr_b
+            TF_VAR_private_subnet_cidr_a
+            TF_VAR_private_subnet_cidr_b
+          )
+
+          for variable_name in "${cidr_variables[@]}"; do
+            variable_value="${!variable_name}"
+
+            if [[ ! "${variable_value}" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[12][0-9]|3[0-2])$ ]]; then
+              echo "::error title=Invalid CIDR value::${variable_name#TF_VAR_} does not contain a valid IPv4 CIDR block."
+              exit 1
+            fi
+          done
+
+          if [[ ! "${TF_VAR_assets_bucket_name}" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ ]]; then
+            echo "::error title=Invalid S3 bucket name::ASSETS_BUCKET_NAME does not satisfy basic S3 bucket naming requirements."
+            exit 1
+          fi
+
+          if [[ ! "${TF_VAR_domain_name}" =~ ^([A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$ ]]; then
+            echo "::error title=Invalid domain name::DOMAIN_NAME must contain a valid fully qualified domain name."
+            exit 1
+          fi
+
+          echo "All required Terraform CI variables are configured."
 
       - name: Terraform Format Check
         working-directory: .
@@ -79,6 +154,7 @@ jobs:
       - name: Terraform Initialize
         run: |
           set -euo pipefail
+
           terraform init \
             -input=false \
             -no-color
@@ -86,12 +162,14 @@ jobs:
       - name: Terraform Validate
         run: |
           set -euo pipefail
+
           terraform validate \
             -no-color
 
       - name: Terraform Plan
         run: |
           set -euo pipefail
+
           terraform plan \
             -input=false \
             -lock=false \
@@ -101,11 +179,11 @@ jobs:
       - name: Display Terraform Plan
         run: |
           set -euo pipefail
+
           terraform show \
             -no-color \
             tfplan
 
       - name: Remove Terraform Plan
         if: always()
-        run: |
-          rm -f tfplan
+        run: rm -f tfplan

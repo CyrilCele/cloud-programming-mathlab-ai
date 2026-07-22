@@ -20,6 +20,11 @@ override.tf.json
 # ===========================
 *.auto.tfvars
 terraform.tfvars
+*.tfvars
+*.tfvars.json
+
+# Retain documented examples
+!*.tfvars.example
 
 # ===========================
 # Sensitive Files
