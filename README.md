@@ -130,6 +130,42 @@ The installed Terraform version should be compatible with the version configured
 
 ---
 
+## Install Prerequisites
+
+The repository includes an automated installer that installs all required local development tools.
+
+Run:
+
+```bash
+bash scripts/install.sh
+```
+
+The installer installs or updates:
+
+- Terraform 1.13.x
+- AWS CLI v2
+- Git
+- curl
+- unzip
+
+After installation, verify the environment:
+
+```bash
+bash scripts/prerequisites.sh
+```
+
+A successful validation confirms:
+
+- Terraform installed
+- AWS CLI installed
+- Git installed
+- curl installed
+- unzip installed
+- AWS credentials configured
+- AWS region configured
+
+---
+
 ## AWS Authentication
 
 Configure AWS credentials:
