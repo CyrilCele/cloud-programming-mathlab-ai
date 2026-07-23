@@ -26,7 +26,7 @@ variable "tags" {
 variable "enable_deletion_protection" {
   description = "Enable deletion protection on the ALB."
   type        = bool
-  default     = true
+  default     = false # I kept it false for marking purposes
 }
 
 variable "access_logs_bucket_name" {
